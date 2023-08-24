@@ -1,0 +1,32 @@
+input::-webkit-datetime-edit-ampm-field:focus,
+input::-webkit-datetime-edit-day-field:focus,
+input::-webkit-datetime-edit-hour-field:focus,
+input::-webkit-datetime-edit-millisecond-field:focus,
+input::-webkit-datetime-edit-minute-field:focus,
+input::-webkit-datetime-edit-month-field:focus,
+input::-webkit-datetime-edit-second-field:focus,
+input::-webkit-datetime-edit-week-field:focus,
+input::-webkit-datetime-edit-year-field:focus {
+    color: highlighttext;
+    outline: none;
+    background-color:green
+  
+}
+input::-webkit-calendar-picker-indicator:hover {
+    background-color:green;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    color: white;
+  
+}
+
+.time-input::-webkit-calendar-picker-indicator {
+  /* Styles for the modal trigger button */
+    background-color:green;
+}
+input::-webkit-inner-spin-button {
+    /* Styles for the spin buttons */
+    -webkit-appearance: none;
+    margin: 0;
+    background-color: greenyellow;
+}

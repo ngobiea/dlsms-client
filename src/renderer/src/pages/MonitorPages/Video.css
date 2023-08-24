@@ -1,0 +1,8 @@
+
+
+.sideBar{
+  flex-grow: 1;
+}
+.main{
+  flex-grow:3 ;
+}
