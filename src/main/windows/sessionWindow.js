@@ -6,7 +6,6 @@ exports.createSessionWindow = (isShow) => {
     width: parseFloat(process.env.sessionWindowWidth),
     height: parseFloat(process.env.sessionWindowHeight),
     webPreferences: {
-      // preload: path.join(__dirname, '../../preload/preload.js'),
       nodeIntegration: true,
       contextIsolation: false,
     },
@@ -20,7 +19,6 @@ exports.createSessionWindow = (isShow) => {
     title: 'main',
     show: isShow,
     icon: path.join(__dirname, '../../renderer/public/images/dlsms2.png'),
-    
   });
   sessionWindow.loadFile(
     path.join(__dirname, '../../renderer/public/session.html')

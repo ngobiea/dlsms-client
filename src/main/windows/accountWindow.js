@@ -6,7 +6,6 @@ exports.createAccountWindow = (isShow) => {
     height: 750,
     frame: false,
     webPreferences: {
-      // preload: path.join(__dirname, '../../preload/preload.js'),
       contextIsolation: false,
       nodeIntegration: true,
     },
@@ -15,7 +14,6 @@ exports.createAccountWindow = (isShow) => {
     title: 'account',
     show: isShow,
     icon: path.join(__dirname, '../../renderer/public/images/dlsms2.png'),
-    
   });
   accountWindow.loadFile(
     path.join(__dirname, '../../renderer/public/account.html')

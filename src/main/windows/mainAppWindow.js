@@ -16,7 +16,6 @@ exports.createAppWindow = (isShow) => {
     x: winState.x,
     y: winState.y,
     webPreferences: {
-      // preload: path.join(__dirname, '../../preload/preload.js'),
       nodeIntegration: true,
       contextIsolation: false,
     },
@@ -32,7 +31,6 @@ exports.createAppWindow = (isShow) => {
     icon: path.join(__dirname, '../../renderer/public/images/dlsms2.png'),
   });
   mainWindow.loadFile(path.join(__dirname, '../../renderer/public/index.html'));
- 
   winState.manage(mainWindow);
   return mainWindow;
 };

@@ -2,7 +2,6 @@ const { BrowserWindow, screen } = require('electron');
 const path = require('path');
 const windowStateKeeper = require('electron-window-state');
 
-
 exports.createMonitorWindow = (isShow) => {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
@@ -16,7 +15,6 @@ exports.createMonitorWindow = (isShow) => {
     x: winState.x,
     y: winState.y,
     webPreferences: {
-      // preload: path.join(__dirname, '../../preload/preload.js'),
       nodeIntegration: true,
       contextIsolation: false,
     },
