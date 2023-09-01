@@ -1,9 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
 import SessionCard from '../../components/Monitor/SessionCard';
 import MonitorSideBar from '../../components/Monitor/MonitorSideBar';
-// import "./Video.css";
-const MonitorPage = ({ setShowCode }) => {
+const MonitorPage = () => {
   // create 10 session card
   const sessionCards = Array.from(Array(25).keys()).map((i) => (
     <SessionCard key={i} />

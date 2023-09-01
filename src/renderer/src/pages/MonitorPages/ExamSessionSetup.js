@@ -21,7 +21,7 @@ import {
 
 const sessionId = localStorage.getItem('sessionId');
 
-const ClassSessionSetup = () => {
+const ExamSessionSetup = () => {
   const videoRef = useRef();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -210,4 +210,4 @@ const ClassSessionSetup = () => {
   );
 };
 
-export default ClassSessionSetup;
+export default ExamSessionSetup;

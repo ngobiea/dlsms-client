@@ -4,6 +4,7 @@ import SessionApp from '../SessionApp';
 import { Provider } from 'react-redux';
 import { HashRouter } from 'react-router-dom';
 import { RealtimeProvider } from '../context/realtimeContext';
+import { ClassSessionProvider } from '../context/ClassSessionContext';
 import { store } from '../store';
 import 'react-toggle/style.css';
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -11,7 +12,9 @@ root.render(
   <HashRouter>
     <Provider store={store}>
       <RealtimeProvider>
-        <SessionApp />
+        <ClassSessionProvider>
+          <SessionApp />
+        </ClassSessionProvider>
       </RealtimeProvider>
     </Provider>
   </HashRouter>

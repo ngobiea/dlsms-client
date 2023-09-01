@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const accountSlice = createSlice({
   name: 'account',
   initialState: {
-    accountType: JSON.parse(localStorage.getItem('accountType')) || 'tutor',
+    accountType: JSON.parse(localStorage.getItem('accountType')) || '',
     email: '',
     token: null,
     user: JSON.parse(localStorage.getItem('user')) || null,

@@ -52,7 +52,20 @@ import {
   setIsShareScreen,
   setIsRecording,
   setIsJoinedSession,
+  setDevices,
+  setDefaultAudioInputDevice,
+  setDefaultAudioOutputDevice,
+  setDefaultVideoOutputDevice,
+  addRemoteStream,
+  setLocalStream,
+  setMediaStreams,
+  setRemoteSteam,
+  setIsProducer,
+  setIsDeviceSet,
 } from './slices/sessionSlice';
+
+import { mediasoupReducer } from './slices/mediasoupSlice';
+
 import { accountApi } from './apis/accountsApi';
 import { classroomApi } from './apis/classroomsApi';
 
@@ -65,11 +78,15 @@ const store = configureStore({
     app: appReducer,
     session: sessionReducer,
     chat: chatReducer,
+    mediasoup: mediasoupReducer,
     [accountApi.reducerPath]: accountApi.reducer,
     [classroomApi.reducerPath]: classroomApi.reducer,
   },
   middleware: (getDefaultMiddleware) => {
-    return getDefaultMiddleware()
+    return getDefaultMiddleware({
+      immutableCheck: false,
+      serializableCheck: false,
+    })
       .concat(accountApi.middleware)
       .concat(classroomApi.middleware);
   },
@@ -123,6 +140,16 @@ export {
   setIsShareScreen,
   setIsRecording,
   setIsJoinedSession,
+  setDevices,
+  setDefaultAudioInputDevice,
+  setDefaultAudioOutputDevice,
+  setDefaultVideoOutputDevice,
+  addRemoteStream,
+  setLocalStream,
+  setMediaStreams,
+  setRemoteSteam,
+  setIsProducer,
+  setIsDeviceSet,
 };
 
 // Account Apis

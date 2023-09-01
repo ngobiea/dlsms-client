@@ -26,7 +26,7 @@ const MonitorSideBar = () => {
                   })
                   .toUTCString()}
               </div>
-              <div className="">{faker.name.fullName()}</div>
+              <div className="">{faker.person.fullName()}</div>
               <div className="">{'Disabled WebCam '}</div>
               <div className="flex justify-between">
                 <MdOutlineVideocamOff className="text-red-500 text-3xl" />
@@ -51,7 +51,7 @@ const MonitorSideBar = () => {
                   })
                   .toUTCString()}
               </div>
-              <div className="">{faker.name.fullName()}</div>
+              <div className="">{faker.person.fullName()}</div>
               <div className="">{'Disabled Screen Sharing'}</div>
               <div className="flex justify-between">
                 <MdStopScreenShare className="text-red-500 text-3xl" />
@@ -76,7 +76,7 @@ const MonitorSideBar = () => {
                   })
                   .toUTCString()}
               </div>
-              <div className="">{faker.name.fullName()}</div>
+              <div className="">{faker.person.fullName()}</div>
               <div className="">{'Multiple People Detected'}</div>
               <div className="flex justify-between">
                 <MdPeopleAlt className="text-red-500 text-3xl" />
@@ -94,7 +94,7 @@ const MonitorSideBar = () => {
           <li>
             <div className="text-green-800 flex flex-col border p-1 border-green-300 w-full rounded-lg bg-green-50 ">
               <div className="text-xs">{faker.date.recent().toUTCString()}</div>
-              <div className="">{faker.name.fullName()}</div>
+              <div className="">{faker.person.fullName()}</div>
               <div className="">{'No Person Detected'}</div>
               <div className="flex justify-between">
                 <MdPersonOff className="text-red-500 text-3xl" />
@@ -112,7 +112,7 @@ const MonitorSideBar = () => {
           <li>
             <div className="text-green-800 flex flex-col border p-1 border-green-300 w-full rounded-lg bg-green-50 ">
               <div className="text-xs">{faker.date.recent().toUTCString()}</div>
-              <div className="">{faker.name.fullName()}</div>
+              <div className="">{faker.person.fullName()}</div>
               <div className="">{"Can't Recognize Face"}</div>
               <div className="flex justify-between">
                 <MdFaceRetouchingOff className="text-red-500 text-3xl" />
@@ -130,7 +130,7 @@ const MonitorSideBar = () => {
           <li>
             <div className="text-green-800 flex flex-col border p-1 border-green-300 w-full rounded-lg bg-green-50 ">
               <div className="text-xs">{faker.date.recent().toUTCString()}</div>
-              <div className="">{faker.name.fullName()}</div>
+              <div className="">{faker.person.fullName()}</div>
               <div className="">{'Disable App full screen'}</div>
               <div className="flex justify-between">
                 <MdOutlineTabUnselected className="text-red-500 text-3xl" />
@@ -155,7 +155,7 @@ const MonitorSideBar = () => {
                   })
                   .toUTCString()}
               </div>
-              <div className="">{faker.name.fullName()}</div>
+              <div className="">{faker.person.fullName()}</div>
               <div className="">{'No Network Connection'}</div>
               <div className="flex justify-between">
                 <MdWifiOff className="text-red-500 text-3xl" />

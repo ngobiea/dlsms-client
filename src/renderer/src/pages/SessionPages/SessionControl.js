@@ -1,4 +1,8 @@
 import React, { useContext, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { PiPhoneDisconnectFill, PiRecordFill } from 'react-icons/pi';
+import { ipcRenderer } from 'electron';
+import classSessionContext from '../../context/ClassSessionContext';
 import {
   MdOutlineChat,
   MdPeopleOutline,
@@ -18,22 +22,16 @@ import {
   setVideoEnable,
   setIsRecording,
 } from '../../store';
-import RealtimeContext from '../../context/realtimeContext';
-import { useSelector, useDispatch } from 'react-redux';
-import { PiPhoneDisconnectFill, PiRecordFill } from 'react-icons/pi';
-import { ipcRenderer } from 'electron';
+import {
+  offWebCam,
+  onWebCam,
+  enableMic,
+  disableMic,
+} from '../../utils/webcamSetup';
 
 const SessionControl = () => {
+  const { connectSendTransport } = useContext(classSessionContext);
   const dispatch = useDispatch();
-  const {
-    videoRef,
-    localStream,
-    setUpWebCam,
-    disableWebcam,
-    enabledMic,
-    disableMic,
-  } = useContext(RealtimeContext);
-
   const {
     isMicEnable,
     isVideoEnable,
@@ -42,19 +40,14 @@ const SessionControl = () => {
     isShowParticipants,
     isRecording,
     activeBorder,
+    localStream,
   } = useSelector((state) => {
     return state.session;
   });
 
   useEffect(() => {
-    console.log(localStream);
-    console.log(isMicEnable);
     if (localStream) {
-      if (!isMicEnable) {
-        disableMic();
-      }
-    } else {
-      setUpWebCam(isVideoEnable, true);
+      connectSendTransport();
     }
   }, [localStream]);
 
@@ -80,22 +73,33 @@ const SessionControl = () => {
     }
   };
   const handleVideo = () => {
+    console.log(isMicEnable);
+    console.log(isVideoEnable);
     if (isVideoEnable) {
-      disableWebcam();
-      dispatch(setVideoEnable(false));
+      offWebCam();
+      if (isMicEnable) {
+        onWebCam(isMicEnable, false);
+      }
+    } else if (isMicEnable) {
+      onWebCam(isMicEnable, true);
     } else {
-      setUpWebCam(true, true);
-      dispatch(setVideoEnable(true));
+      onWebCam(isMicEnable, true);
     }
+    dispatch(setVideoEnable(!isVideoEnable));
   };
   const handleMic = () => {
     if (isMicEnable) {
-      disableMic();
-      dispatch(setMicEnable(false));
+      if (isVideoEnable) {
+        disableMic();
+      } else {
+        offWebCam();
+      }
+    } else if (isVideoEnable) {
+      enableMic();
     } else {
-      enabledMic();
-      dispatch(setMicEnable(true));
+      onWebCam(true, isVideoEnable);
     }
+    dispatch(setMicEnable(!isMicEnable));
   };
   const handleShareScreen = () => {
     if (isShareScreen) {

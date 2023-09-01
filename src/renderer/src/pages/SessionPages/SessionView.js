@@ -1,31 +1,20 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-import RealtimeContext from '../../context/realtimeContext';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const SessionView = () => {
-  const dispatch = useDispatch();
-  const { videoRef } = useContext(RealtimeContext);
+  const videoRef = useRef();
 
-  const {
-    isMicEnable,
-    isVideoEnable,
-    isShareScreen,
-    isShowChat,
-    isShowParticipants,
-    isRecording,
-    activeBorder,
-  } = useSelector((state) => {
+  const { activeBorder, localStream } = useSelector((state) => {
     return state.session;
   });
-  const percentages = {
-    '100%': 'h-full w-full bg-blue-600',
-    '50%': 'h-full w-1/2 bg-blue-600',
-    '33%': 'h-full w-1/3 bg-blue-600',
-    '25%': 'h-full w-1/4 bg-blue-600',
-    '20%': 'h-full w-1/5 bg-blue-600',
-    '16%': 'h-full w-1/6 bg-blue-600',
-  };
+
+  useEffect(() => {
+    if (localStream) {
+      videoRef.current.srcObject = localStream;
+    }
+  }, [localStream]);
+
   const activeFullScreenClass = 'h-full relative w-full bg-green-800';
   const inActiveFullScreenClass = 'h-full relative w-4/5 bg-green-800';
   return (
@@ -41,20 +30,13 @@ const SessionView = () => {
           <div>
             <video
               className="h-auto bg-blue-900 max-w-full "
-              ref={videoRef}
+              // ref={videoRef}
             ></video>
           </div>
           <div>
             <video
               className="h-auto bg-blue-900 max-w-full "
-              ref={videoRef}
-            ></video>
-          </div>
-          <div>
-            <video
-              autoPlay
-              className="h-auto bg-blue-900 max-w-full "
-              ref={videoRef}
+              // ref={videoRef}
             ></video>
           </div>
           <div>
@@ -68,7 +50,14 @@ const SessionView = () => {
             <video
               autoPlay
               className="h-auto bg-blue-900 max-w-full "
-              ref={videoRef}
+              // ref={videoRef}
+            ></video>
+          </div>
+          <div>
+            <video
+              autoPlay
+              className="h-auto bg-blue-900 max-w-full "
+              // ref={videoRef}
             ></video>
           </div>
           <div>

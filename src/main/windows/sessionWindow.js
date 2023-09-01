@@ -1,10 +1,12 @@
-const { BrowserWindow } = require('electron');
+const { BrowserWindow, screen } = require('electron');
 const path = require('path');
 
 exports.createSessionWindow = (isShow) => {
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+
   const sessionWindow = new BrowserWindow({
-    width: parseFloat(process.env.sessionWindowWidth),
-    height: parseFloat(process.env.sessionWindowHeight),
+    width: width,
+    height: height,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,

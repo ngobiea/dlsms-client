@@ -1,33 +1,13 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { faker } from '@faker-js/faker';
-import {
-  MdMicNone,
-  MdVideocam,
-  MdStopScreenShare,
-  MdPeopleAlt,
-} from 'react-icons/md';
+import { MdVideocam, MdStopScreenShare, MdPeopleAlt } from 'react-icons/md';
 import { BsArrowsAngleExpand, BsShieldCheck } from 'react-icons/bs';
 import { HiSpeakerWave } from 'react-icons/hi2';
 import screen from '../../../public/images/Screenshot.png';
 
 const SessionCard = () => {
-  const [imageStream, setImageStream] = useState(null);
   const videoRef = useRef(null);
-  useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: false })
-      .then((stream) => {
-        setImageStream(stream);
-      })
-      .catch((err) => {
-        console.log(err)
-      });
-  }, []);
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.srcObject = imageStream;
-    }
-  }, [imageStream]);
+
   return (
     <div className="relative cursor-pointer">
       <video
@@ -44,7 +24,7 @@ const SessionCard = () => {
         <BsShieldCheck className="self-center my-1 text-4xl text-green-500" />
       </div>
       <div className="absolute inset-x-0 bottom-0 bg-green-200 bg-opacity-50 w-full flex justify-between">
-        <div className="">{faker.name.firstName()}</div>
+        <div className="">{faker.person.firstName()}</div>
         <div className="flex self-center">
           <HiSpeakerWave className="self-center mx-1" />
           <MdVideocam className="self-center mx-1" />
