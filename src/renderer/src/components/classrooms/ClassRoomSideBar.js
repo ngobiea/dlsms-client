@@ -22,7 +22,7 @@ const ClassRoomSideBar = () => {
   });
   const dispatch = useDispatch();
   return (
-    <aside className="w-64" aria-label="Sidebar">
+    <aside className=" w-1/6" aria-label="Sidebar">
       <div className="h-full px-3 py-4 overflow-y-auto border-r-2">
         <ul className="space-y-2 font-medium">
           <li>

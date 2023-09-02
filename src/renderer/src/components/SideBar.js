@@ -47,6 +47,10 @@ const SideBar = () => {
           <span className="text-xs font-light">Classrooms </span>
         </NavLink>
         <NavLink
+          onClick={() => {
+            localStorage.setItem('examSessionId', 'newExamSession');
+            ipcRenderer.send('openMonitorWindow');
+          }}
           className={(navData) =>
             navData.isActive ? activeClass : inActiveClass
           }
@@ -58,6 +62,7 @@ const SideBar = () => {
         {accountType === 'tutor' ? (
           <div
             onClick={() => {
+              localStorage.setItem('examSessionId', 'newExamSession');
               ipcRenderer.send('openMonitorWindow');
             }}
             className={inActiveClass}

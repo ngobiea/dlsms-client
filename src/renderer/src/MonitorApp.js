@@ -5,12 +5,12 @@ import TitleNav from './components/TitleNav';
 import MonitorPage from './pages/MonitorPages/MonitorPage';
 import ExamSessionSetup from './pages/MonitorPages/ExamSessionSetup';
 import ExamSessionContext from './context/ExamSessionContext';
-const sessionId = localStorage.getItem('sessionId');
+const examSessionId = localStorage.getItem('examSessionId');
 
 const MonitorApp = () => {
   const { socket, loadDevice } = useContext(ExamSessionContext);
   useEffect(() => {
-    socket.emit('examSession', { sessionId }, ({ rtpCapabilities }) => {
+    socket.emit('examSession', { examSessionId }, ({ rtpCapabilities }) => {
       loadDevice(rtpCapabilities);
     });
   }, []);

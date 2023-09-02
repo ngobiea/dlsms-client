@@ -15,6 +15,8 @@ import ClassroomFiles from './pages/ClassRoomPages/Classroom/ClassroomFiles';
 import Assigned from './pages/ClassRoomPages/Assignments/Assigned';
 import GradedAssignment from './pages/ClassRoomPages/Assignments/GradedAssignment';
 import JoinClassroomVerification from './pages/ClassRoomPages/Student/JoinClassroomVerification';
+import ExamSessionSetupForm from './pages/SessionPages/ExamSession/ExamSessionSetupForm';
+import ExamQuestions from './pages/SessionPages/ExamSession/ExamQuestions';
 import TitleNav from './components/TitleNav';
 import SideBar from './components/SideBar';
 
@@ -35,12 +37,17 @@ const App = () => {
             <Route path="graded" element={<GradedAssignment />} />
             <Route path="create" element={<CreateAssignment />} />
           </Route>
+          <Route path="exam" element={<ExamSessionSetupForm />} />
+          <Route path="questions" element={<ExamQuestions />} />
         </Route>
         <Route path="monitor" element={<MonitorPage />} />
         <Route path="assignment" element={<AssignmentPage />} />
         <Route path="report" element={<ReportPage />} />
         <Route path="notification" element={<NotificationPage />} />
-        <Route path=":classroomId/image" element={<JoinClassroomVerification />} />
+        <Route
+          path=":classroomId/image"
+          element={<JoinClassroomVerification />}
+        />
         <Route path=":classroomId/join" element={<JoinPage />} />
       </Routes>
     </>

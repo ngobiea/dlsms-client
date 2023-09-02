@@ -5,14 +5,15 @@ const device = new Device();
 
 import RealtimeContext from './realtimeContext';
 import { handleLoadDevice } from '../utils/mediasoup/loadDevice';
-import { handleCreateSendTransport } from '../utils/mediasoup/handleCreateSendTransport';
+import { handleCreateSendTransport } from '../utils/mediasoup/classSession/handleCreateSendTransport';
 import { addRemoteStream } from '../store';
 const ClassSessionContext = createContext();
 const mediasoupClient = {
   producerTransport: null,
   consumingTransports: [],
 };
-let consumerTransports = [];
+
+let consumerTransports = []; // consumer multiple streams
 let audioProducer;
 let videoProducer;
 let consumer;
@@ -60,7 +61,6 @@ const ClassSessionProvider = ({ children }) => {
           console.log(error);
           return;
         }
-
         consumerTransport.on(
           'connect',
           async ({ dtlsParameters }, callback, errback) => {

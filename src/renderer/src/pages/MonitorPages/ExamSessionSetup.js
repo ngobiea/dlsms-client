@@ -19,7 +19,7 @@ import {
   MdOutlineMicOff,
 } from 'react-icons/md';
 
-const sessionId = localStorage.getItem('sessionId');
+const sessionId = localStorage.getItem('examSessionId');
 
 const ExamSessionSetup = () => {
   const videoRef = useRef();

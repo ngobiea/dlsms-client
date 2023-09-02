@@ -7,6 +7,8 @@ import { RealtimeProvider } from '../context/realtimeContext';
 import { ClassSessionProvider } from '../context/ClassSessionContext';
 import { store } from '../store';
 import 'react-toggle/style.css';
+import 'react-datetime/css/react-datetime.css';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <HashRouter>
