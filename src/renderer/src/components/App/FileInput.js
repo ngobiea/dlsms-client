@@ -1,23 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { MdClose } from 'react-icons/md';
+import { useDispatch, useSelector } from 'react-redux';
 import { IoDocumentAttachOutline } from 'react-icons/io5';
 import { generateUniqueId } from '../../utils/util';
+import { addFile, removeFile } from '../../store';
 const FileInput = () => {
-  const [files, setFiles] = useState([]);
+  const dispatch = useDispatch();
+  const { files } = useSelector((state) => state.app);
 
   const handleFileChange = (event) => {
     const newFiles = Array.from(event.target.files);
     newFiles.forEach((file) => {
       file.id = generateUniqueId();
     });
-    setFiles([...files, ...newFiles]);
+    dispatch(addFile(newFiles));
   };
-  const removeFile = (index) => {
-    const newFiles = [...files];
-    newFiles.splice(index, 1);
-    setFiles(newFiles);
-  };
-
   return (
     <div className="mx-7 my-7 w-auto">
       <label
@@ -27,7 +24,7 @@ const FileInput = () => {
         <IoDocumentAttachOutline className="align-middle mt-1" />{' '}
         <span className="ml-2 align-middle">Attach Files</span>
       </label>
-      {files.map((file, index) => {
+      {files.map((file) => {
         return (
           <div
             key={file.id}
@@ -43,7 +40,7 @@ const FileInput = () => {
               <span className="sr-only">Dismiss</span>
               <MdClose
                 onClick={() => {
-                  removeFile(index);
+                  dispatch(removeFile(file.id));
                 }}
                 className="h-6 w-6"
                 aria-hidden="true"
@@ -52,7 +49,6 @@ const FileInput = () => {
           </div>
         );
       })}
-
       <input
         className="hidden"
         multiple

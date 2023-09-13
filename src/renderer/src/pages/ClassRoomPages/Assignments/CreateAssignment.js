@@ -71,10 +71,7 @@ const CreateAssignment = () => {
           </div>
 
           <FileInput reg={register} />
-          <div className="mx-7 my-7 grid sm:grid-cols-2 sm:gap-6 mt-5">
-            <DateInput />
-            <TimeInput />
-          </div>
+     
         </form>
       </div>
     </div>

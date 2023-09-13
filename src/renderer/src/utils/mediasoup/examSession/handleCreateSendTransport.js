@@ -1,9 +1,13 @@
 const examSessionId = localStorage.getItem('examSessionId');
 console.log(examSessionId);
-export const handleCreateSendTransport = (socket, device, mediasoupClient) => {
+export const handleCreateProducerTransport = (
+  socket,
+  device,
+  mediasoupClient
+) => {
   socket.emit(
-    'createExamSessionTransport',
-    { examSessionId },
+    'createExamSessionWebRTCTransport',
+    { examSessionId, isProducer: true },
     ({ serverParams }) => {
       if (serverParams.error) {
         console.log(serverParams.error);
@@ -18,11 +22,13 @@ export const handleCreateSendTransport = (socket, device, mediasoupClient) => {
       console.log(mediasoupClient.producerTransport);
 
       mediasoupClient.producerTransport.on(
-        'connectExamSessionTransport',
+        'connect',
         async ({ dtlsParameters }, callback, errback) => {
           try {
-            await socket.emit('transport-connect', {
+            await socket.emit('examSessionOnProducerTransportConnect', {
               dtlsParameters,
+              examSessionId,
+              producerTransportId: serverParams.id,
             });
             console.log('transport connected success');
             callback();
@@ -33,25 +39,23 @@ export const handleCreateSendTransport = (socket, device, mediasoupClient) => {
       );
 
       mediasoupClient.producerTransport.on(
-        'produceExamSession',
+        'produce',
         async (parameters, callback, errback) => {
           console.log(parameters);
           try {
             await socket.emit(
-              'transport-produce',
+              'examSessionOnTransportProduce',
               {
+                examSessionId,
                 kind: parameters.kind,
                 rtpParameters: parameters.rtpParameters,
                 appData: parameters.appData,
+                producerTransportId: serverParams.id,
               },
-              ({ id, producersExist }) => {
+              ({ id }) => {
                 // Tell the transport that parameters were transmitted and provide it with the
                 // server side producer's id.
                 callback({ id });
-
-                if (producersExist) {
-                  getProducers();
-                }
               }
             );
           } catch (error) {

@@ -40,6 +40,10 @@ import {
   setPercentageCount,
   setEndDate,
   setStartDate,
+  addFile,
+  removeFile,
+  removeAllFiles,
+  setIsShowConfirmationModal,
 } from './slices/appSlice';
 
 import { chatReducer, addMessage, setMessages } from './slices/chatSlice';
@@ -66,8 +70,18 @@ import {
 
 import { mediasoupReducer } from './slices/mediasoupSlice';
 
+import {
+  examSessionReducer,
+  setCorrectOption,
+  addQuestion,
+  removeQuestion,
+  setShowExamSession,
+  setIsShowExamConfirm,
+  setExamSessionIdStep,
+} from './slices/examSessionSlice';
 import { accountApi } from './apis/accountsApi';
 import { classroomApi } from './apis/classroomsApi';
+import { examSessionApi } from './apis/examSessionApi';
 
 const store = configureStore({
   reducer: {
@@ -79,8 +93,10 @@ const store = configureStore({
     session: sessionReducer,
     chat: chatReducer,
     mediasoup: mediasoupReducer,
+    examSession: examSessionReducer,
     [accountApi.reducerPath]: accountApi.reducer,
     [classroomApi.reducerPath]: classroomApi.reducer,
+    [examSessionApi.reducerPath]: examSessionApi.reducer,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware({
@@ -88,7 +104,8 @@ const store = configureStore({
       serializableCheck: false,
     })
       .concat(accountApi.middleware)
-      .concat(classroomApi.middleware);
+      .concat(classroomApi.middleware)
+      .concat(examSessionApi.middleware);
   },
 });
 
@@ -116,6 +133,10 @@ export {
   setPercentageCount,
   setEndDate,
   setStartDate,
+  addFile,
+  removeFile,
+  removeAllFiles,
+  setIsShowConfirmationModal,
 
   //classroom Slice
   setStudents,
@@ -150,6 +171,14 @@ export {
   setRemoteSteam,
   setIsProducer,
   setIsDeviceSet,
+
+  //examSession slice
+  setCorrectOption,
+  addQuestion,
+  removeQuestion,
+  setShowExamSession,
+  setIsShowExamConfirm,
+  setExamSessionIdStep,
 };
 
 // Account Apis
@@ -169,3 +198,12 @@ export {
   usePostScheduleClassSessionMutation,
   usePostJoinMutation,
 } from './apis/classroomsApi';
+
+// ExamSession Apis
+export {
+  usePostScheduleExamSessionMutation,
+  useDeleteExamSessionMutation,
+  usePostExamQuestionMutation,
+  useDeleteExamQuestionMutation,
+  usePostSaveExamSessionMutation
+} from './apis/examSessionApi';

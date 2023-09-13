@@ -19,12 +19,20 @@ import ExamSessionSetupForm from './pages/SessionPages/ExamSession/ExamSessionSe
 import ExamQuestions from './pages/SessionPages/ExamSession/ExamQuestions';
 import TitleNav from './components/TitleNav';
 import SideBar from './components/SideBar';
+import ExamConfirm from './components/App/ExamConfirm';
+import { useSelector } from 'react-redux';
+
 
 const App = () => {
+
+  const { isShowConfirmationModal } = useSelector((state) => state.app);
+  const { isShowExamConfirm } = useSelector((state) => state.examSession);
+
   return (
     <>
       <TitleNav />
       <SideBar />
+      {isShowExamConfirm && <ExamConfirm />}
       <Routes>
         <Route path="/" element={<ClassRoomsPage />} />
         <Route path=":classroomId" element={<ClassRoomPage />}>
@@ -37,8 +45,6 @@ const App = () => {
             <Route path="graded" element={<GradedAssignment />} />
             <Route path="create" element={<CreateAssignment />} />
           </Route>
-          <Route path="exam" element={<ExamSessionSetupForm />} />
-          <Route path="questions" element={<ExamQuestions />} />
         </Route>
         <Route path="monitor" element={<MonitorPage />} />
         <Route path="assignment" element={<AssignmentPage />} />

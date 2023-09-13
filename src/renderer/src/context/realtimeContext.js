@@ -35,11 +35,8 @@ const RealtimeProvider = ({ children }) => {
   const connectWithSocketServer = () => {
     socket.on('connect', () => {
       console.log('successfully connected with socket.io server');
-      console.log(socket.id);
     });
-    socket.on('online-users', (value) => {
-      console.log(value);
-    });
+    socket.on('online-users', (value) => {});
     socket.on('connect_error', (err) => {
       console.log(err instanceof Error);
       console.log(err.message);
@@ -49,13 +46,14 @@ const RealtimeProvider = ({ children }) => {
       joinClassroomHandler(value, navigate);
     });
     socket.on('send-classroom', (value) => {
+      console.log(value);
       store.dispatch(setStudents(value.students));
       store.dispatch(setMessages(value.messages));
     });
     socket.on('classroom-schedule-message', (value) => {
-      console.log('received classroom schedule message event');
       classroomScheduleMessageHandle(value, navigate);
     });
+    socket.on('exam-schedule-message', (value, navigate) => {});
   };
 
   useEffect(() => {

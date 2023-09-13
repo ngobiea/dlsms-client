@@ -2,19 +2,22 @@ import React, { createContext, useContext } from 'react';
 import { Device } from 'mediasoup-client';
 import { useSelector } from 'react-redux';
 import { handleLoadDevice } from '../utils/mediasoup/loadDevice';
-import { handleCreateSendTransport } from '../utils/mediasoup/examSession/handleCreateSendTransport';
+import { handleCreateProducerTransport } from '../utils/mediasoup/examSession/handleCreateSendTransport';
+import { handleCreateConsumerTransport } from '../utils/mediasoup/examSession/handleCreateConsumerTransport';
 import RealtimeContext from './realtimeContext';
 
 const device = new Device();
-const sessionId = localStorage.getItem('sessionId');
+const examSessionId = localStorage.getItem('examSessionId');
 
 const mediasoupClient = {
   producerTransport: null,
+  consumerTransport: null,
   consumingTransports: [],
+  videoProducer: null,
+  audioProducer: null,
+  screenShareProducer: null,
 };
-let consumerTransports = [];
-let audioProducer;
-let videoProducer;
+const consumerTransports = [];
 let consumer;
 
 const ExamSessionContext = createContext();
@@ -25,16 +28,22 @@ const ExamSessionProvider = ({ children }) => {
   console.log(accountType);
   const loadDevice = async (rtpCapabilities) => {
     await handleLoadDevice(device, rtpCapabilities);
+
     createSendTransport();
+    createReceiveTransport();
   };
 
   const createSendTransport = () => {
-    handleCreateSendTransport(socket, device, mediasoupClient);
+    handleCreateProducerTransport(socket, device, mediasoupClient);
+  };
+  const createReceiveTransport = () => {
+   handleCreateConsumerTransport(socket, device, mediasoupClient);
   };
   const values = {
     socket,
     loadDevice,
   };
+
   return (
     <ExamSessionContext.Provider value={values}>
       {children}

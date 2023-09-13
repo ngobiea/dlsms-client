@@ -10,7 +10,7 @@ const examSessionId = localStorage.getItem('examSessionId');
 const MonitorApp = () => {
   const { socket, loadDevice } = useContext(ExamSessionContext);
   useEffect(() => {
-    socket.emit('examSession', { examSessionId }, ({ rtpCapabilities }) => {
+    socket.emit('newExamSession', { examSessionId }, ({ rtpCapabilities }) => {
       loadDevice(rtpCapabilities);
     });
   }, []);

@@ -7,7 +7,7 @@ import ChatInput from '../../../components/classrooms/chat/ChatInput';
 const ClassroomChatRoot = () => {
   const [show, setShow] = useState(false);
   return (
-    <div className="flex-1 p-2 flex flex-col justify-between h-full">
+    <div className="flex-1 p-2 flex w-5/6 flex-col justify-between h-full">
       <ClassroomChatHeader show={show} setShow={setShow} />
       <Outlet />
       <ChatInput />

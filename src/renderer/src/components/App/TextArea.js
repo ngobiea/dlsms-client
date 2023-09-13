@@ -1,6 +1,7 @@
 import React from 'react';
 
 const TextArea = ({
+  rows,
   reg,
   labelText,
   inputValue,
@@ -15,7 +16,7 @@ const TextArea = ({
         {labelText}
       </label>
       <textarea
-        rows="4"
+        rows={rows ||4 }
         {...reg(inputValue, valid)}
         className="block p-2.5 w-full text-sm text-title bg-gray-50 rounded-lg border border-gray-300 focus:ring-title focus:border-title"
         placeholder={placeholder}

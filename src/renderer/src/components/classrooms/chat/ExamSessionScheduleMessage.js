@@ -1,24 +1,33 @@
 import React from 'react';
+import { ipcRenderer } from 'electron';
 import { MdOutlineCalendarMonth } from 'react-icons/md';
+import { formatCustomDateTime, formatDateTime } from '../../../utils/dateTime';
+import { useSelector } from 'react-redux';
+
 const ExamSessionScheduleMessage = ({ message }) => {
+  const { accountType } = useSelector((state) => state.account);
+  console.log(message)
+  const handleSession = () => {
+    const sessionId = message.examSession._id;
+    localStorage.setItem('sessionId', sessionId);
+    ipcRenderer.send('openSessionWindow');
+  };
+
   return (
     <div className="bg-gray-300 transition duration-350 ease-in-out mx-2 rounded-lg rounded-bl-none">
       <div className="flex items-center pl-3 ">
         <p className="text-base leading-6 font-medium mr-2 text-green-800">
-          Sonata Hiram
+          {message.sender.firstName} {message.sender.lastName}
         </p>
 
         <p className="text-xs leading-6 font-medium text-green-800">
-          4/28 8:27 AM
+          {formatDateTime(message.timestamp)}
         </p>
       </div>
 
       <div className="pl-3 pb-1">
         <p className="text-base width-auto font-medium text-green-800 flex-shrink">
-          Day 07 of the challenge #100DaysOfCode I was wondering what I can do
-          with #tailwindcss , so just started building Twitter UI using Tailwind
-          and so far it looks so promising. I will post my code after
-          completion. [07/100] #WomenWhoCode #CodeNewbie
+          {message.examSession.description}
         </p>
       </div>
       <div

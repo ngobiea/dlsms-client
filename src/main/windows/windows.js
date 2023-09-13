@@ -8,13 +8,7 @@ const BrowserHistory = require('node-browser-history');
 const { readyToShow } = require('../util/events');
 
 exports.createWindow = async () => {
-
-  const {
-    setCookies,
-    getCookie,
-    removeCookies,
-  } = require('./cookies');
-
+  const { setCookies, getCookie, removeCookies } = require('./cookies');
 
   const modelsPath = app.isPackaged
     ? path.join(process.resourcesPath, 'public', 'models')

@@ -29,8 +29,13 @@ const ClassroomChatMessage = () => {
                 message={message}
               />
             );
-          } else if (message.type === 'examSessionSchedule') {
-            return <ExamSessionScheduleMessage key={message._id.toString()} />;
+          } else if (message.type === 'examSession') {
+            return (
+              <ExamSessionScheduleMessage
+                key={message._id.toString()}
+                message={message}
+              />
+            );
           } else if (
             message.type === 'general' &&
             message.sender._id.toString() ===

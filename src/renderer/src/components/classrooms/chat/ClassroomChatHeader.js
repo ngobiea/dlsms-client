@@ -1,12 +1,15 @@
 import React from 'react';
 import MiniClassRoomCard from '../MiniClassRoomCard';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { setShowSchedule, setShowScheduleForm } from '../../../store';
+import {
+  setShowSchedule,
+  setShowScheduleForm,
+  setShowExamSession,
+} from '../../../store';
 
 const ClassroomChatHeader = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isShowSchedule } = useSelector((state) => {
     return state.modal;
@@ -84,7 +87,7 @@ const ClassroomChatHeader = () => {
               </li>
               <li
                 onClick={() => {
-                  navigate('exam');
+                  dispatch(setShowExamSession(true));
                 }}
               >
                 <div className="block px-4 py-2 hover:bg-gray-100">

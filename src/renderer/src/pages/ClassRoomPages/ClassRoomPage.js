@@ -3,6 +3,7 @@ import { useParams, Outlet } from 'react-router-dom';
 import ClassRoomSideBar from '../../components/classrooms/ClassRoomSideBar';
 import ClassroomCode from '../../components/classrooms/ClassroomCode';
 import ScheduleClassSession from '../../components/classrooms/ClassSession/ScheduleClassSession';
+import ScheduleExamSession from '../../components/classrooms/ExamSession.js/ScheduleExamSession';
 import RealtimeContext from '../../context/realtimeContext';
 import './classroomPage.css';
 import {
@@ -27,6 +28,7 @@ const ClassRoomPage = () => {
   const { accountType } = useSelector((state) => {
     return state.account;
   });
+  const { isShowExamSession } = useSelector((state) => state.examSession);
 
   const { data, isSuccess } = useFetchClassroomQuery({
     accountType,
@@ -60,7 +62,7 @@ const ClassRoomPage = () => {
 
   return (
     <div
-      className="fixed inset-0 z-0 mt-10 ml-20 flex"
+      className="flex relative  pt-10 pl-20 overflow-hidden h-screen"
       onClick={() => {
         if (isShowSchedule) {
           dispatch(setShowSchedule(false));
@@ -71,6 +73,7 @@ const ClassRoomPage = () => {
       <Outlet />
       {isSuccess && isShowCode && <ClassroomCode />}
       {isShowScheduleForm && <ScheduleClassSession />}
+      {isShowExamSession && <ScheduleExamSession />}
     </div>
   );
 };

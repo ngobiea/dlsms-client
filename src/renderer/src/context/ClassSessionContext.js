@@ -13,7 +13,8 @@ const mediasoupClient = {
   consumingTransports: [],
 };
 
-let consumerTransports = []; // consumer multiple streams
+// consumer multiple streams
+let consumerTransports = [];
 let audioProducer;
 let videoProducer;
 let consumer;
@@ -34,7 +35,6 @@ const ClassSessionProvider = ({ children }) => {
   };
   const getProducers = () => {
     socket.emit('getProducers', (producerIds) => {
-      console.log(producerIds);
       producerIds.forEach(signalNewConsumerTransport);
     });
   };
