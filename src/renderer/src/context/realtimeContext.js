@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logoutHandler } from '../utils/util';
 import { joinClassroomHandler } from '../realTimeCommunication/classroom/joinClassroomHandler';
-import { classroomScheduleMessageHandle } from '../realTimeCommunication/classroom/classroom/classroomScheduleMessageHandle';
+import { classroomScheduleMessageHandle } from '../realTimeCommunication/classroom/classroomScheduleMessageHandle';
+import { examScheduleMessage } from '../realTimeCommunication/classroom/examScheduleMessageHandler';
 import {
   useFetchClassroomsQuery,
   setClassrooms,
@@ -22,7 +23,9 @@ if (userDetails) {
     },
   });
 }
-
+socket.on('connect', () => {
+  console.log('successfully connected with socket.io server');
+});
 const RealtimeContext = createContext();
 
 const RealtimeProvider = ({ children }) => {
@@ -31,11 +34,7 @@ const RealtimeProvider = ({ children }) => {
 
   const { accountType } = store.getState().account;
   const { data, isSuccess } = useFetchClassroomsQuery(accountType);
-
   const connectWithSocketServer = () => {
-    socket.on('connect', () => {
-      console.log('successfully connected with socket.io server');
-    });
     socket.on('online-users', (value) => {});
     socket.on('connect_error', (err) => {
       console.log(err instanceof Error);
@@ -51,9 +50,14 @@ const RealtimeProvider = ({ children }) => {
       store.dispatch(setMessages(value.messages));
     });
     socket.on('classroom-schedule-message', (value) => {
+      console.log('received class schedule message event');
+
       classroomScheduleMessageHandle(value, navigate);
     });
-    socket.on('exam-schedule-message', (value, navigate) => {});
+    socket.on('exam-schedule-message', (value) => {
+      console.log('received exam schedule message event');
+      examScheduleMessage(value, navigate);
+    });
   };
 
   useEffect(() => {
@@ -63,9 +67,13 @@ const RealtimeProvider = ({ children }) => {
     if (isSuccess) {
       dispatch(setClassrooms(data.classrooms));
     }
-    connectWithSocketServer();
   }, [data, isSuccess]);
 
+  useEffect(() => {
+    connectWithSocketServer();
+  }, []);
+
+  
   const values = {
     socket,
   };
@@ -77,5 +85,5 @@ const RealtimeProvider = ({ children }) => {
   );
 };
 
-export { RealtimeProvider };
+export { RealtimeProvider, socket };
 export default RealtimeContext;

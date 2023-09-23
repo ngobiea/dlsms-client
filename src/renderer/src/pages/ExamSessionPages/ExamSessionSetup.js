@@ -2,15 +2,18 @@ import React, { useEffect, useRef } from 'react';
 import { ipcRenderer } from 'electron';
 import Toggle from 'react-toggle';
 import { getDevices } from '../../utils/getDevices';
-import { setUpWebCam, offWebCam, onWebCam } from '../../utils/webcamSetup';
+import {
+  setUpWebCam,
+  disableWebCam,
+  enableWebCam,
+} from '../../utils/webcamSetup';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
-  setMicEnable,
-  setVideoEnable,
   setDefaultAudioInputDevice,
   setDefaultAudioOutputDevice,
   setDefaultVideoOutputDevice,
+  setMicState,
 } from '../../store';
 import {
   MdVideocam,
@@ -32,34 +35,38 @@ const ExamSessionSetup = () => {
     audioInputDevices,
     audioOutputDevices,
     videoOutputDevices,
-    localStream,
+    localVideoStream,
     defaultAudioInputDevice,
     defaultAudioOutputDevice,
     defaultVideoOutputDevice,
+    micState,
   } = useSelector((state) => {
     return state.session;
   });
 
   const handleToClassSession = () => {
-    // offWebCam()
-    navigate('/' + sessionId);
+    navigate('' + sessionId);
   };
   const handleMic = (e) => {
     const value = e.target.checked;
-    dispatch(setMicEnable(value));
+    if (value) {
+      dispatch(setMicState('enable'));
+    } else {
+      dispatch(setMicState('disable'));
+    }
   };
   const handleCancel = () => {
-    ipcRenderer.send('closeSessionWindow');
+    ipcRenderer.send('closeExamS');
   };
 
   useEffect(() => {
     getDevices();
   }, []);
   useEffect(() => {
-    if (localStream) {
-      videoRef.current.srcObject = localStream;
+    if (localVideoStream) {
+      videoRef.current.srcObject = localVideoStream;
     }
-  }, [localStream]);
+  }, [localVideoStream]);
   const handleAudioInputChange = (event) => {
     dispatch(setDefaultAudioInputDevice(event.target.value));
   };
@@ -76,11 +83,10 @@ const ExamSessionSetup = () => {
   const handleVideo = (e) => {
     const value = e.target.checked;
     if (value) {
-      onWebCam(false, true);
+      enableWebCam();
     } else {
-      offWebCam();
+      disableWebCam();
     }
-    dispatch(setVideoEnable(value));
   };
 
   return (
@@ -128,7 +134,7 @@ const ExamSessionSetup = () => {
                 <Toggle
                   icons={false}
                   onChange={handleMic}
-                  checked={isMicEnable}
+                  checked={micState === 'enable'}
                 />
               </label>
             </div>

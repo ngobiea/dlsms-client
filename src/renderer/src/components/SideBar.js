@@ -1,5 +1,4 @@
 import React from 'react';
-import { ipcRenderer } from 'electron';
 import { SiGoogleclassroom } from 'react-icons/si';
 import { TbFileReport, TbLogout } from 'react-icons/tb';
 import { useSelector } from 'react-redux';
@@ -21,9 +20,7 @@ const SideBar = () => {
     'flex flex-col items-center py-3 px-2 text-white rounded-lg dark:text-white hover:bg-title hover:text-white dark:hover:bg-gray-700';
   return (
     <aside
-      id="logo-sidebar"
       className="fixed h-screen left-0 w-20 z-40 top-0  bg-sidebar"
-      aria-label="Sidebar"
     >
       <div className="pt-10">
         <NavLink
@@ -47,23 +44,20 @@ const SideBar = () => {
           <span className="text-xs font-light">Classrooms </span>
         </NavLink>
         <NavLink
-          onClick={() => {
-            localStorage.setItem('examSessionId', 'newExamSession');
-            ipcRenderer.send('openMonitorWindow');
-          }}
           className={(navData) =>
             navData.isActive ? activeClass : inActiveClass
           }
           to="/assignment"
+          end
         >
-          <MdOutlineAssignment className="w-6 h-6 text-white transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+          <MdOutlineAssignment className="w-6 h-6 text-white transition duration-75  group-hover:text-gray-900 dark:group-hover:text-white" />
           <span className="text-xs font-light">Assignments </span>
         </NavLink>
         {accountType === 'tutor' ? (
           <div
             onClick={() => {
               localStorage.setItem('examSessionId', 'newExamSession');
-              ipcRenderer.send('openMonitorWindow');
+              window.account.openMonitorWindow('openMonitorWindow');
             }}
             className={inActiveClass}
           >

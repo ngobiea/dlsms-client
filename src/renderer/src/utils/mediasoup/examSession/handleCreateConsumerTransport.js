@@ -1,4 +1,5 @@
 const examSessionId = localStorage.getItem('examSessionId');
+
 export const handleCreateConsumerTransport = (socket, device, mediasoupClient) => {
       socket.emit(
         'createExamSessionWebRTCTransport',

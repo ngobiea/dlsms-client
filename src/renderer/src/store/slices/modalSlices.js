@@ -28,7 +28,7 @@ const modalSlice = createSlice({
     },
     setShowScheduleForm(state, action) {
       state.isShowScheduleForm = action.payload;
-    }
+    },
   },
 });
 

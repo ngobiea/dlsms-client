@@ -16,6 +16,12 @@ const appSlice = createSlice({
     duration: '15m',
     files: [],
     isShowConfirmationModal: false,
+    notification: {
+      title: 'Success',
+      message: '',
+      type: 'success',
+      isActive: false,
+    },
   },
   reducers: {
     setIsWebcamActive(state, action) {
@@ -68,6 +74,9 @@ const appSlice = createSlice({
     setIsShowConfirmationModal(state, action) {
       state.isShowConfirmationModal = action.payload;
     },
+    setNotification(state, action) {
+      state.notification = action.payload;
+    },
   },
 });
 export const {
@@ -79,6 +88,7 @@ export const {
   addFile,
   removeFile,
   removeAllFiles,
-  setIsShowConfirmationModal
+  setIsShowConfirmationModal,
+  setNotification,
 } = appSlice.actions;
 export const appReducer = appSlice.reducer;

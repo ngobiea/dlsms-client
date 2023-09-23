@@ -5,15 +5,15 @@ import { useSelector } from 'react-redux';
 const SessionView = () => {
   const videoRef = useRef();
 
-  const { activeBorder, localStream } = useSelector((state) => {
+  const { activeBorder, localVideoStream } = useSelector((state) => {
     return state.session;
   });
 
   useEffect(() => {
-    if (localStream) {
-      videoRef.current.srcObject = localStream;
+    if (localVideoStream) {
+      videoRef.current.srcObject = localVideoStream;
     }
-  }, [localStream]);
+  }, [localVideoStream]);
 
   const activeFullScreenClass = 'h-full relative w-full bg-green-800';
   const inActiveFullScreenClass = 'h-full relative w-4/5 bg-green-800';

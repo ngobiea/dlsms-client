@@ -19,7 +19,10 @@ contextBridge.exposeInMainWorld('account', {
   getMediasoup: () => ipcRenderer.invoke('mediasoup-client'),
   openSessionWindow: () => ipcRenderer.send('openSessionWindow'),
   closeSessionWindow: () => ipcRenderer.send('closeSessionWindow'),
+  openExamSessionWindow: () => ipcRenderer.send('openExamSessionWindow'),
+  openExamQuestionWindow: () => ipcRenderer.send('openExamQuestionWindow'),
+  closeExamSessionWindow: () => ipcRenderer.send('closeExamSessionWindow'),
+  closeExamQuestionWindow: () => ipcRenderer.send('closeExamQuestionWindow'),
 });
 
 
-contextBridge.exposeInMainWorld('load', load);

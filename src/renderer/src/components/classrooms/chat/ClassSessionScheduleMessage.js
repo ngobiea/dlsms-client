@@ -1,5 +1,4 @@
 import React from 'react';
-import { ipcRenderer } from 'electron';
 import { MdOutlineCalendarMonth } from 'react-icons/md';
 import { formatDateTime, formatCustomDateTime } from '../../../utils/dateTime';
 import { useSelector } from 'react-redux';
@@ -11,8 +10,7 @@ const ClassSessionScheduleMessage = ({ message }) => {
   const handleSession = () => {
     const sessionId = message.classSession._id;
     localStorage.setItem('sessionId', sessionId);
-    ipcRenderer.send('openSessionWindow');
-
+    window.account.openSessionWindow('openSessionWindow');
   };
   return (
     <div className="bg-gray-300 transition duration-350 ease-in-out mx-2 rounded-lg rounded-bl-none">
@@ -20,7 +18,6 @@ const ClassSessionScheduleMessage = ({ message }) => {
         <p className="text-base leading-6 font-medium mr-2 text-green-800">
           {message.sender.firstName} {message.sender.lastName}
         </p>
-
         <p className="text-xs leading-6 font-medium text-green-800">
           {formatDateTime(message.timestamp)}
         </p>

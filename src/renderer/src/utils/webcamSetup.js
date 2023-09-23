@@ -1,16 +1,16 @@
 import {
   store,
-  setLocalStream,
-  setMediaStreams,
-  setVideoEnable,
-  setIsProducer,
+  setLocalVideoStream,
+  setLocalAudioStream,
+  setMicEnable,
+  setMicState,
 } from '../store';
 const webcamError = 'Error accessing webcam';
-export const onWebCam = (isAudio, isVideo) => {
+export const enableWebCam = () => {
   const { defaultVideoOutputDevice } = store.getState().session;
 
   let videoConstraints = false;
-  if (isVideo && defaultVideoOutputDevice) {
+  if (defaultVideoOutputDevice) {
     videoConstraints = {
       deviceId: { ideal: defaultVideoOutputDevice },
       width: {
@@ -27,15 +27,9 @@ export const onWebCam = (isAudio, isVideo) => {
   navigator.mediaDevices
     .getUserMedia({
       video: videoConstraints,
-      audio: true,
     })
     .then((stream) => {
-      store.dispatch(setLocalStream(stream));
-      store.dispatch(setMediaStreams(stream));
-      store.dispatch(setIsProducer(true));
-      if (!isAudio) {
-        disableMic();
-      }
+      store.dispatch(setLocalVideoStream(stream));
     })
     .catch((error) => {
       console.log(webcamError, error);
@@ -43,9 +37,10 @@ export const onWebCam = (isAudio, isVideo) => {
 };
 
 export const setUpWebCam = () => {
-  const { defaultVideoOutputDevice, localStream } = store.getState().session;
-  if (localStream) {
-    offWebCam();
+  const { defaultVideoOutputDevice, localVideoStream } =
+    store.getState().session;
+  if (localVideoStream) {
+    disableWebCam();
   }
   navigator.mediaDevices
     .getUserMedia({
@@ -62,40 +57,57 @@ export const setUpWebCam = () => {
             },
           }
         : undefined,
-      audio: true,
     })
     .then((stream) => {
-      store.dispatch(setVideoEnable(true));
-      store.dispatch(setLocalStream(stream));
-      store.dispatch(setMediaStreams(stream));
+      store.dispatch(setLocalVideoStream(stream));
     })
     .catch((error) => {
       console.log(webcamError, error);
     });
 };
 
-export const offWebCam = () => {
-  const { localStream } = store.getState().session;
+export const disableWebCam = () => {
+  const { localVideoStream } = store.getState().session;
 
-  if (localStream) {
-    const tracks = localStream.getTracks();
+  if (localVideoStream) {
+    const tracks = localVideoStream.getTracks();
     tracks.forEach((track) => {
       track.stop();
     });
-    store.dispatch(setLocalStream(null));
+    store.dispatch(setLocalVideoStream(null));
   }
 };
 
-export const enableMic = () => {
-  const { localStream } = store.getState().session;
-  if (localStream) {
-    console.log(localStream.getAudioTracks()[0]);
-    localStream.getAudioTracks()[0].enabled = true;
-  }
+export const enableMic = async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+  });
+  store.dispatch(setLocalAudioStream(stream));
+  return stream;
 };
 export const disableMic = () => {
-  const { localStream } = store.getState().session;
-  if (localStream) {
-    localStream.getAudioTracks()[0].enabled = false;
+  const { localAudioStream } = store.getState().session;
+  if (localAudioStream) {
+    const tracks = localAudioStream.getTracks();
+    tracks.forEach((track) => {
+      track.stop();
+    });
+    store.dispatch(setLocalAudioStream(null));
+  }
+};
+
+export const unmuteMic = () => {
+  const { localAudioStream } = store.getState().session;
+  if (localAudioStream) {
+    localAudioStream.getAudioTracks()[0].enabled = true;
+    store.dispatch(setMicState('unmute'));
+  }
+};
+
+export const muteMic = () => {
+  const { localAudioStream } = store.getState().session;
+  if (localAudioStream) {
+    localAudioStream.getAudioTracks()[0].enabled = false;
+    store.dispatch(setMicState('mute'));
   }
 };

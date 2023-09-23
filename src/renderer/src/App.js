@@ -15,23 +15,21 @@ import ClassroomFiles from './pages/ClassRoomPages/Classroom/ClassroomFiles';
 import Assigned from './pages/ClassRoomPages/Assignments/Assigned';
 import GradedAssignment from './pages/ClassRoomPages/Assignments/GradedAssignment';
 import JoinClassroomVerification from './pages/ClassRoomPages/Student/JoinClassroomVerification';
-import ExamSessionSetupForm from './pages/SessionPages/ExamSession/ExamSessionSetupForm';
-import ExamQuestions from './pages/SessionPages/ExamSession/ExamQuestions';
 import TitleNav from './components/TitleNav';
 import SideBar from './components/SideBar';
 import ExamConfirm from './components/App/ExamConfirm';
+import Notification from './components/Notification';
 import { useSelector } from 'react-redux';
 
-
 const App = () => {
-
-  const { isShowConfirmationModal } = useSelector((state) => state.app);
   const { isShowExamConfirm } = useSelector((state) => state.examSession);
+  const { notification } = useSelector((state) => state.app);
 
   return (
     <>
       <TitleNav />
       <SideBar />
+      {notification.isActive && <Notification />}
       {isShowExamConfirm && <ExamConfirm />}
       <Routes>
         <Route path="/" element={<ClassRoomsPage />} />

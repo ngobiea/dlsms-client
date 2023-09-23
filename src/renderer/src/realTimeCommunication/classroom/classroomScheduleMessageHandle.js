@@ -1,4 +1,5 @@
-import { addMessage, store } from '../../../store';
+import { addMessage, store } from '../../store';
+
 export const classroomScheduleMessageHandle = (data, navigate) => {
   console.log(data);
   const { classrooms, classroomId } = store.getState().classroom;

@@ -1,10 +1,14 @@
-const { app, ipcMain, clipboard } = require('electron');
+const { app, ipcMain, clipboard, desktopCapturer, Menu } = require('electron');
 const path = require('path');
 const { createAccountWindow } = require('./accountWindow');
 const { createAppWindow } = require('./mainAppWindow');
 const { createMonitorWindow } = require('./monitorWindow');
-const { createSessionWindow } = require('./sessionWindow');
+const { createSessionWindow } = require('./classSessionWindow');
+const { createExamSessionWindow } = require('./examSessionWindow');
+const { createExamQuestionWindow } = require('./examQuestionWindow');
+
 const BrowserHistory = require('node-browser-history');
+
 const { readyToShow } = require('../util/events');
 
 exports.createWindow = async () => {
@@ -21,6 +25,8 @@ exports.createWindow = async () => {
   let accWindow;
   let monitWindow;
   let sessionWindow;
+  let examSessionWindow;
+  let examQuestionWindow;
 
   const cookie = await getCookie('isLogin');
   if (cookie.length > 0) {
@@ -61,6 +67,48 @@ exports.createWindow = async () => {
       sessionWindow = null;
     });
   });
+  ipcMain.on('openExamSessionWindow', () => {
+    examSessionWindow = createExamSessionWindow(false);
+    examSessionWindow.on(readyToShow, () => {
+      examSessionWindow.show();
+    });
+  });
+  ipcMain.on('showScreenSources', async () => {
+    try {
+      const inputSources = await desktopCapturer.getSources({
+        types: ['window', 'screen'],
+      });
+
+      const videoOptionsMenu = Menu.buildFromTemplate(
+        inputSources.map((source) => {
+          return {
+            label: source.name,
+            click: () => {
+              if (examSessionWindow) {
+                examSessionWindow.webContents.send('source', { source });
+              }
+              if (sessionWindow) {
+                sessionWindow.webContents.send('source', { source });
+              }
+            },
+          };
+        })
+      );
+      videoOptionsMenu.popup();
+    } catch (error) {
+      console.log(error);
+    }
+  });
+  ipcMain.on('closeExamSessionWindow', () => {
+    examSessionWindow.close();
+    examSessionWindow = null;
+  });
+  ipcMain.on('openExamQuestionWindow', () => {
+    examQuestionWindow = createExamQuestionWindow(false);
+    examQuestionWindow.on(readyToShow, () => {
+      examQuestionWindow.show();
+    });
+  });
 
   ipcMain.on('login', (_e, isLogin) => {
     setCookies(isLogin);
@@ -81,6 +129,7 @@ exports.createWindow = async () => {
   ipcMain.on('closeSessionWindow', (_e) => {
     sessionWindow.close();
   });
+
   if (sessionWindow) {
     sessionWindow.on('closed', () => {
       sessionWindow = null;

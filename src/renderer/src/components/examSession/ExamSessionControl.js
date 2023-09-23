@@ -2,7 +2,8 @@ import React, { useContext, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { PiPhoneDisconnectFill, PiRecordFill } from 'react-icons/pi';
 import { ipcRenderer } from 'electron';
-import classSessionContext from '../../context/ClassSessionContext';
+import ExamSessionContext from '../../context/ExamSessionContext';
+import { shareScreen, stopShareScreen } from '../../utils/screen';
 import {
   MdOutlineChat,
   MdPeopleOutline,
@@ -21,17 +22,34 @@ import {
   setMicEnable,
   setVideoEnable,
   setIsRecording,
+  store,
+  setMicState,
 } from '../../store';
 import {
   disableWebCam,
   enableWebCam,
   enableMic,
   disableMic,
+  muteMic,
+  unmuteMic,
 } from '../../utils/webcamSetup';
 
-const SessionControl = () => {
-  const { connectSendTransport } = useContext(classSessionContext);
+ipcRenderer.on('source', (_e, { source }) => {
+  shareScreen(source.id);
+  store.dispatch(setIsShareScreen(true));
+});
+
+const ExamSessionControl = () => {
   const dispatch = useDispatch();
+  const {
+    socket,
+    produceVideo,
+    mediasoupClient,
+    examSessionId,
+    produceScreen,
+    produceAudio,
+  } = useContext(ExamSessionContext);
+
   const {
     isMicEnable,
     isVideoEnable,
@@ -41,16 +59,36 @@ const SessionControl = () => {
     isRecording,
     activeBorder,
     localVideoStream,
+    localScreenStream,
+    localAudioStream,
+    micState,
   } = useSelector((state) => {
     return state.session;
   });
-
   useEffect(() => {
     if (localVideoStream) {
-      connectSendTransport();
+      produceVideo(isVideoEnable);
     }
   }, [localVideoStream]);
 
+  useEffect(() => {
+    if (localScreenStream) {
+      produceScreen(isScreenEnable);
+    }
+  }, [localScreenStream]);
+
+  useEffect(() => {
+    if (micState === 'enable') {
+      enableMic()
+        .then((stream) => {
+          
+          produceAudio(stream);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, []);
   const handleRecoding = () => {
     if (isRecording) {
       dispatch(setIsRecording(false));
@@ -72,46 +110,41 @@ const SessionControl = () => {
       dispatch(setIsShowParticipants(true));
     }
   };
+
   const handleVideo = () => {
-    console.log(isMicEnable);
-    console.log(isVideoEnable);
     if (isVideoEnable) {
       disableWebCam();
-      if (isMicEnable) {
-        enableWebCam(isMicEnable, false);
-      }
-    } else if (isMicEnable) {
-      enableWebCam(isMicEnable, true);
     } else {
-      enableWebCam(isMicEnable, true);
+      enableWebCam();
     }
-    dispatch(setVideoEnable(!isVideoEnable));
   };
   const handleMic = () => {
-    if (isMicEnable) {
-      if (isVideoEnable) {
-        disableMic();
-      } else {
-        disableWebCam();
-      }
-    } else if (isVideoEnable) {
-      enableMic();
-    } else {
-      enableWebCam(true, isVideoEnable);
+    if (micState === 'disable') {
+      enableMic()
+        .then((stream) => {
+          console.log(stream);
+          produceAudio();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else if (micState === 'mute') {
+      unmuteMic();
+    } else if (micState === 'unmute') {
+      muteMic();
     }
-    dispatch(setMicEnable(!isMicEnable));
   };
   const handleShareScreen = () => {
     if (isScreenEnable) {
+      stopShareScreen();
       dispatch(setIsShareScreen(false));
     } else {
-      dispatch(setIsShareScreen(true));
+      ipcRenderer.send('showScreenSources');
     }
   };
   const handleLeaveSession = () => {
     window.account.closeSessionWindow('closeSessionWindow');
-
-    ipcRenderer.send('closeSessionWindow');
+    ipcRenderer.send('closeExamSessionWindow');
   };
   const handleEndSession = () => {
     window.account.closeSessionWindow('closeSessionWindow');
@@ -180,7 +213,7 @@ const SessionControl = () => {
             onClick={handleMic}
             className="flex flex-col px-2 mx-2 text-green-600 cursor-pointer hover:text-green-500"
           >
-            {isMicEnable ? (
+            {micState === 'enable' || micState === 'unmute' ? (
               <MdOutlineMic className="self-center pt-1 w-6 h-6" />
             ) : (
               <MdOutlineMicOff className="self-center pt-1 w-6 h-6" />
@@ -217,4 +250,4 @@ const SessionControl = () => {
   );
 };
 
-export default SessionControl;
+export default ExamSessionControl;

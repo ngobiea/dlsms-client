@@ -6,7 +6,6 @@ const ClassRoomCard = ({ title }) => {
       <div className="h-20 flex justify-center items-center text-white w-20 rounded-md bg-green-300 text-center">
         {getCapitalLetters(title)}
       </div>
-
       {title}
     </div>
   );

@@ -2,14 +2,15 @@ const { BrowserWindow, screen } = require('electron');
 const path = require('path');
 const windowStateKeeper = require('electron-window-state');
 
-exports.createAppWindow = (isShow) => {
+exports.createExamQuestionWindow = (isShow) => {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
   const winState = windowStateKeeper({
     defaultWidth: width,
     defaultHeight: height,
   });
-  const mainWindow = new BrowserWindow({
+
+  const examQuestionWindow = new BrowserWindow({
     width: winState.width,
     height: winState.height,
     x: winState.x,
@@ -24,11 +25,19 @@ exports.createAppWindow = (isShow) => {
       symbolColor: 'white',
       height: 40,
     },
-    title: 'Main App Window',
+    title: 'monitor',
+
     show: isShow,
     icon: path.join(__dirname, '../../renderer/public/images/dlsms2.png'),
   });
-  mainWindow.loadFile(path.join(__dirname, '../../renderer/public/index.html'));
-  winState.manage(mainWindow);
-  return mainWindow;
+
+  examQuestionWindow.loadFile(
+    path.join(__dirname, '../../renderer/public/examQuestion.html')
+  );
+
+  examQuestionWindow.setContentProtection(true);
+
+  winState.manage(examQuestionWindow);
+
+  return examQuestionWindow;
 };

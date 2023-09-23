@@ -2,7 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import { ipcRenderer } from 'electron';
 import Toggle from 'react-toggle';
 import { getDevices } from '../../utils/getDevices';
-import { setUpWebCam, offWebCam, onWebCam } from '../../utils/webcamSetup';
+import {
+  setUpWebCam,
+  disableWebCam,
+  enableWebCam,
+} from '../../utils/webcamSetup';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -32,7 +36,7 @@ const ClassSessionSetup = () => {
     audioInputDevices,
     audioOutputDevices,
     videoOutputDevices,
-    localStream,
+    localVideoStream,
     defaultAudioInputDevice,
     defaultAudioOutputDevice,
     defaultVideoOutputDevice,
@@ -41,7 +45,7 @@ const ClassSessionSetup = () => {
   });
 
   const handleToClassSession = () => {
-    // offWebCam()
+    // disableWebCam()
     navigate('/' + sessionId);
   };
   const handleMic = (e) => {
@@ -56,10 +60,10 @@ const ClassSessionSetup = () => {
     getDevices();
   }, []);
   useEffect(() => {
-    if (localStream) {
-      videoRef.current.srcObject = localStream;
+    if (localVideoStream) {
+      videoRef.current.srcObject = localVideoStream;
     }
-  }, [localStream]);
+  }, [localVideoStream]);
   const handleAudioInputChange = (event) => {
     dispatch(setDefaultAudioInputDevice(event.target.value));
   };
@@ -76,9 +80,9 @@ const ClassSessionSetup = () => {
   const handleVideo = (e) => {
     const value = e.target.checked;
     if (value) {
-      onWebCam(false, true);
+      enableWebCam(false, true);
     } else {
-      offWebCam();
+      disableWebCam();
     }
     dispatch(setVideoEnable(value));
   };

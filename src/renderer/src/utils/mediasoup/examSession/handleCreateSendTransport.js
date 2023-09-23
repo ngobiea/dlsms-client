@@ -14,6 +14,7 @@ export const handleCreateProducerTransport = (
         return;
       }
       console.log(serverParams);
+      
       mediasoupClient.producerTransport =
         device.createSendTransport(serverParams);
 
@@ -28,7 +29,6 @@ export const handleCreateProducerTransport = (
             await socket.emit('examSessionOnProducerTransportConnect', {
               dtlsParameters,
               examSessionId,
-              producerTransportId: serverParams.id,
             });
             console.log('transport connected success');
             callback();
@@ -50,7 +50,6 @@ export const handleCreateProducerTransport = (
                 kind: parameters.kind,
                 rtpParameters: parameters.rtpParameters,
                 appData: parameters.appData,
-                producerTransportId: serverParams.id,
               },
               ({ id }) => {
                 // Tell the transport that parameters were transmitted and provide it with the
@@ -58,6 +57,7 @@ export const handleCreateProducerTransport = (
                 callback({ id });
               }
             );
+            console.log('transport produce success, server-side producer ID:');
           } catch (error) {
             errback(error);
           }

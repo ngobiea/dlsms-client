@@ -11,10 +11,11 @@ import {
 
 const AddButtons = () => {
   const dispatch = useDispatch();
-  const { examSessionId } = useSelector((state) => state.examSession);
+  const { examSessionId, questions } = useSelector(
+    (state) => state.examSession
+  );
   console.log(examSessionId);
-  const [postSaveExamSession, { isSuccess, data }] =
-    usePostSaveExamSessionMutation();
+  const [postSaveExamSession, { isSuccess }] = usePostSaveExamSessionMutation();
   useEffect(() => {
     if (isSuccess) {
       dispatch(setIsShowExamConfirm(false));
@@ -53,14 +54,16 @@ const AddButtons = () => {
         </button>
       </div>
       <div>
-        <button
-          onClick={() => {
-            postSaveExamSession({ examSessionId });
-          }}
-          className="text-white mx-2 flex bg-sidebar hover:bg-sidebarHover focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-        >
-          Post Exam Session
-        </button>
+        {questions.length > 0 && (
+          <button
+            onClick={() => {
+              postSaveExamSession({ examSessionId });
+            }}
+            className="text-white mx-2 flex bg-sidebar hover:bg-sidebarHover focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+          >
+            Post Exam Session
+          </button>
+        )}
       </div>
     </div>
   );

@@ -4,10 +4,11 @@ const sessionSlice = createSlice({
   name: 'session',
   initialState: {
     isMicEnable: false,
+    micState: 'disable',
     isVideoEnable: false,
     isShowChat: false,
     isShowParticipants: false,
-    isShareScreen: false,
+    isScreenEnable: false,
     isRecording: false,
     activeBorder: '',
     isJoinedSession: false,
@@ -16,19 +17,25 @@ const sessionSlice = createSlice({
     defaultAudioInputDevice: null,
     defaultAudioOutputDevice: null,
     defaultVideoOutputDevice: null,
-    localStream: null,
+    localVideoStream: null,
+    localScreenStream: null,
+    localAudioStream: null,
     remoteStream: null,
-    audioParams: null,
+    audioParams: {},
     remoteStreams: [],
     audioInputDevices: [],
     audioOutputDevices: [],
     videoOutputDevices: [],
     consumerTransports: [],
     videoParams: { params },
+    screenShareParams: { params },
   },
   reducers: {
     setMicEnable(state, action) {
       state.isMicEnable = action.payload;
+    },
+    setMicState(state, action) {
+      state.micState = action.payload;
     },
     setVideoEnable(state, action) {
       state.isVideoEnable = action.payload;
@@ -42,7 +49,6 @@ const sessionSlice = createSlice({
         state.activeBorder = '';
       }
     },
-
     setIsShowParticipants(state, action) {
       state.isShowParticipants = action.payload;
       if (action.payload) {
@@ -53,7 +59,7 @@ const sessionSlice = createSlice({
       }
     },
     setIsShareScreen(state, action) {
-      state.isShareScreen = action.payload;
+      state.isScreenEnable = action.payload;
     },
     setIsRecording(state, action) {
       state.isRecording = action.payload;
@@ -87,20 +93,54 @@ const sessionSlice = createSlice({
     setDefaultVideoOutputDevice(state, action) {
       state.defaultVideoOutputDevice = action.payload;
     },
-    setLocalStream(state, action) {
-      state.localStream = action.payload;
+    setLocalVideoStream(state, action) {
+      state.localVideoStream = action.payload;
+      if (action.payload) {
+        state.videoParams = {
+          ...state.videoParams,
+          track: action.payload.getVideoTracks()[0],
+          appData: { video: true },
+        };
+        state.isVideoEnable = true;
+      } else {
+        state.isVideoEnable = false;
+      }
+    },
+    setScreenStream(state, action) {
+      state.localScreenStream = action.payload;
+      if (action.payload) {
+        state.screenShareParams = {
+          ...state.screenShareParams,
+          track: action.payload.getVideoTracks()[0],
+          appData: { screen: true },
+        };
+        state.isScreenEnable = true;
+      } else {
+        state.isScreenEnable = false;
+      }
+    },
+    setLocalAudioStream(state, action) {
+      state.localAudioStream = action.payload;
+      console.log(action.payload);
+      if (action.payload) {
+        state.audioParams = {
+          ...state.audioParams,
+          track: action.payload.getAudioTracks()[0],
+          appData: { audio: true },
+        };
+        state.micState = 'enable';
+      } else {
+        state.micState = 'disable';
+      }
     },
     addRemoteStream(state, action) {
       state.remoteStreams.push(action.payload);
     },
-    setMediaStreams(state, action) {
-      state.audioParams = {
-        ...state.audioParams,
-        track: action.payload.getAudioTracks()[0],
-      };
-      state.videoParams = {
-        ...state.videoParams,
+    setShareScreenStreams(state, action) {
+      state.screenShareParams = {
+        ...state.screenShareParams,
         track: action.payload.getVideoTracks()[0],
+        appData: { screen: true },
       };
     },
     setRemoteSteam(state, action) {
@@ -119,8 +159,9 @@ const sessionSlice = createSlice({
 });
 
 export const {
-  setLocalStream,
+  setLocalVideoStream,
   setMicEnable,
+  setMicState,
   setVideoEnable,
   setIsShowChat,
   setIsShowParticipants,
@@ -132,9 +173,11 @@ export const {
   setDefaultVideoOutputDevice,
   setDevices,
   addRemoteStream,
-  setMediaStreams,
   setRemoteSteam,
   setIsProducer,
   setIsDeviceSet,
+  setScreenStream,
+  setShareScreenStreams,
+  setLocalAudioStream,
 } = sessionSlice.actions;
 export const sessionReducer = sessionSlice.reducer;

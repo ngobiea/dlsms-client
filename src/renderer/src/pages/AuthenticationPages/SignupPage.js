@@ -1,5 +1,4 @@
 import React, { useContext, useEffect } from 'react';
-import { ipcRenderer } from 'electron';
 import AccountContext from '../../context/accountContext';
 import logo from '../../../public/images/dlsms2.png';
 import { useSignupUserMutation } from '../../store';
@@ -40,7 +39,7 @@ useEffect(() => {
       <div className="close">
         <p className="text-right absolute top-0 right-0 text-2xl font-semibold mr-4">
           <span
-            onClick={() => ipcRenderer.send('exitApp')}
+            onClick={() => window.account.exitApp()}
             className="cursor-pointer text-green-900"
           >
             X

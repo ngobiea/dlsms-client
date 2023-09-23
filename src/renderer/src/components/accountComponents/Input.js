@@ -9,11 +9,13 @@ const Input = ({
   errorMessage,
   errors,
   focus,
+  autoComplete,
 }) => {
   return (
     <div className="relative z-0 w-full mb-6 group">
       <input
         autoFocus={focus}
+        autoComplete={autoComplete ? 'on' : 'off'}
         type={type}
         {...reg(inputValue, valid)}
         placeholder=" "

@@ -4,9 +4,9 @@ const path = require('path');
 exports.createSessionWindow = (isShow) => {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
-  const sessionWindow = new BrowserWindow({
-    width: width,
-    height: height,
+  const classSessionWindow = new BrowserWindow({
+    width,
+    height,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -22,9 +22,10 @@ exports.createSessionWindow = (isShow) => {
     show: isShow,
     icon: path.join(__dirname, '../../renderer/public/images/dlsms2.png'),
   });
-  sessionWindow.loadFile(
-    path.join(__dirname, '../../renderer/public/session.html')
+
+  classSessionWindow.loadFile(
+    path.join(__dirname, '../../renderer/public/classSession.html')
   );
 
-  return sessionWindow;
+  return classSessionWindow;
 };

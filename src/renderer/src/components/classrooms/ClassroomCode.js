@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ipcRenderer } from 'electron';
 import { MdClose, MdContentCopy } from 'react-icons/md';
 import { setShowCode } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
@@ -44,7 +43,7 @@ const ClassroomCode = () => {
               <button
                 onClick={() => {
                   setCopy('Copied');
-                  ipcRenderer.send('copyCode',code);
+                  window.account.copyCode(code);
                 }}
                 type="submit"
                 className="flex items-center justify-center p-2.5 text-sm font-medium text-white bg-green-700 rounded-r-lg border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300"

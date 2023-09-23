@@ -6,8 +6,7 @@ exports.createAccountWindow = (isShow) => {
     height: 750,
     frame: false,
     webPreferences: {
-      contextIsolation: false,
-      nodeIntegration: true,
+      preload: path.join(__dirname, '../../preload/preload.js'),
     },
     backgroundColor: '#759278',
     resizable: false,

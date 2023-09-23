@@ -1,6 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import { ipcRenderer } from 'electron';
-// import {} from 'electron'
 const pad = 2;
 const code8 = 8;
 
@@ -33,5 +31,6 @@ export const generateUniqueId = () => {
 
 export const logoutHandler = () => {
   localStorage.removeItem('user');
-  ipcRenderer.send('logout')
+  window.account.logout();
+
 };
