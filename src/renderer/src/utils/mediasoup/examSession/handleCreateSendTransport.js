@@ -14,7 +14,7 @@ export const handleCreateProducerTransport = (
         return;
       }
       console.log(serverParams);
-      
+
       mediasoupClient.producerTransport =
         device.createSendTransport(serverParams);
 

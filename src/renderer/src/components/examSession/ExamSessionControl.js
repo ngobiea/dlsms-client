@@ -81,7 +81,6 @@ const ExamSessionControl = () => {
     if (micState === 'enable') {
       enableMic()
         .then((stream) => {
-          
           produceAudio(stream);
         })
         .catch((error) => {

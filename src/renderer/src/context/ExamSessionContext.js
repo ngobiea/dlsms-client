@@ -11,14 +11,13 @@ const examSessionId = localStorage.getItem('examSessionId');
 
 const mediasoupClient = {
   producerTransport: null,
-  consumerTransport: null,
+  studentProducerTransportIds: [],
+  consumerTransports: [],
   consumingTransports: [],
   videoProducer: null,
   audioProducer: null,
   screenShareProducer: null,
 };
-const consumerTransports = [];
-let consumer;
 
 const ExamSessionContext = createContext();
 
@@ -26,15 +25,36 @@ const ExamSessionProvider = ({ children }) => {
   const { socket } = useContext(RealtimeContext);
   const { accountType } = useSelector((state) => state.account);
 
-  const { videoParams, audioParams, screenShareParams, micState } = useSelector(
+  const { videoParams, screenShareParams, micState } = useSelector(
     (state) => state.session
   );
 
   const loadDevice = async (rtpCapabilities) => {
     await handleLoadDevice(device, rtpCapabilities);
 
-    createSendTransport();
-    createReceiveTransport();
+    if (accountType === 'student') {
+      createSendTransport();
+    } else if (accountType === 'tutor') {
+      socket.emit(
+        'getStudentProducerTransportIds',
+        { examSessionId },
+        ({ producerTransportIds }) => {
+          console.log(producerTransportIds);
+
+          if (Object.keys(producerTransportIds).length === 0) {
+            console.log('no student in this exam session');
+            return;
+          }
+          for (const [transportId, producerIds] of Object.entries(
+            producerTransportIds
+          )) {
+            if (producerIds.length !== 0) {
+              signalConsumerTransport(producerIds);
+            }
+          }
+        }
+      );
+    }
   };
 
   const createSendTransport = () => {
@@ -49,6 +69,9 @@ const ExamSessionProvider = ({ children }) => {
         mediasoupClient.audioProducer =
           await mediasoupClient.producerTransport.produce({
             track: stream.getAudioTracks()[0],
+            appData: {
+              audio: true,
+            },
           });
         mediasoupClient.audioProducer.on('trackended', () => {
           console.log('audio track ended');
@@ -116,6 +139,57 @@ const ExamSessionProvider = ({ children }) => {
     } catch (error) {
       console.log(error);
     }
+  };
+  const signalConsumerTransport = async (transportId, producerIds) => {
+    if (mediasoupClient.studentProducerTransportIds.includes(transportId)) {
+      return;
+    }
+    mediasoupClient.consumingTransports.push(transportId);
+    await handleCreateConsumerTransport(
+      remoteProducerId,
+      socket,
+      device,
+      mediasoupClient,
+      connectRecvTransport
+    );
+  };
+  const connectRecvTransport = async (
+    consumerTransport,
+    remoteProducerId,
+    serverConsumerTransportId
+  ) => {
+    await socket.emit(
+      'consume',
+      {
+        rtpCapabilities: device.rtpCapabilities,
+        remoteProducerId,
+        serverConsumerTransportId,
+      },
+      async ({ serverParams }) => {
+        if (serverParams.error) {
+          console.log(serverParams.error);
+          return;
+        }
+
+        const consumer = await consumerTransport.consume({
+          id: serverParams.id,
+          producerId: serverParams.producerId,
+          kind: serverParams.kind,
+          rtpParameters: serverParams.rtpParameters,
+          appData: { peerId: remoteProducerId },
+        });
+
+        mediasoupClient.consumerTransports = [
+          ...mediasoupClient.consumerTransports,
+          {
+            consumerTransport,
+            serverConsumerTransportId: serverParams.id,
+            producerId: serverParams.producerId,
+            consumer,
+          },
+        ];
+      }
+    );
   };
   const values = {
     socket,
