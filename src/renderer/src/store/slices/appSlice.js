@@ -22,6 +22,7 @@ const appSlice = createSlice({
       type: 'success',
       isActive: false,
     },
+    socket: null,
   },
   reducers: {
     setIsWebcamActive(state, action) {
@@ -77,6 +78,9 @@ const appSlice = createSlice({
     setNotification(state, action) {
       state.notification = action.payload;
     },
+    setSocket(state, action) {
+      state.socket = action.payload;
+    },
   },
 });
 export const {
@@ -90,5 +94,6 @@ export const {
   removeAllFiles,
   setIsShowConfirmationModal,
   setNotification,
+  setSocket,
 } = appSlice.actions;
 export const appReducer = appSlice.reducer;

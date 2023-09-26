@@ -41,14 +41,7 @@ ipcRenderer.on('source', (_e, { source }) => {
 
 const ExamSessionControl = () => {
   const dispatch = useDispatch();
-  const {
-    socket,
-    produceVideo,
-    mediasoupClient,
-    examSessionId,
-    produceScreen,
-    produceAudio,
-  } = useContext(ExamSessionContext);
+  const { examSession } = useContext(ExamSessionContext);
 
   const {
     isMicEnable,
@@ -67,13 +60,13 @@ const ExamSessionControl = () => {
   });
   useEffect(() => {
     if (localVideoStream) {
-      produceVideo(isVideoEnable);
+      examSession.produceVideo();
     }
   }, [localVideoStream]);
 
   useEffect(() => {
     if (localScreenStream) {
-      produceScreen(isScreenEnable);
+      examSession.produceScreen(isScreenEnable);
     }
   }, [localScreenStream]);
 
@@ -81,7 +74,7 @@ const ExamSessionControl = () => {
     if (micState === 'enable') {
       enableMic()
         .then((stream) => {
-          produceAudio(stream);
+          examSession.produceAudio(stream);
         })
         .catch((error) => {
           console.log(error);
@@ -121,8 +114,7 @@ const ExamSessionControl = () => {
     if (micState === 'disable') {
       enableMic()
         .then((stream) => {
-          console.log(stream);
-          produceAudio();
+          examSession.produceAudio(stream);
         })
         .catch((error) => {
           console.log(error);

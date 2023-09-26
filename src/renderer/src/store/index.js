@@ -47,6 +47,7 @@ import {
   removeAllFiles,
   setIsShowConfirmationModal,
   setNotification,
+  setSocket,
 } from './slices/appSlice';
 
 import { chatReducer, addMessage, setMessages } from './slices/chatSlice';
@@ -144,6 +145,7 @@ export {
   removeAllFiles,
   setIsShowConfirmationModal,
   setNotification,
+  setSocket,
 
   //classroom Slice
   setStudents,

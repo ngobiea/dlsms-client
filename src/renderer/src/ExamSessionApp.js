@@ -10,11 +10,15 @@ import ExamSession from './pages/ExamSessionPages/ExamSession';
 const examSessionId = localStorage.getItem('examSessionId');
 
 const ExamSessionApp = () => {
-  const { socket, loadDevice } = useContext(ExamSessionContext);
+  const { socket, examSession } = useContext(ExamSessionContext);
   useEffect(() => {
-    socket.emit('newExamSession', { examSessionId }, ({ rtpCapabilities }) => {
-      loadDevice(rtpCapabilities);
-    });
+    socket.emit(
+      'newExamSession',
+      { examSessionId },
+      async ({ rtpCapabilities }) => {
+        await examSession.loadDevice(rtpCapabilities, socket);
+      }
+    );
   }, []);
   const { isDeviceSet } = useSelector((state) => state.session);
   return (

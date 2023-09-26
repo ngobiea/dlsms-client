@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 const device = new Device();
 
 import RealtimeContext from './realtimeContext';
-import { handleLoadDevice } from '../utils/mediasoup/loadDevice';
 import { handleCreateSendTransport } from '../utils/mediasoup/classSession/handleCreateSendTransport';
 import { addRemoteStream } from '../store';
 const ClassSessionContext = createContext();

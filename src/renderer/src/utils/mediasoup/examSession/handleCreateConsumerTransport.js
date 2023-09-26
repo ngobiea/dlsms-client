@@ -3,7 +3,7 @@ import { params } from '../params';
 const examSessionId = localStorage.getItem('examSessionId');
 
 export const handleCreateConsumerTransport = async (
-  remoteProducerId,
+  remoteTransportId,
   socket,
   device,
   mediasoupClient,

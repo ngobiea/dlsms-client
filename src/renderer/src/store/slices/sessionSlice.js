@@ -29,6 +29,13 @@ const sessionSlice = createSlice({
     consumerTransports: [],
     videoParams: { params },
     screenShareParams: { params },
+    studentsMedia: [],
+    studentMedia: {
+      transportId: null,
+      remoteVideoStream: null,
+      remoteAudioSteam: null,
+      remoteScreenSteam: null,
+    },
   },
   reducers: {
     setMicEnable(state, action) {
@@ -155,6 +162,10 @@ const sessionSlice = createSlice({
     setIsDeviceSet(state, action) {
       state.isDeviceSet = action.payload;
     },
+    addStudentMedia(state, action) {
+      
+    }
+    
   },
 });
 
