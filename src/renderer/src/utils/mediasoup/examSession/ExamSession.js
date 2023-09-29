@@ -1,7 +1,6 @@
 import { setIsDeviceSet, store } from '../../../store';
 import { Device } from 'mediasoup-client';
 import { socket } from '../../../context/realtimeContext';
-import { params } from '../params';
 export class ExamSession {
   constructor(examSessionId) {
     this.device = new Device();
@@ -63,7 +62,7 @@ export class ExamSession {
   async createProducerTransport() {
     try {
       this.socket.emit(
-        'createExamSessionWebRTCTransport',
+        'createExamSessionTp',
         { examSessionId: this.examSessionId, isProducer: true },
         ({ serverParams }) => {
           if (serverParams.error) {
@@ -79,13 +78,10 @@ export class ExamSession {
             'connect',
             async ({ dtlsParameters }, callback, errback) => {
               try {
-                await this.socket.emit(
-                  'examSessionOnProducerTransportConnect',
-                  {
-                    dtlsParameters,
-                    examSessionId: this.examSessionId,
-                  }
-                );
+                await this.socket.emit('ESOnPTConnect', {
+                  dtlsParameters,
+                  examSessionId: this.examSessionId,
+                });
                 console.log('transport connected success');
                 callback();
               } catch (error) {
@@ -99,7 +95,7 @@ export class ExamSession {
               console.log(parameters);
               try {
                 await this.socket.emit(
-                  'examSessionOnTransportProduce',
+                  'ESOnPTProduce',
                   {
                     examSessionId: this.examSessionId,
                     kind: parameters.kind,
@@ -212,7 +208,7 @@ export class ExamSession {
 
   async createConsumerTransport(transportId, producerIds) {
     await socket.emit(
-      'createExamSessionWebRTCTransport',
+      'createExamSessionTp',
       { examSessionId: this.examSessionId, isProducer: false },
       async ({ serverParams }) => {
         console.log(serverParams);
@@ -231,7 +227,7 @@ export class ExamSession {
           .get(serverParams.id)
           .on('connect', async ({ dtlsParameters }, callback, errback) => {
             try {
-              await socket.emit('examSessionOnConsumerTransportConnect', {
+              await socket.emit('ESOnCTConnect', {
                 examSessionId: this.examSessionId,
                 dtlsParameters,
                 consumerTransportId: serverParams.id,
@@ -262,7 +258,7 @@ export class ExamSession {
     // }
     // this.studentProducerIds.push(remoteProducerId);
     await socket.emit(
-      'consumeTransport',
+      'ESOnCTConsume',
       {
         examSessionId: this.examSessionId,
         rtpCapabilities: this.device.rtpCapabilities,
@@ -284,7 +280,7 @@ export class ExamSession {
         console.log(consumer);
         const { track } = consumer;
         console.log(track);
-        this.socket.emit('consumerResume', {
+        this.socket.emit('ESOnCTResume', {
           examSessionId: this.examSessionId,
           serverConsumerId: serverParams.serverConsumerId,
         });

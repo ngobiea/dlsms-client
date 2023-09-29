@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext } from 'react';
 import { handleCreateConsumerTransport } from '../utils/mediasoup/examSession/handleCreateConsumerTransport';
 import RealtimeContext from './realtimeContext';
 import { ExamSession } from '../utils/mediasoup/examSession/ExamSession';
@@ -19,7 +19,6 @@ const ExamSessionContext = createContext();
 
 const ExamSessionProvider = ({ children }) => {
   const { socket } = useContext(RealtimeContext);
-
 
   const signalConsumerTransport = async (transportId, producerIds) => {
     if (mediasoupClient.studentProducerTransportIds.has(transportId)) {
@@ -64,9 +63,9 @@ const ExamSessionProvider = ({ children }) => {
           ...mediasoupClient.consumerTransports,
           {
             consumerTransport,
+            consumer,
             serverConsumerTransportId: serverParams.id,
             producerId: serverParams.producerId,
-            consumer,
           },
         ];
       }
