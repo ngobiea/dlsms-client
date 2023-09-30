@@ -29,7 +29,7 @@ const sessionSlice = createSlice({
     consumerTransports: [],
     videoParams: { params },
     screenShareParams: { params },
-    studentsMedia: [],
+    studentStreams: [],
     studentMedia: {
       transportId: null,
       remoteVideoStream: null,
@@ -162,10 +162,9 @@ const sessionSlice = createSlice({
     setIsDeviceSet(state, action) {
       state.isDeviceSet = action.payload;
     },
-    addStudentMedia(state, action) {
-      
-    }
-    
+    addStudentStreams(state, action) {
+      state.studentStreams.push(action.payload);
+    },
   },
 });
 
@@ -190,5 +189,6 @@ export const {
   setScreenStream,
   setShareScreenStreams,
   setLocalAudioStream,
+  addStudentStreams,
 } = sessionSlice.actions;
 export const sessionReducer = sessionSlice.reducer;

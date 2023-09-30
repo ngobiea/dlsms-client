@@ -4,6 +4,7 @@ import RealtimeContext from './realtimeContext';
 import { ExamSession } from '../utils/mediasoup/examSession/ExamSession';
 
 const examSessionId = localStorage.getItem('examSessionId');
+const accountType = JSON.parse(localStorage.getItem('accountType'));
 const mediasoupClient = {
   producerTransport: null,
   studentProducerTransportIds: new Map(),
@@ -13,7 +14,7 @@ const mediasoupClient = {
   audioProducer: null,
   screenShareProducer: null,
 };
-const examSession = new ExamSession(examSessionId);
+const examSession = new ExamSession(examSessionId, accountType);
 
 const ExamSessionContext = createContext();
 

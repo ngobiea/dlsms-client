@@ -1,12 +1,21 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { faker } from '@faker-js/faker';
 import { MdVideocam, MdStopScreenShare, MdPeopleAlt } from 'react-icons/md';
 import { BsArrowsAngleExpand, BsShieldCheck } from 'react-icons/bs';
 import { HiSpeakerWave } from 'react-icons/hi2';
 import screen from '../../../public/images/Screenshot.png';
 
-const SessionCard = () => {
+const SessionCard = ({ studentStream }) => {
   const videoRef = useRef(null);
+  const screenRef = useRef(null);
+  useEffect(() => {
+    if (studentStream.streams.video) {
+      videoRef.current.srcObject = studentStream.stream;
+    }
+    if (studentStream.streams.screen) {
+      screenRef.current.srcObject = studentStream.stream;
+    }
+  }, []);
 
   return (
     <div className="relative cursor-pointer">
@@ -16,7 +25,7 @@ const SessionCard = () => {
         ref={videoRef}
       ></video>
       <div className="absolute top-0 cursor-pointer left-0 overflow-auto">
-        <img className="w-25  h-20" src={screen} alt="Image" />
+        <video autoPlay ref={screenRef} className="w-25  h-20"  alt="Image" />
       </div>
       <div className="absolute inset-y-0 right-0 h-full w-10 bg-gray-300 bg-opacity-50">
         <MdStopScreenShare className="self-center text-4xl text-red-600 my-1" />

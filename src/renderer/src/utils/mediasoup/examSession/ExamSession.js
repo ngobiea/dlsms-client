@@ -1,21 +1,23 @@
-import { setIsDeviceSet, store } from '../../../store';
+import { setIsDeviceSet, store, addStudentStreams } from '../../../store';
 import { Device } from 'mediasoup-client';
 import { socket } from '../../../context/realtimeContext';
+import { User } from './User';
 export class ExamSession {
-  constructor(examSessionId) {
-    this.device = new Device();
-    this.accountType = JSON.parse(localStorage.getItem('accountType'));
-    this.examSessionId = examSessionId;
+  constructor(examSessionId, accountType) {
     this.socket = null;
+    this.device = new Device();
+    this.accountType = accountType;
+    this.examSessionId = examSessionId;
+    this.audioProducer = null;
+    this.videoProducer = null;
+    this.screenProducer = null;
     this.producerTransport = null;
     this.studentConsumerTransports = new Map();
+    this.currentStudents = new Map();
     this.tutorConsumerTransport = null;
     this.consumers = new Map();
     this.studentProducerTransportIds = new Map();
     this.studentProducerIds = [];
-    this.audioProducer = null;
-    this.videoProducer = null;
-    this.screenProducer = null;
   }
   async loadDevice(rtpCapabilities, ws) {
     try {
@@ -32,32 +34,33 @@ export class ExamSession {
     }
   }
   setUpUser() {
+    console.log(this.accountType);
     try {
       if (this.accountType === 'student') {
         this.createProducerTransport();
       } else if (this.accountType === 'tutor') {
-        console.log(this.accountType);
-        this.socket.emit(
-          'getStudentProducerTransportIds',
-          { examSessionId: this.examSessionId },
-          ({ producerTransportIds }) => {
-            console.log(producerTransportIds);
-            if (Object.keys(producerTransportIds).length === 0) {
-              console.log('no student in this exam session');
-              return;
-            }
-
-            for (const [transportId, producerIds] of Object.entries(
-              producerTransportIds
-            )) {
-              if (producerIds.length !== 0) {
-                this.signalConsumerTransport(transportId, producerIds);
-              }
-            }
-          }
-        );
+        this.getStudentIds();
       }
     } catch (error) {}
+  }
+  getStudentIds() {
+    this.socket.emit(
+      'getStudentPTIds',
+      { examSessionId: this.examSessionId },
+      ({ producerTransportIds }) => {
+        console.log(producerTransportIds);
+        if (Object.keys(producerTransportIds).length === 0) {
+          console.log('no student in this exam session');
+          return;
+        }
+
+        for (const [transportId, producerIds] of Object.entries(
+          producerTransportIds
+        )) {
+          this.signalConsumerTransport(transportId, producerIds);
+        }
+      }
+    );
   }
   async createProducerTransport() {
     try {
@@ -124,7 +127,9 @@ export class ExamSession {
     //   return;
     // }
     // this.studentProducerTransportIds.set(transportId, producerIds);
-    this.createConsumerTransport(transportId, producerIds);
+    if (producerIds.length !== 0) {
+      this.createConsumerTransport(transportId, producerIds);
+    }
   }
 
   async produceAudio(stream) {
@@ -238,51 +243,63 @@ export class ExamSession {
               errback(error);
             }
           });
+        if (!this.currentStudents.has(transportId)) {
+          this.currentStudents.set(transportId, new User());
+        }
         for (const producerId of producerIds) {
           await this.connectRecvTransport(
-            this.studentConsumerTransports.get(serverParams.id),
             producerId,
-            serverParams.id
+            serverParams.id,
+            transportId
           );
         }
+        store.dispatch(
+          addStudentStreams(this.currentStudents.get(transportId).getUserData())
+        );
       }
     );
   }
-  async connectRecvTransport(
-    consumerTransport,
-    remoteProducerId,
-    serverConsumerTransportId
-  ) {
-    // if (this.studentProducerIds.includes(remoteProducerId)) {
-    //   return;
-    // }
-    // this.studentProducerIds.push(remoteProducerId);
-    await socket.emit(
+  async connectRecvTransport(producerId, consumerTransportId, transportId) {
+    await this.socket.emit(
       'ESOnCTConsume',
       {
         examSessionId: this.examSessionId,
         rtpCapabilities: this.device.rtpCapabilities,
-        remoteProducerId,
-        serverConsumerTransportId,
+        producerId,
+        consumerTransportId,
       },
       async ({ serverParams }) => {
         if (serverParams.error) {
           console.log(serverParams.error);
           return;
         }
-        const consumer = await consumerTransport.consume({
-          id: serverParams.id,
-          producerId: serverParams.producerId,
-          kind: serverParams.kind,
-          rtpParameters: serverParams.rtpParameters,
-          appData: { peerId: remoteProducerId },
+        const { id, kind, rtpParameters, producerAppData, userData } =
+          serverParams;
+        const consumer = await this.studentConsumerTransports
+          .get(consumerTransportId)
+          .consume({
+            id,
+            producerId,
+            kind,
+            rtpParameters,
+            appData: producerAppData,
+          });
+        this.consumers.set(consumer.id, consumer);
+
+        const { track } = this.consumers.get(consumer.id);
+        this.currentStudents
+          .get(transportId)
+          .addConsumer(consumer.id, track, producerAppData);
+        this.currentStudents.get(transportId).setUserData(userData);
+        this.consumers.get(consumer.id).on('transportclose', () => {
+          console.log('transport closed so consumer closed');
         });
-        console.log(consumer);
-        const { track } = consumer;
+        this.consumers.get(consumer.id).on('trackended', () => {});
+
         console.log(track);
         this.socket.emit('ESOnCTResume', {
           examSessionId: this.examSessionId,
-          serverConsumerId: serverParams.serverConsumerId,
+          consumerId: id,
         });
       }
     );

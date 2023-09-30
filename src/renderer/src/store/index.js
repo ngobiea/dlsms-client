@@ -73,6 +73,7 @@ import {
   setShareScreenStreams,
   setLocalAudioStream,
   setMicState,
+  addStudentStreams,
 } from './slices/sessionSlice';
 
 import { mediasoupReducer } from './slices/mediasoupSlice';
@@ -183,6 +184,7 @@ export {
   setShareScreenStreams,
   setLocalAudioStream,
   setMicState,
+  addStudentStreams,
 
   //examSession slice
   setCorrectOption,
