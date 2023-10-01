@@ -33,6 +33,7 @@ import {
   muteMic,
   unmuteMic,
 } from '../../utils/webcamSetup';
+import { socket } from '../../context/realtimeContext';
 
 ipcRenderer.on('source', (_e, { source }) => {
   shareScreen(source.id);
@@ -106,10 +107,12 @@ const ExamSessionControl = () => {
   const handleVideo = () => {
     if (isVideoEnable) {
       disableWebCam();
+      examSession.closeESProducer('video');
     } else {
       enableWebCam();
     }
   };
+
   const handleMic = () => {
     if (micState === 'disable') {
       enableMic()
@@ -129,6 +132,7 @@ const ExamSessionControl = () => {
     if (isScreenEnable) {
       stopShareScreen();
       dispatch(setIsShareScreen(false));
+      examSession.closeESProducer('screen');
     } else {
       ipcRenderer.send('showScreenSources');
     }

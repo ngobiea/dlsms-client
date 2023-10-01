@@ -74,6 +74,9 @@ import {
   setLocalAudioStream,
   setMicState,
   addStudentStreams,
+  addStudentDetails,
+  removeStudentFromActiveExamSession,
+  addStudentStream,
 } from './slices/sessionSlice';
 
 import { mediasoupReducer } from './slices/mediasoupSlice';
@@ -185,6 +188,9 @@ export {
   setLocalAudioStream,
   setMicState,
   addStudentStreams,
+  addStudentDetails,
+  removeStudentFromActiveExamSession,
+  addStudentStream,
 
   //examSession slice
   setCorrectOption,

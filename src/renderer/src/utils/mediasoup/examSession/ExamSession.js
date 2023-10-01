@@ -1,6 +1,5 @@
-import { setIsDeviceSet, store, addStudentStreams } from '../../../store';
+import { setIsDeviceSet, store, addStudentDetails } from '../../../store';
 import { Device } from 'mediasoup-client';
-import { socket } from '../../../context/realtimeContext';
 import { User } from './User';
 export class ExamSession {
   constructor(examSessionId, accountType) {
@@ -12,18 +11,15 @@ export class ExamSession {
     this.videoProducer = null;
     this.screenProducer = null;
     this.producerTransport = null;
-    this.studentConsumerTransports = new Map();
-    this.currentStudents = new Map();
+    this.activeStudents = new Map();
     this.tutorConsumerTransport = null;
-    this.consumers = new Map();
-    this.studentProducerTransportIds = new Map();
     this.studentProducerIds = [];
   }
   async loadDevice(rtpCapabilities, ws) {
+    this.setSocket(ws);
     try {
       await this.device.load({ routerRtpCapabilities: rtpCapabilities });
       console.log('Device RTP Capabilities', this.device.rtpCapabilities);
-      this.socket = ws;
       store.dispatch(setIsDeviceSet(true));
       this.setUpUser();
     } catch (error) {
@@ -33,6 +29,10 @@ export class ExamSession {
       }
     }
   }
+  setSocket(socket) {
+    this.socket = socket;
+  }
+
   setUpUser() {
     console.log(this.accountType);
     try {
@@ -48,16 +48,23 @@ export class ExamSession {
       'getStudentPTIds',
       { examSessionId: this.examSessionId },
       ({ producerTransportIds }) => {
-        console.log(producerTransportIds);
         if (Object.keys(producerTransportIds).length === 0) {
           console.log('no student in this exam session');
           return;
         }
 
-        for (const [transportId, producerIds] of Object.entries(
+        for (const [transportId, { producerIds, user }] of Object.entries(
           producerTransportIds
         )) {
-          this.signalConsumerTransport(transportId, producerIds);
+          const newUser = new User(
+            this.examSessionId,
+            this.device,
+            user,
+            this.socket,
+            producerIds
+          );
+          store.dispatch(addStudentDetails(user));
+          this.activeStudents.set(transportId, newUser);
         }
       }
     );
@@ -120,15 +127,6 @@ export class ExamSession {
       );
     } catch (error) {
       console.log(error);
-    }
-  }
-  async signalConsumerTransport(transportId, producerIds) {
-    // if (this.studentProducerTransportIds.has(transportId)) {
-    //   return;
-    // }
-    // this.studentProducerTransportIds.set(transportId, producerIds);
-    if (producerIds.length !== 0) {
-      this.createConsumerTransport(transportId, producerIds);
     }
   }
 
@@ -211,96 +209,54 @@ export class ExamSession {
     }
   }
 
-  async createConsumerTransport(transportId, producerIds) {
-    await socket.emit(
-      'createExamSessionTp',
-      { examSessionId: this.examSessionId, isProducer: false },
-      async ({ serverParams }) => {
-        console.log(serverParams);
-        if (serverParams.error) {
-          console.log(serverParams.error);
-          return;
+  async closeESProducer(producerType) {
+    let producerId;
+    if (producerType === 'video') {
+      producerId = this.videoProducer.id;
+    } else if (producerType === 'screen') {
+      producerId = this.screenProducer.id;
+    }
+    this.socket.emit(
+      'closeESProducer',
+      {
+        examSessionId: this.examSessionId,
+        producerId,
+      },
+      () => {
+        if (producerType === 'video') {
+          this.videoProducer.close();
+          this.videoProducer = null;
+          console.log('video producer closed');
+        } else if (producerType === 'screen') {
+          this.screenProducer.close();
+          this.screenProducer = null;
+          console.log('screen producer closed');
         }
-
-        this.studentConsumerTransports.set(
-          serverParams.id,
-          this.device.createRecvTransport(serverParams)
-        );
-        console.log('new consumer transport');
-        console.log(this.studentConsumerTransports.get(serverParams.id));
-        this.studentConsumerTransports
-          .get(serverParams.id)
-          .on('connect', async ({ dtlsParameters }, callback, errback) => {
-            try {
-              await socket.emit('ESOnCTConnect', {
-                examSessionId: this.examSessionId,
-                dtlsParameters,
-                consumerTransportId: serverParams.id,
-              });
-              console.log('transport connected success');
-              callback();
-            } catch (error) {
-              errback(error);
-            }
-          });
-        if (!this.currentStudents.has(transportId)) {
-          this.currentStudents.set(transportId, new User());
-        }
-        for (const producerId of producerIds) {
-          await this.connectRecvTransport(
-            producerId,
-            serverParams.id,
-            transportId
-          );
-        }
-        store.dispatch(
-          addStudentStreams(this.currentStudents.get(transportId).getUserData())
-        );
       }
     );
   }
-  async connectRecvTransport(producerId, consumerTransportId, transportId) {
-    await this.socket.emit(
-      'ESOnCTConsume',
+
+  async pauseAudioProducer() {
+    this.socket.emit(
+      'pauseESAudioProducer',
       {
         examSessionId: this.examSessionId,
-        rtpCapabilities: this.device.rtpCapabilities,
-        producerId,
-        consumerTransportId,
+        producerId: this.audioProducer.id,
       },
-      async ({ serverParams }) => {
-        if (serverParams.error) {
-          console.log(serverParams.error);
-          return;
-        }
-        const { id, kind, rtpParameters, producerAppData, userData } =
-          serverParams;
-        const consumer = await this.studentConsumerTransports
-          .get(consumerTransportId)
-          .consume({
-            id,
-            producerId,
-            kind,
-            rtpParameters,
-            appData: producerAppData,
-          });
-        this.consumers.set(consumer.id, consumer);
-
-        const { track } = this.consumers.get(consumer.id);
-        this.currentStudents
-          .get(transportId)
-          .addConsumer(consumer.id, track, producerAppData);
-        this.currentStudents.get(transportId).setUserData(userData);
-        this.consumers.get(consumer.id).on('transportclose', () => {
-          console.log('transport closed so consumer closed');
-        });
-        this.consumers.get(consumer.id).on('trackended', () => {});
-
-        console.log(track);
-        this.socket.emit('ESOnCTResume', {
-          examSessionId: this.examSessionId,
-          consumerId: id,
-        });
+      () => {
+        this.audioProducer.pause();
+      }
+    );
+  }
+  async resumerAudioProducer() {
+    this.socket.emit(
+      'resumeESAudioProducer',
+      {
+        examSessionId: this.examSessionId,
+        producerId: this.audioProducer.id,
+      },
+      () => {
+        this.audioProducer.resume();
       }
     );
   }
