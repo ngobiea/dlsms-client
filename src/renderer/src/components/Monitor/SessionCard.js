@@ -4,17 +4,12 @@ import { BsArrowsAngleExpand, BsShieldCheck } from 'react-icons/bs';
 import { HiSpeakerWave } from 'react-icons/hi2';
 
 const SessionCard = ({ student }) => {
-  console.log(student);
-  console.log(student.video);
   const videoRef = useRef(null);
   const screenRef = useRef(null);
 
   useEffect(() => {
-    console.log(student);
-
     if (student.video) {
       videoRef.current.srcObject = student.video;
-      console.log(student);
     }
     if (student.screen) {
       screenRef.current.srcObject = student.screen;

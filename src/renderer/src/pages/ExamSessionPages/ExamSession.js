@@ -7,7 +7,6 @@ const ExamSession = () => {
     <div className="relative pt-10 h-screen overflow-hidden">
       <ExamSessionControl />
       <ExamSessionView />
-      
     </div>
   );
 };

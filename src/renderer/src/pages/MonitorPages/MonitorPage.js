@@ -4,10 +4,6 @@ import SessionCard from '../../components/Monitor/SessionCard';
 import MonitorSideBar from '../../components/Monitor/MonitorSideBar';
 const MonitorPage = () => {
   const { activeStudentsInExamSession } = useSelector((state) => state.session);
-  console.log(activeStudentsInExamSession);
-  const sessionCards = Array.from(Array(25).keys()).map((i) => (
-    <SessionCard key={i} />
-  ));
 
   return (
     <>

@@ -13,7 +13,6 @@ export class ExamSession {
     this.producerTransport = null;
     this.activeStudents = new Map();
     this.tutorConsumerTransport = null;
-    this.studentProducerIds = [];
   }
   async loadDevice(rtpCapabilities, ws) {
     this.setSocket(ws);
@@ -29,12 +28,40 @@ export class ExamSession {
       }
     }
   }
+
   setSocket(socket) {
     this.socket = socket;
+    this.socket.on('newESStudent', ({ examSessionId, user }) => {
+      console.log('new student received');
+      if (
+        examSessionId === this.examSessionId &&
+        this.accountType === 'tutor'
+      ) {
+        const newUser = new User(
+          this.examSessionId,
+          this.device,
+          user,
+          this.socket,
+          null
+        );
+        store.dispatch(addStudentDetails(user));
+        this.activeStudents.set(user._id.toString(), newUser);
+      }
+    });
+    this.socket.on(
+      'newESSProducer',
+      ({ examSessionId, userId, producerId }) => {
+        if (
+          examSessionId === this.examSessionId &&
+          this.accountType === 'tutor'
+        ) {
+          this.activeStudents.get(userId).createConsumer(producerId);
+        }
+      }
+    );
   }
 
   setUpUser() {
-    console.log(this.accountType);
     try {
       if (this.accountType === 'student') {
         this.createProducerTransport();
@@ -43,6 +70,7 @@ export class ExamSession {
       }
     } catch (error) {}
   }
+
   getStudentIds() {
     this.socket.emit(
       'getStudentPTIds',
@@ -56,6 +84,7 @@ export class ExamSession {
         for (const [transportId, { producerIds, user }] of Object.entries(
           producerTransportIds
         )) {
+
           const newUser = new User(
             this.examSessionId,
             this.device,
@@ -64,7 +93,7 @@ export class ExamSession {
             producerIds
           );
           store.dispatch(addStudentDetails(user));
-          this.activeStudents.set(transportId, newUser);
+          this.activeStudents.set(user._id.toString(), newUser);
         }
       }
     );

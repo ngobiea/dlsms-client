@@ -167,16 +167,13 @@ const sessionSlice = createSlice({
       state.studentStreams.push(action.payload);
     },
     addStudentDetails(state, action) {
-      console.log(action.payload);
       state.activeStudentsInExamSession.push({ ...action.payload });
     },
     addStudentStream(state, action) {
-      console.log(action.payload);
       const { id } = action.payload;
- 
+
       state.activeStudentsInExamSession = state.activeStudentsInExamSession.map(
         (student) => {
-          console.log(student._id.toString() === id);
           return student._id.toString() === id
             ? { ...student, ...action.payload }
             : student;

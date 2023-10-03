@@ -16,15 +16,15 @@ export class User {
   }
   setSocket(socket) {
     this.socket = socket;
-    this.socket.on('closeSESConsumer', ({ examSessionId, consumerId }) => {
-
+    this.socket.on('closeESConsumer', ({ examSessionId, consumerId }) => {
       console.log('close consumer received');
-      
+
       console.log(examSessionId);
       console.log(consumerId);
 
-      if (examSessionId === this.examSessionId) { 
+      if (examSessionId === this.examSessionId) {
         this.consumers.get(consumerId).close();
+        this.consumers.delete(consumerId);
       }
     });
   }
@@ -34,7 +34,6 @@ export class User {
       'createExamSessionTp',
       { examSessionId: this.examSessionId, isProducer: false },
       async ({ serverParams }) => {
-        console.log(serverParams);
         if (serverParams.error) {
           console.log(serverParams.error);
           return;
@@ -53,7 +52,6 @@ export class User {
                 consumerTransportId: serverParams.id,
                 dtlsParameters,
               });
-              console.log('transport connected success');
               callback();
             } catch (error) {
               errback(error);
@@ -61,8 +59,10 @@ export class User {
             }
           }
         );
-        for (const producerId of this.producerIds) {
-          await this.createConsumer(producerId);
+        if (this.producerIds) {
+          for (const producerId of this.producerIds) {
+            await this.createConsumer(producerId);
+          }
         }
       }
     );
@@ -78,7 +78,6 @@ export class User {
         producerId,
       },
       async ({ serverParams }) => {
-        console.log(serverParams);
         if (serverParams.error) {
           console.log(serverParams.error);
           return;
@@ -92,6 +91,7 @@ export class User {
           rtpParameters,
           appData: producerAppData,
         });
+        console.log('new consumer:', consumer.id);
         const userStream = { id: this.user._id.toString() };
         const { track } = consumer;
         const stream = new MediaStream([track]);
@@ -120,43 +120,4 @@ export class User {
       }
     );
   }
-
-  // addConsumerStream(consumerId, stream, appData, userData) {
-  //   let type;
-  //   if (appData.video) {
-  //     type = 'video';
-  //   } else if (appData.audio) {
-  //     type = 'audio';
-  //   } else if (appData.screen) {
-  //     type = 'screen';
-  //   }
-  //   const consumerStream = { stream, type };
-  //   console.log(consumerStream);
-  //   this.consumerStreams.set(consumerId, consumerStream);
-  // }
-  // removeConsumerStream(consumerId) {
-  //   delete this.consumerStreams[consumerId];
-  // }
-  // getConsumerStream(consumerId) {
-  //   return this.consumerStreams[consumerId];
-  // }
-  // getConsumerStreams() {
-  //   return this.consumerStreams;
-  // }
-  // setUserData(userData) {
-  //   this.userData = userData;
-  // }
-  // getUserData() {
-  //   let streams = {};
-  //   let data = {};
-  //   this.consumerStreams.forEach((consumerStream) => {
-  //     streams[consumerStream.type] = consumerStream.stream;
-  //   });
-  //   data = {
-  //     user: this.userData,
-  //     streams,
-  //   };
-  //   console.log(data);
-  //   return data;
-  // }
 }
