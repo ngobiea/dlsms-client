@@ -6,11 +6,12 @@ import { fetchClassroomQuery } from './classroomApi/fetchClassroomQuery';
 import { postJoinClassroomQuery } from './classroomApi/postJoinClassroomQuery';
 import { verifyClassroomCodeQuery } from './classroomApi/verifyClassroomCodeQuery';
 import { prepareHeaders } from './classroomApi/prepareHeaders';
+import { baseUrl } from '../../utils/url';
 const classroomApi = createApi({
   reducerPath: 'classroomApi',
   tagTypes: ['classroom'],
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:6001',
+    baseUrl,
     prepareHeaders,
   }),
   endpoints(builder) {

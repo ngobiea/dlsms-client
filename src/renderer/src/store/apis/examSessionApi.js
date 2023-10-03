@@ -1,10 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { prepareHeaders } from './classroomApi/prepareHeaders';
-
+import { baseUrl } from '../../utils/url';
 const examSessionApi = createApi({
   reducerPath: 'examSessionApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:6001',
+    baseUrl,
     prepareHeaders,
   }),
   endpoints(builder) {
@@ -45,9 +45,8 @@ const examSessionApi = createApi({
       }),
       postSaveExamSession: builder.mutation({
         query: ({ examSessionId }) => {
-          
           const formData = new FormData();
-          console.log('examSessionId in api', examSessionId)
+          console.log('examSessionId in api', examSessionId);
           formData.append('examSessionId', examSessionId);
           return {
             url: `/tutor/exam-session/save`,
