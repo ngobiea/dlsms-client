@@ -6,7 +6,7 @@ import { logoutHandler } from '../utils/util';
 import { joinClassroomHandler } from '../realTimeCommunication/classroom/joinClassroomHandler';
 import { classroomScheduleMessageHandle } from '../realTimeCommunication/classroom/classroomScheduleMessageHandle';
 import { examScheduleMessage } from '../realTimeCommunication/classroom/examScheduleMessageHandler';
-import { baseUrl } from '../utils/url';
+import { baseUrl, localhost } from '../utils/url';
 import {
   useFetchClassroomsQuery,
   setClassrooms,
@@ -18,7 +18,7 @@ import {
 const userDetails = JSON.parse(localStorage.getItem('user'));
 let socket;
 if (userDetails) {
-  socket = io(baseUrl, {
+  socket = io(baseUrl || localhost, {
     auth: {
       token: userDetails.token,
     },

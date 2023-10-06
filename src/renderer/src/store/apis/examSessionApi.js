@@ -1,10 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { prepareHeaders } from './classroomApi/prepareHeaders';
-import { baseUrl } from '../../utils/url';
+import { baseUrl,localhost } from '../../utils/url';
 const examSessionApi = createApi({
   reducerPath: 'examSessionApi',
   baseQuery: fetchBaseQuery({
-    baseUrl,
+    baseUrl: baseUrl || localhost,
     prepareHeaders,
   }),
   endpoints(builder) {
