@@ -42,52 +42,48 @@ module.exports = class Windows {
     });
   }
   createMonitWindow() {
-    if (this.monitWindow) {
-      return;
+    if (!this.monitWindow) {
+      this.monitWindow = createMonitorWindow(false);
+      this.monitWindow.on(readyToShow, () => {
+        this.monitWindow.show();
+      });
+      this.monitWindow.on('closed', () => {
+        this.monitWindow = null;
+      });
     }
-    this.monitWindow = createMonitorWindow(false);
-    this.monitWindow.on(readyToShow, () => {
-      this.monitWindow.show();
-    });
-    this.monitWindow.on('closed', () => {
-      this.monitWindow = null;
-    });
   }
   createSessionWindow() {
-    if (this.sessionWindow) {
-      return;
+    if (!this.sessionWindow) {
+      this.sessionWindow = createSessionWindow(false);
+      this.sessionWindow.on(readyToShow, () => {
+        this.sessionWindow.show();
+      });
+      this.sessionWindow.on('closed', () => {
+        this.sessionWindow = null;
+      });
     }
-    this.sessionWindow = createSessionWindow(false);
-    this.sessionWindow.on(readyToShow, () => {
-      this.sessionWindow.show();
-    });
-    this.sessionWindow.on('closed', () => {
-      this.sessionWindow = null;
-    });
   }
   createExamSessionWindow() {
-    if (this.examSessionWindow) {
-      return;
+    if (!this.examSessionWindow) {
+      this.examSessionWindow = createExamSessionWindow(false);
+      this.examSessionWindow.on(readyToShow, () => {
+        this.examSessionWindow.show();
+      });
+      this.examSessionWindow.on('closed', () => {
+        this.examSessionWindow = null;
+      });
     }
-    this.examSessionWindow = createExamSessionWindow(false);
-    this.examSessionWindow.on(readyToShow, () => {
-      this.examSessionWindow.show();
-    });
-    this.examQuestionWindow.on('closed', () => {
-      this.examQuestionWindow = null;
-    });
   }
   createExamQuestionWindow() {
-    if (this.examQuestionWindow) {
-      return;
+    if (!this.examQuestionWindow && this.examSessionWindow) {
+      this.examQuestionWindow = createExamQuestionWindow(false);
+      this.examQuestionWindow.on(readyToShow, () => {
+        this.examQuestionWindow.show();
+      });
+      this.examQuestionWindow.on('closed', () => {
+        this.examQuestionWindow = null;
+      });
     }
-    this.examQuestionWindow = createExamQuestionWindow(false);
-    this.examQuestionWindow.on(readyToShow, () => {
-      this.examQuestionWindow.show();
-    });
-    this.examQuestionWindow.on('closed', () => {
-      this.examQuestionWindow = null;
-    });
   }
   closeMainWindow() {
     if (this.mainWindow) {

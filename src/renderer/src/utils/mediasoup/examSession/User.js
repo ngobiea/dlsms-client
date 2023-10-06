@@ -7,9 +7,9 @@ export class User {
     this.user = user;
     this.producerIds = producerIds;
     this.consumerTransport = null;
-
     this.consumers = new Map();
 
+    
     this.consumerStreams = new Map();
 
     this.createConsumerTransport();
@@ -32,7 +32,11 @@ export class User {
   async createConsumerTransport() {
     await this.socket.emit(
       'createExamSessionTp',
-      { examSessionId: this.examSessionId, isProducer: false },
+      {
+        examSessionId: this.examSessionId,
+        isProducer: false,
+        userId: this.user._id.toString(),
+      },
       async ({ serverParams }) => {
         if (serverParams.error) {
           console.log(serverParams.error);
@@ -49,7 +53,7 @@ export class User {
             try {
               await this.socket.emit('ESOnCTConnect', {
                 examSessionId: this.examSessionId,
-                consumerTransportId: serverParams.id,
+                userId: this.user._id.toString(),
                 dtlsParameters,
               });
               callback();
@@ -74,7 +78,7 @@ export class User {
       {
         examSessionId: this.examSessionId,
         rtpCapabilities: this.device.rtpCapabilities,
-        consumerTransportId: this.consumerTransport.id,
+        userId: this.user._id.toString(),
         producerId,
       },
       async ({ serverParams }) => {

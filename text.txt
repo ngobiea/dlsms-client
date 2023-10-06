@@ -1,17 +1,1 @@
-cat << EOF >> .env
-AWS_ACCESS_KEY_ID=AKIA2ENRGFZYJ7VGS2W6
-AWS_SECRET_ACCESS_KEY=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
-AWS_REGION_2=us-east-1
-AWS_REGION_1=ap-south-1
-SENDER_EMAIL=ngobiea@outlook.com
-JWT_SECRET=THISISMYSECRET
-PORT=80
-MONGO_URI=mongodb+srv://ngobiea:ella1410@betine.sy5e1jg.mongodb.net/dlsms
-MONGO_URI_LOCAL=mongodb://127.0.0.1:27017/dlsms
-SALT=12
-JWT_EXPIRATION_TIME=1w
-TRAINING_BUCKET=dlsms-student-training-data
-EXAM_SESSION_BUCKET=dlsms-exam-session-data
-MEDIASOUP_IP=0.0.0.0
-MEDIASOUP_ANNOUNCED_IP=35.154.170.178
-EOF
+jlfjalkdjalkjalkdfjadl
