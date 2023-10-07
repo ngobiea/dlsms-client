@@ -1,4 +1,9 @@
-import { setIsDeviceSet, store, addStudentDetails } from '../../../store';
+import {
+  setIsDeviceSet,
+  store,
+  addStudentDetails,
+  removeStudentFromActiveExamSession,
+} from '../../../store';
 import { Device } from 'mediasoup-client';
 import { User } from './User';
 export class ExamSession {
@@ -31,34 +36,9 @@ export class ExamSession {
 
   setSocket(socket) {
     this.socket = socket;
-    this.socket.on('newESStudent', ({ examSessionId, user }) => {
-      console.log('new student received');
-      if (
-        examSessionId === this.examSessionId &&
-        this.accountType === 'tutor'
-      ) {
-        const newUser = new User(
-          this.examSessionId,
-          this.device,
-          user,
-          this.socket,
-          null
-        );
-        store.dispatch(addStudentDetails(user));
-        this.activeStudents.set(user._id.toString(), newUser);
-      }
-    });
-    this.socket.on(
-      'newESSProducer',
-      ({ examSessionId, userId, producerId }) => {
-        if (
-          examSessionId === this.examSessionId &&
-          this.accountType === 'tutor'
-        ) {
-          this.activeStudents.get(userId).createConsumer(producerId);
-        }
-      }
-    );
+    this.socket.on('newESStudent', this.newStudent.bind(this));
+    this.socket.on('newESSProducer', this.newProducer.bind(this));
+    this.socket.on('closeESCT', this.closeConsumerTransport.bind(this));
   }
 
   setUpUser() {
@@ -84,7 +64,6 @@ export class ExamSession {
         for (const [transportId, { producerIds, user }] of Object.entries(
           producerTransportIds
         )) {
-
           const newUser = new User(
             this.examSessionId,
             this.device,
@@ -97,6 +76,20 @@ export class ExamSession {
         }
       }
     );
+  }
+  newStudent({ examSessionId, user }) {
+    console.log('new student received');
+    if (examSessionId === this.examSessionId && this.accountType === 'tutor') {
+      const newUser = new User(
+        this.examSessionId,
+        this.device,
+        user,
+        this.socket,
+        null
+      );
+      store.dispatch(addStudentDetails(user));
+      this.activeStudents.set(user._id.toString(), newUser);
+    }
   }
   async createProducerTransport() {
     try {
@@ -237,7 +230,11 @@ export class ExamSession {
       console.log(error);
     }
   }
-
+  newProducer({ examSessionId, userId, producerId }) {
+    if (examSessionId === this.examSessionId && this.accountType === 'tutor') {
+      this.activeStudents.get(userId).createConsumer(producerId);
+    }
+  }
   async closeESProducer(producerType) {
     let producerId;
     if (producerType === 'video') {
@@ -288,5 +285,13 @@ export class ExamSession {
         this.audioProducer.resume();
       }
     );
+  }
+  closeConsumerTransport({ examSessionId, userId }) {
+    console.log('receive close consumer transport');
+    if (examSessionId === this.examSessionId && this.accountType === 'tutor') {
+      this.activeStudents.get(userId).closeConsumerTransport();
+      this.activeStudents.delete(userId);
+      store.dispatch(removeStudentFromActiveExamSession(userId));
+    }
   }
 }

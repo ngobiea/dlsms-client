@@ -9,24 +9,13 @@ export class User {
     this.consumerTransport = null;
     this.consumers = new Map();
 
-    
     this.consumerStreams = new Map();
 
     this.createConsumerTransport();
   }
   setSocket(socket) {
     this.socket = socket;
-    this.socket.on('closeESConsumer', ({ examSessionId, consumerId }) => {
-      console.log('close consumer received');
-
-      console.log(examSessionId);
-      console.log(consumerId);
-
-      if (examSessionId === this.examSessionId) {
-        this.consumers.get(consumerId).close();
-        this.consumers.delete(consumerId);
-      }
-    });
+    this.socket.on('closeESConsumer', this.closeConsumer.bind(this));
   }
 
   async createConsumerTransport() {
@@ -123,5 +112,20 @@ export class User {
         });
       }
     );
+  }
+  closeConsumerTransport() {
+    this.consumerTransport.close();
+    this.consumerTransport = null;
+  }
+  closeConsumer({ examSessionId, consumerId }) {
+    console.log('close consumer received');
+
+    console.log(examSessionId);
+    console.log(consumerId);
+
+    if (examSessionId === this.examSessionId) {
+      this.consumers.get(consumerId).close();
+      this.consumers.delete(consumerId);
+    }
   }
 }

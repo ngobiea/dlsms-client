@@ -27,6 +27,11 @@ if (userDetails) {
 socket.on('connect', () => {
   console.log('successfully connected with socket.io server');
 });
+socket.on('hello', (name) => {
+  console.log(name);
+  console.log('io is set for exam session');
+});
+
 const RealtimeContext = createContext();
 
 const RealtimeProvider = ({ children }) => {
@@ -58,6 +63,10 @@ const RealtimeProvider = ({ children }) => {
     socket.on('exam-schedule-message', (value) => {
       console.log('received exam schedule message event');
       examScheduleMessage(value, navigate);
+    });
+    socket.on('esConnected', ({ name }) => {
+      console.log(name);
+      console.log('io is set for exam session');
     });
   };
 
