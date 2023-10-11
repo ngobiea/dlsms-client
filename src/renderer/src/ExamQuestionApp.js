@@ -6,26 +6,50 @@ console.log(examSessionId);
 window.account.blurExamQuestionWindow(() => {
   console.log('examQuestionWindow blur');
   if (socket) {
-    socket.emit('blurEQWindow', { examSessionId });
+    socket.emit('violation', {
+      examSessionId,
+      violation: {
+        title: 'blur',
+        description: 'Exam Question Window Loses Focus',
+      },
+    });
   }
 });
 window.account.minimizeExamQuestionWindow(() => {
   console.log('examQuestionWindow minimize');
   if (socket) {
-    socket.emit('minEQWindow', { examSessionId });
+    socket.emit('violation', {
+      examSessionId,
+      violation: {
+        title: 'minimize',
+        description: 'Exam Question Window Minimized',
+      },
+    });
   }
 });
 
 window.account.maximizeExamQuestionWindow(() => {
   console.log('examQuestionWindow maximize');
   if (socket) {
-    socket.emit('maxEQWindow', { examSessionId });
+    socket.emit('violation', {
+      examSessionId,
+      violation: {
+        title: 'maximize',
+        description: 'Exam Question Window Maximized',
+      },
+    });
   }
 });
 window.account.focusExamQuestionWindow(() => {
   console.log('examQuestionWindow focus');
   if (socket) {
-    socket.emit('focusEQWindow', { examSessionId });
+    socket.emit('violation', {
+      examSessionId,
+      violation: {
+        title: 'focus',
+        description: 'Exam Question Window Gain Focus',
+      },
+    });
   }
 });
 

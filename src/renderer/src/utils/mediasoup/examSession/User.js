@@ -17,20 +17,14 @@ export class User {
   setSocket(socket) {
     this.socket = socket;
     this.socket.on('closeESConsumer', this.closeConsumer.bind(this));
-    this.socket.on('blurESQW', ({ examSessionId, user }) => {
-      console.log('received blurExamQuestionWindow for:', user);
+    this.socket.on('ESviolation', ({ examSessionId, user, violation }) => {
+      console.log('received violation for:', user);
+      console.log(violation);
       console.log(examSessionId);
     });
-    this.socket.on('focusESQW', ({ examSessionId, user }) => {
-      console.log('received focusExamQuestionWindow for:', user);
-      console.log(examSessionId);
-    });
-    this.socket.on('minimizeESQW', ({ examSessionId, user }) => {
-      console.log('received minimizeExamQuestionWindow for:', user);
-      console.log(examSessionId);
-    });
-    this.socket.on('maximizeESQW', ({ examSessionId, user }) => {
-      console.log('received maximizeExamQuestionWindow for:', user);
+    this.socket.on('BH', ({ examSessionId, user, history }) => {
+      console.log('received browser history for:', user);
+      console.log(history);
       console.log(examSessionId);
     });
   }

@@ -2,16 +2,9 @@ const { app, ipcMain, clipboard } = require('electron');
 const path = require('path');
 
 const Windows = require('../util/Windows');
-const BrowserHistory = require('node-browser-history');
 
 exports.createWindow = async () => {
   const windows = new Windows();
-  const {
-    setCookies,
-    getCookie,
-    removeCookies,
-    getCookies,
-  } = require('./cookies');
 
   const modelsPath = app.isPackaged
     ? path.join(process.resourcesPath, 'public', 'models')

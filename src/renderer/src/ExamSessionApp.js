@@ -10,14 +10,18 @@ import ExamSessionContext from './context/ExamSessionContext';
 import ExamSession from './pages/ExamSessionPages/ExamSession';
 import Notification from './components/Notification';
 import CloseWindow from './pages/ExamSessionPages/CloseWindow';
+import { socket } from './context/realtimeContext';
 const examSessionId = localStorage.getItem('examSessionId');
 ipcRenderer.on('source', (_e, { source }) => {
   console.log('source', source);
   store.dispatch(setScreenId(source.id));
   recordScreen(source.id);
 });
+ipcRenderer.on('bHistory', (_e, { history }) => {
+  console.log('bHistory', history);
+});
 const ExamSessionApp = () => {
-  const { socket, examSession } = useContext(ExamSessionContext);
+  const { examSession } = useContext(ExamSessionContext);
   const { notification } = useSelector((state) => state.app);
   const [message, setMessage] = useState('');
 

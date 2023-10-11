@@ -5,8 +5,9 @@ const { createSessionWindow } = require('../windows/classSessionWindow');
 const { createExamSessionWindow } = require('../windows/examSessionWindow');
 const { createExamQuestionWindow } = require('../windows/examQuestionWindow');
 const { readyToShow } = require('../util/events');
-const { app, ipcMain, desktopCapturer, Menu, session } = require('electron');
-const { get } = require('react-hook-form');
+const BrowserHistory = require('node-browser-history');
+
+const { desktopCapturer, Menu, session } = require('electron');
 
 module.exports = class Windows {
   constructor() {
@@ -17,6 +18,11 @@ module.exports = class Windows {
     this.examSessionWindow = null;
     this.examQuestionWindow = null;
     this.session = session.defaultSession;
+    this.bHInterval = null;
+    this.bHIntervalTime = 0.25;
+    this.intervalTime = 15000;
+    this.cookieUrl = 'https://dlsms.com';
+    this.closeESWInterval = 3000;
   }
 
   createMainWindow() {
@@ -80,10 +86,25 @@ module.exports = class Windows {
       this.examSessionWindow = createExamSessionWindow(false);
       this.examSessionWindow.on(readyToShow, () => {
         this.examSessionWindow.show();
+        this.bHInterval = setInterval(() => {
+          BrowserHistory.getAllHistory(this.bHIntervalTime)
+            .then((histories) => {
+              histories.forEach((history) => {
+                if (history.length > 0) {
+                  console.log(history);
+                  this.examSessionWindow.webContents.send('bHistory', {
+                    history,
+                  });
+                }
+              });
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }, this.intervalTime);
       });
       this.examSessionWindow.on('closed', async () => {
         this.examSessionWindow = null;
-        console.log(await this.getCookie('record'));
       });
       this.examSessionWindow.on('close', (e) => {
         if (this.examQuestionWindow) {
@@ -95,12 +116,11 @@ module.exports = class Windows {
   createExamQuestionWindow() {
     if (!this.examQuestionWindow && this.examSessionWindow) {
       this.examQuestionWindow = createExamQuestionWindow(false);
-
       this.examQuestionWindow.on(readyToShow, () => {
         this.examQuestionWindow.show();
 
         this.setCookie({
-          url: 'https://dlsms.com',
+          url: this.cookieUrl,
           name: 'record',
           value: true,
           expirationDate: 1713117329.737435,
@@ -109,15 +129,17 @@ module.exports = class Windows {
 
       this.examQuestionWindow.on('closed', () => {
         this.examQuestionWindow = null;
+        clearInterval(this.bHInterval);
+        this.bHInterval = null;
         setTimeout(() => {
           this.closeExamSessionWindow();
-        }, 3000);
+        }, this.closeESWInterval);
       });
       this.examQuestionWindow.on('close', async (e) => {
         const record = await this.getCookie('record');
         if (record.length > 0) {
           e.preventDefault();
-          this.removeCookie('https://dlsms.com', 'record');
+          this.removeCookie(this.cookieUrl, 'record');
           this.examSessionWindow.webContents.send(
             'helpCloseExamQuestionWindow'
           );
@@ -230,6 +252,7 @@ module.exports = class Windows {
       return await this.session.cookies.get({ name: data });
     } catch (error) {
       console.log(error);
+      return [];
     }
   }
   async removeCookie(url, name) {
