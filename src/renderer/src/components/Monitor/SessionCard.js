@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { MdVideocam, MdStopScreenShare, MdPeopleAlt } from 'react-icons/md';
 import { BsArrowsAngleExpand, BsShieldCheck } from 'react-icons/bs';
 import { HiSpeakerWave } from 'react-icons/hi2';
+import studentProfile from '../../../public/images/sessionProfile.jpg';
 
 const SessionCard = ({ student }) => {
   const videoRef = useRef(null);
@@ -15,17 +16,27 @@ const SessionCard = ({ student }) => {
       screenRef.current.srcObject = student.screen;
     }
   }, [student.video, student.screen]);
-
+  console.log(student);
   return (
-    <div className="relative cursor-pointer">
-      <video
-        className="h-auto max-w-full block"
-        autoPlay
-        ref={videoRef}
-      ></video>
-      <div className="absolute top-0 cursor-pointer left-0 overflow-auto">
-        <video autoPlay ref={screenRef} className="w-25 h-20" />
-      </div>
+    <div
+      className="relative cursor-pointer h-60 bg-contain"
+      style={{
+        backgroundImage: `url(${studentProfile})`,
+      }}
+    >
+      {student.video?.active && (
+        <video
+          className=" h-max max-w-full block"
+          autoPlay
+          ref={videoRef}
+        ></video>
+      )}
+
+      {student.screen?.active && (
+        <div className="absolute top-0 cursor-pointer left-0 overflow-auto">
+          <video autoPlay ref={screenRef} className="w-25 h-20" />
+        </div>
+      )}
       <div className="absolute inset-y-0 right-0 h-full w-10 bg-gray-300 bg-opacity-50">
         <MdStopScreenShare className="self-center text-4xl text-red-600 my-1" />
         <MdPeopleAlt className="self-center my-1 text-4xl text-red-500 " />

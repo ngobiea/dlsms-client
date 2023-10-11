@@ -1,20 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 
 import { useSelector } from 'react-redux';
-
 const ExamSessionView = () => {
   const videoRef = useRef();
   const shareScreenRef = useRef();
 
-  const {
-    activeBorder,
-    localVideoStream,
-    localScreenStream,
-    localAudioStream,
-    
-  } = useSelector((state) => {
-    return state.session;
-  });
+  const { activeBorder, localVideoStream, localScreenStream } = useSelector(
+    (state) => {
+      return state.session;
+    }
+  );
 
   useEffect(() => {
     if (localVideoStream) {

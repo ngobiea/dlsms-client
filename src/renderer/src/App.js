@@ -20,7 +20,6 @@ import SideBar from './components/SideBar';
 import ExamConfirm from './components/App/ExamConfirm';
 import Notification from './components/Notification';
 import { useSelector } from 'react-redux';
-
 const App = () => {
   const { isShowExamConfirm } = useSelector((state) => state.examSession);
   const { notification } = useSelector((state) => state.app);

@@ -1,7 +1,9 @@
-import { store, setScreenStream } from '../store';
+import { store, setScreenStream, setIsShareScreen } from '../store';
 
 export const shareScreen = async (sourceId) => {
   try {
+    if (!sourceId) return console.log('No sourceId');
+    store.dispatch(setIsShareScreen(true));
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: false,
       video: {
@@ -24,6 +26,7 @@ export const shareScreen = async (sourceId) => {
 export const stopShareScreen = () => {
   const { localScreenStream } = store.getState().session;
   if (localScreenStream) {
+    store.dispatch(setIsShareScreen(false));
     localScreenStream.getTracks().forEach((track) => track.stop());
     store.dispatch(setScreenStream(null));
   }

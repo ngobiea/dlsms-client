@@ -79,6 +79,7 @@ export class ExamSession {
   }
   newStudent({ examSessionId, user }) {
     console.log('new student received');
+
     if (examSessionId === this.examSessionId && this.accountType === 'tutor') {
       const newUser = new User(
         this.examSessionId,
@@ -87,6 +88,7 @@ export class ExamSession {
         this.socket,
         null
       );
+      user.violations = [];
       store.dispatch(addStudentDetails(user));
       this.activeStudents.set(user._id.toString(), newUser);
     }
@@ -289,9 +291,9 @@ export class ExamSession {
   closeConsumerTransport({ examSessionId, userId }) {
     console.log('receive close consumer transport');
     if (examSessionId === this.examSessionId && this.accountType === 'tutor') {
+      store.dispatch(removeStudentFromActiveExamSession(userId));
       this.activeStudents.get(userId).closeConsumerTransport();
       this.activeStudents.delete(userId);
-      store.dispatch(removeStudentFromActiveExamSession(userId));
     }
   }
 }

@@ -7,6 +7,7 @@ import {
   disableWebCam,
   enableWebCam,
 } from '../../utils/webcamSetup';
+import { shareScreen, stopShareScreen } from '../../utils/screen';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -20,12 +21,15 @@ import {
   MdVideocamOff,
   MdOutlineMic,
   MdOutlineMicOff,
+  MdScreenShare,
+  MdStopScreenShare,
 } from 'react-icons/md';
 
 const sessionId = localStorage.getItem('examSessionId');
 
 const ExamSessionSetup = () => {
   const videoRef = useRef();
+  const screenRef = useRef();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -40,12 +44,16 @@ const ExamSessionSetup = () => {
     defaultAudioOutputDevice,
     defaultVideoOutputDevice,
     micState,
+    isScreenEnable,
+    localScreenStream,
+    screenId,
   } = useSelector((state) => {
     return state.session;
   });
 
   const handleToClassSession = () => {
     navigate('' + sessionId);
+    ipcRenderer.send('openExamQuestionWindow');
   };
   const handleMic = (e) => {
     const value = e.target.checked;
@@ -67,6 +75,12 @@ const ExamSessionSetup = () => {
       videoRef.current.srcObject = localVideoStream;
     }
   }, [localVideoStream]);
+
+  useEffect(() => {
+    if (localScreenStream) {
+      screenRef.current.srcObject = localScreenStream;
+    }
+  }, [localScreenStream]);
   const handleAudioInputChange = (event) => {
     dispatch(setDefaultAudioInputDevice(event.target.value));
   };
@@ -88,7 +102,18 @@ const ExamSessionSetup = () => {
       disableWebCam();
     }
   };
+  const handleShareScreen = () => {
+    if (isScreenEnable) {
+      stopShareScreen();
+    } else {
+      shareScreen(screenId);
+    }
+  };
 
+  const joinEnableStyle =
+    'py-2.5 px-5 mr-2 w-20  text-sm font-medium text-white focus:outline-none bg-green-800 rounded-lg border border-green-200 hover:bg-green-600 hover:text-white focus:z-10';
+  const joinDisableStyle =
+    'py-2.5 px-5 mr-2 w-20  text-sm font-medium text-white focus:outline-none bg-gray-400 rounded-lg border border-gray-200';
   return (
     <div className="h-screen m-auto pt-28">
       <div className="flex justify-around">
@@ -102,12 +127,19 @@ const ExamSessionSetup = () => {
           <p className="px-10 py-2 my-3 font-bold text-lg text-center bg-gray-300  text-title rounded">
             First classroom className session
           </p>
-          <div className="bg-gray-300 w-webcam h-96">
+          <div className=" bg-black w-webcam h-96 relative">
             <video
               autoPlay
               ref={videoRef}
               className="w-full object-cover h-96"
             ></video>
+            {localScreenStream && (
+              <video
+                autoPlay
+                ref={screenRef}
+                className=" w-48 h-48 object-cover absolute top-0 left-0"
+              ></video>
+            )}
           </div>
           <div className="flex justify-between h-14 border-2 rounded border-green-800">
             <div className="flex">
@@ -138,6 +170,20 @@ const ExamSessionSetup = () => {
                 />
               </label>
             </div>
+            <div className="flex">
+              {isScreenEnable ? (
+                <MdScreenShare className="w-10 h-6 self-center" />
+              ) : (
+                <MdStopScreenShare className="w-10 h-6 self-center" />
+              )}
+              <label className="relative inline-flex items-center my-4 self-center  cursor-pointer">
+                <Toggle
+                  icons={false}
+                  onChange={handleShareScreen}
+                  checked={isScreenEnable}
+                />
+              </label>
+            </div>
             <div className="self-center">
               <button
                 onClick={handleCancel}
@@ -147,9 +193,16 @@ const ExamSessionSetup = () => {
                 Cancel
               </button>
               <button
+                disabled={
+                  !(micState === 'enable' && isVideoEnable && isScreenEnable)
+                }
                 type="button"
                 onClick={handleToClassSession}
-                className="py-2.5 px-5 mr-2 w-20  text-sm font-medium text-white focus:outline-none bg-green-800 rounded-lg border border-green-200 hover:bg-green-600 hover:text-white focus:z-10"
+                className={
+                  micState === 'enable' && isVideoEnable && isScreenEnable
+                    ? joinEnableStyle
+                    : joinDisableStyle
+                }
               >
                 Join
               </button>

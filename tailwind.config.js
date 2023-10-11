@@ -19,6 +19,9 @@ module.exports = {
       sidebar: '#06603a',
       sidebarHover: '#2b7858',
     },
+    backgroundImage: {
+      'session-profile': 'url("./src/renderer/public/images/sessionProfile.jpg")',
+    }
   },
   plugins: [require('flowbite/plugin')],
 };

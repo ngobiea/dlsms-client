@@ -41,7 +41,6 @@ const RealtimeProvider = ({ children }) => {
   const { accountType } = store.getState().account;
   const { data, isSuccess } = useFetchClassroomsQuery(accountType);
   const connectWithSocketServer = () => {
-    socket.on('online-users', (value) => {});
     socket.on('connect_error', (err) => {
       console.log(err instanceof Error);
       console.log(err.message);
@@ -67,6 +66,10 @@ const RealtimeProvider = ({ children }) => {
     socket.on('esConnected', ({ name }) => {
       console.log(name);
       console.log('io is set for exam session');
+    });
+    socket.on('blurESQW', ({ examSessionId, user }) => {
+      console.log('received blurExamQuestionWindow for:', user);
+      console.log(examSessionId);
     });
   };
 

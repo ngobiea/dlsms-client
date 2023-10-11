@@ -3,6 +3,8 @@ import {
   setLocalVideoStream,
   setLocalAudioStream,
   setMicEnable,
+  setVideoEnable,
+  setIsShareScreen,
   setMicState,
 } from '../store';
 const webcamError = 'Error accessing webcam';
@@ -23,7 +25,7 @@ export const enableWebCam = () => {
       },
     };
   }
-
+  store.dispatch(setVideoEnable(true));
   navigator.mediaDevices
     .getUserMedia({
       video: videoConstraints,
@@ -32,6 +34,7 @@ export const enableWebCam = () => {
       store.dispatch(setLocalVideoStream(stream));
     })
     .catch((error) => {
+      store.dispatch(setVideoEnable(false));
       console.log(webcamError, error);
     });
 };
@@ -42,6 +45,7 @@ export const setUpWebCam = () => {
   if (localVideoStream) {
     disableWebCam();
   }
+  store.dispatch(setVideoEnable(true));
   navigator.mediaDevices
     .getUserMedia({
       video: defaultVideoOutputDevice
@@ -63,6 +67,7 @@ export const setUpWebCam = () => {
     })
     .catch((error) => {
       console.log(webcamError, error);
+      store.dispatch(setVideoEnable(false));
     });
 };
 

@@ -16,36 +16,23 @@ import {
   MdOutlineKeyboardArrowDown,
 } from 'react-icons/md';
 import {
-  setIsShareScreen,
   setIsShowParticipants,
   setIsShowChat,
-  setMicEnable,
-  setVideoEnable,
   setIsRecording,
-  store,
-  setMicState,
 } from '../../store';
 import {
   disableWebCam,
   enableWebCam,
   enableMic,
-  disableMic,
   muteMic,
   unmuteMic,
 } from '../../utils/webcamSetup';
-import { socket } from '../../context/realtimeContext';
-
-ipcRenderer.on('source', (_e, { source }) => {
-  shareScreen(source.id);
-  store.dispatch(setIsShareScreen(true));
-});
 
 const ExamSessionControl = () => {
   const dispatch = useDispatch();
   const { examSession } = useContext(ExamSessionContext);
 
   const {
-    isMicEnable,
     isVideoEnable,
     isScreenEnable,
     isShowChat,
@@ -54,8 +41,8 @@ const ExamSessionControl = () => {
     activeBorder,
     localVideoStream,
     localScreenStream,
-    localAudioStream,
     micState,
+    screenId,
   } = useSelector((state) => {
     return state.session;
   });
@@ -70,7 +57,6 @@ const ExamSessionControl = () => {
       examSession.produceScreen(isScreenEnable);
     }
   }, [localScreenStream]);
-
   useEffect(() => {
     if (micState === 'enable') {
       enableMic()
@@ -131,12 +117,12 @@ const ExamSessionControl = () => {
   const handleShareScreen = () => {
     if (isScreenEnable) {
       stopShareScreen();
-      dispatch(setIsShareScreen(false));
       examSession.closeESProducer('screen');
     } else {
-      ipcRenderer.send('showScreenSources');
+      shareScreen(screenId);
     }
   };
+
   const handleLeaveSession = () => {
     window.account.closeSessionWindow('closeSessionWindow');
     ipcRenderer.send('closeExamSessionWindow');

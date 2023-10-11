@@ -6,7 +6,12 @@ const BrowserHistory = require('node-browser-history');
 
 exports.createWindow = async () => {
   const windows = new Windows();
-  const { setCookies, getCookie, removeCookies } = require('./cookies');
+  const {
+    setCookies,
+    getCookie,
+    removeCookies,
+    getCookies,
+  } = require('./cookies');
 
   const modelsPath = app.isPackaged
     ? path.join(process.resourcesPath, 'public', 'models')
@@ -15,7 +20,7 @@ exports.createWindow = async () => {
     return { modelsPath };
   });
 
-  const cookie = await getCookie('isLogin');
+  const cookie = await windows.getCookie('isLogin');
   if (cookie.length > 0) {
     windows.createMainWindow();
   } else {
@@ -32,7 +37,7 @@ exports.createWindow = async () => {
   ipcMain.on('openSessionWindow', (_e) => {
     windows.createSessionWindow();
   });
-  ipcMain.on('openExamSessionWindow', () => {
+  ipcMain.on('openExamSessionWindow', async () => {
     windows.createExamSessionWindow();
   });
   ipcMain.on('showScreenSources', async () => {
@@ -45,11 +50,9 @@ exports.createWindow = async () => {
     windows.createExamQuestionWindow();
   });
   ipcMain.on('login', (_e, isLogin) => {
-    setCookies(isLogin);
-    windows.login();
+    windows.login(isLogin);
   });
   ipcMain.on('logout', (_e) => {
-    removeCookies('https://dlsms.com', 'isLogin');
     windows.logout();
   });
   ipcMain.on('closeSessionWindow', (_e) => {

@@ -20,7 +20,7 @@ const sessionSlice = createSlice({
     localVideoStream: null,
     localScreenStream: null,
     localAudioStream: null,
-    remoteStream: null,
+    recordingStream: null,
     audioParams: {},
     remoteStreams: [],
     audioInputDevices: [],
@@ -29,14 +29,9 @@ const sessionSlice = createSlice({
     consumerTransports: [],
     videoParams: { params },
     screenShareParams: { params },
-    studentStreams: [],
-    studentMedia: {
-      transportId: null,
-      remoteVideoStream: null,
-      remoteAudioSteam: null,
-      remoteScreenSteam: null,
-    },
     activeStudentsInExamSession: [],
+    sessionViolations: [],
+    screenId: null,
   },
   reducers: {
     setMicEnable(state, action) {
@@ -109,7 +104,6 @@ const sessionSlice = createSlice({
           track: action.payload.getVideoTracks()[0],
           appData: { video: true },
         };
-        state.isVideoEnable = true;
       } else {
         state.isVideoEnable = false;
       }
@@ -151,27 +145,36 @@ const sessionSlice = createSlice({
         appData: { screen: true },
       };
     },
-    setRemoteSteam(state, action) {
-      state.remoteStream = action.payload;
-    },
+
     setIsProducer(state, action) {
       state.isProducer = action.payload;
     },
+
     addConsumerTransports(state, action) {
       state.consumerTransports.push(action.payload);
     },
+
     setIsDeviceSet(state, action) {
       state.isDeviceSet = action.payload;
     },
-    addStudentStreams(state, action) {
-      state.studentStreams.push(action.payload);
-    },
+
     addStudentDetails(state, action) {
       state.activeStudentsInExamSession.push({ ...action.payload });
     },
+
     addStudentStream(state, action) {
       const { id } = action.payload;
+      state.activeStudentsInExamSession = state.activeStudentsInExamSession.map(
+        (student) => {
+          return student._id.toString() === id
+            ? { ...student, ...action.payload }
+            : student;
+        }
+      );
+    },
 
+    updateActiveStudentsInExamSession(state, action) {
+      const { id } = action.payload;
       state.activeStudentsInExamSession = state.activeStudentsInExamSession.map(
         (student) => {
           return student._id.toString() === id
@@ -183,9 +186,36 @@ const sessionSlice = createSlice({
     removeStudentFromActiveExamSession(state, action) {
       state.activeStudentsInExamSession =
         state.activeStudentsInExamSession.filter(
-          (student) => student.id !== action.payload
+          (student) => student._id.toString() !== action.payload
         );
     },
+    addStudentViolation(state, action) {
+      const { id } = action.payload;
+      // student violation is an array of objects
+      state.activeStudentsInExamSession = state.activeStudentsInExamSession.map(
+        (student) => {
+          return student._id.toString() === id
+            ? {
+                ...student,
+                violations: [...student.violations, action.payload],
+              }
+            : student;
+        }
+      );
+      state.sessionViolations.push(action.payload);
+    },
+    setSessionViolations(state, action) {
+      state.sessionViolations = action.payload;
+    },
+
+    setRecordingStream(state, action) {
+      state.recordingStream = action.payload;
+    },
+
+    setScreenId(state, action) {
+      state.screenId = action.payload;
+    },
+  
   },
 });
 
@@ -210,9 +240,12 @@ export const {
   setScreenStream,
   setShareScreenStreams,
   setLocalAudioStream,
-  addStudentStreams,
   addStudentDetails,
   removeStudentFromActiveExamSession,
   addStudentStream,
+  addStudentViolation,
+  setSessionViolations,
+  setRecordingStream,
+  setScreenId,
 } = sessionSlice.actions;
 export const sessionReducer = sessionSlice.reducer;

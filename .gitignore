@@ -96,3 +96,5 @@ package-lock.json
 build/
 dist/
 certificates/
+
+notes.txt

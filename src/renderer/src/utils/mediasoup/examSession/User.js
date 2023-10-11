@@ -1,3 +1,4 @@
+import { Socket } from 'socket.io-client';
 import { store, addStudentStream } from '../../../store';
 export class User {
   constructor(examSessionId, device, user, socket, producerIds) {
@@ -16,6 +17,22 @@ export class User {
   setSocket(socket) {
     this.socket = socket;
     this.socket.on('closeESConsumer', this.closeConsumer.bind(this));
+    this.socket.on('blurESQW', ({ examSessionId, user }) => {
+      console.log('received blurExamQuestionWindow for:', user);
+      console.log(examSessionId);
+    });
+    this.socket.on('focusESQW', ({ examSessionId, user }) => {
+      console.log('received focusExamQuestionWindow for:', user);
+      console.log(examSessionId);
+    });
+    this.socket.on('minimizeESQW', ({ examSessionId, user }) => {
+      console.log('received minimizeExamQuestionWindow for:', user);
+      console.log(examSessionId);
+    });
+    this.socket.on('maximizeESQW', ({ examSessionId, user }) => {
+      console.log('received maximizeExamQuestionWindow for:', user);
+      console.log(examSessionId);
+    });
   }
 
   async createConsumerTransport() {
@@ -84,11 +101,12 @@ export class User {
           rtpParameters,
           appData: producerAppData,
         });
-        console.log('new consumer:', consumer.id);
+        console.log('new consumer:', consumer);
         const userStream = { id: this.user._id.toString() };
         const { track } = consumer;
         const stream = new MediaStream([track]);
-
+        stream.consumerId = consumer.id;
+        console.log(stream);
         if (producerAppData.video) {
           userStream.video = stream;
         } else if (producerAppData.audio) {
@@ -105,6 +123,8 @@ export class User {
         });
         this.consumers.get(consumer.id).on('transportclose', () => {
           console.log('transport closed');
+          this.consumers.get(consumer.id).close();
+          this.consumers.delete(consumer.id);
         });
         this.socket.emit('ESOnCTResume', {
           examSessionId: this.examSessionId,
@@ -119,11 +139,21 @@ export class User {
   }
   closeConsumer({ examSessionId, consumerId }) {
     console.log('close consumer received');
+    const userStream = { id: this.user._id.toString() };
 
     console.log(examSessionId);
     console.log(consumerId);
 
     if (examSessionId === this.examSessionId) {
+      console.log('closing consumer', this.consumers.get(consumerId).appData);
+      if (this.consumers.get(consumerId).appData.video) {
+        userStream.video = null;
+      } else if (this.consumers.get(consumerId).appData.audio) {
+        userStream.audio = null;
+      } else if (this.consumers.get(consumerId).appData.screen) {
+        userStream.screen = null;
+      }
+      store.dispatch(addStudentStream(userStream));
       this.consumers.get(consumerId).close();
       this.consumers.delete(consumerId);
     }

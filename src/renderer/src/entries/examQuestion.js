@@ -5,17 +5,17 @@ import { HashRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import 'react-toggle/style.css';
 
-import { ExamSessionProvider } from '../context/ExamSessionContext';
 import { RealtimeProvider } from '../context/realtimeContext';
 import { store } from '../store';
 
+import ExamQuestionApp from '../ExamQuestionApp';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <HashRouter>
     <Provider store={store}>
       <RealtimeProvider>
-        <ExamSessionProvider />
+        <ExamQuestionApp />
       </RealtimeProvider>
     </Provider>
   </HashRouter>
