@@ -86,22 +86,6 @@ module.exports = class Windows {
       this.examSessionWindow = createExamSessionWindow(false);
       this.examSessionWindow.on(readyToShow, () => {
         this.examSessionWindow.show();
-        this.bHInterval = setInterval(() => {
-          BrowserHistory.getAllHistory(this.bHIntervalTime)
-            .then((histories) => {
-              histories.forEach((history) => {
-                if (history.length > 0) {
-                  console.log(history);
-                  this.examSessionWindow.webContents.send('bHistory', {
-                    history,
-                  });
-                }
-              });
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        }, this.intervalTime);
       });
       this.examSessionWindow.on('closed', async () => {
         this.examSessionWindow = null;
@@ -119,31 +103,29 @@ module.exports = class Windows {
       this.examQuestionWindow.on(readyToShow, () => {
         this.examQuestionWindow.show();
 
-        this.setCookie({
-          url: this.cookieUrl,
-          name: 'record',
-          value: true,
-          expirationDate: 1713117329.737435,
-        });
+        this.bHInterval = setInterval(() => {
+          BrowserHistory.getAllHistory(this.bHIntervalTime)
+            .then((histories) => {
+              histories.forEach((history) => {
+                if (history.length > 0) {
+                  console.log(history);
+                  this.examSessionWindow.webContents.send('bHistory', {
+                    history,
+                  });
+                }
+              });
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }, this.intervalTime);
       });
 
       this.examQuestionWindow.on('closed', () => {
         this.examQuestionWindow = null;
         clearInterval(this.bHInterval);
         this.bHInterval = null;
-        setTimeout(() => {
-          this.closeExamSessionWindow();
-        }, this.closeESWInterval);
-      });
-      this.examQuestionWindow.on('close', async (e) => {
-        const record = await this.getCookie('record');
-        if (record.length > 0) {
-          e.preventDefault();
-          this.removeCookie(this.cookieUrl, 'record');
-          this.examSessionWindow.webContents.send(
-            'helpCloseExamQuestionWindow'
-          );
-        }
+        this.examSessionWindow.webContents.send('stopRecord');
       });
 
       this.examQuestionWindow.on('blur', () => {

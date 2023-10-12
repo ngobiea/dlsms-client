@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux';
 import TitleNav from './components/TitleNav';
 import MonitorPage from './pages/MonitorPages/MonitorPage';
 import ExamSessionContext from './context/ExamSessionContext';
-import CurrentStudentList from './pages/MonitorPages/CurrentStudentList';
 const examSessionId = localStorage.getItem('examSessionId');
 
 const MonitorApp = () => {

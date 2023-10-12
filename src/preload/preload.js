@@ -24,9 +24,10 @@ contextBridge.exposeInMainWorld('account', {
   closeExamSessionWindow: () => ipcRenderer.send('closeExamSessionWindow'),
   closeExamQuestionWindow: () => ipcRenderer.send('closeExamQuestionWindow'),
   blurExamQuestionWindow: (callback) => ipcRenderer.on('blur', callback),
-  minimizeExamQuestionWindow: (callback) => ipcRenderer.on('minimize', callback),
-  maximizeExamQuestionWindow: (callback) => ipcRenderer.on('maximize', callback),
+  minimizeExamQuestionWindow: (callback) =>
+    ipcRenderer.on('minimize', callback),
+  maximizeExamQuestionWindow: (callback) =>
+    ipcRenderer.on('maximize', callback),
   focusExamQuestionWindow: (callback) => ipcRenderer.on('focus', callback),
+  isExamSessionWindowOpen: () => ipcRenderer.invoke('isExamSessionWindowOpen'),
 });
-
-

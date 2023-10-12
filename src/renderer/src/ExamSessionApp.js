@@ -4,7 +4,11 @@ import { useSelector } from 'react-redux';
 import TitleNav from './components/TitleNav';
 import { setScreenId, store } from './store';
 import { ipcRenderer } from 'electron';
-import { recordScreen } from './utils/mediasoup/examSession/recordScreen';
+import {
+  captureScreen,
+  stopRecording,
+  stopCaptureScreen,
+} from './utils/mediasoup/examSession/recordScreen';
 import ExamSessionSetup from './pages/ExamSessionPages/ExamSessionSetup';
 import ExamSessionContext from './context/ExamSessionContext';
 import ExamSession from './pages/ExamSessionPages/ExamSession';
@@ -15,10 +19,13 @@ const examSessionId = localStorage.getItem('examSessionId');
 ipcRenderer.on('source', (_e, { source }) => {
   console.log('source', source);
   store.dispatch(setScreenId(source.id));
-  recordScreen(source.id);
+  captureScreen(source.id);
 });
 ipcRenderer.on('bHistory', (_e, { history }) => {
   console.log('bHistory', history);
+});
+ipcRenderer.on('stopRecord', (_e) => {
+  stopRecording(socket);
 });
 const ExamSessionApp = () => {
   const { examSession } = useContext(ExamSessionContext);

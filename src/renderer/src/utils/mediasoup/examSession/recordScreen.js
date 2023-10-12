@@ -6,10 +6,13 @@ ipcRenderer.on('helpCloseExamQuestionWindow', (_e) => {
   stopRecording();
   ipcRenderer.send('closeExamSessionWindow');
 });
-export const recordScreen = async (sourceId) => {
+export const captureScreen = async (sourceId) => {
   try {
-    if (!sourceId) return console.log('No sourceId');
-    stopRecordScreen();
+    if (!sourceId) {
+      console.log('No sourceId');
+      return;
+    }
+    stopCaptureScreen();
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: false,
       video: {
@@ -29,7 +32,7 @@ export const recordScreen = async (sourceId) => {
   }
 };
 
-export const stopRecordScreen = () => {
+export const stopCaptureScreen = () => {
   const { recordingStream } = store.getState().session;
   if (recordingStream) {
     recordingStream.getTracks().forEach((track) => track.stop());
@@ -39,7 +42,7 @@ export const stopRecordScreen = () => {
 
 let mediaRecorder;
 let interval;
-const intervalTime = 180000;
+const intervalTime = 3000;
 let index = 0;
 
 export const startRecording = (socket) => {
@@ -80,6 +83,6 @@ export const stopRecording = () => {
   if (mediaRecorder) {
     mediaRecorder.stop();
     clearInterval(interval);
-    stopRecordScreen();
+    stopCaptureScreen();
   }
 };

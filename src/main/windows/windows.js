@@ -2,6 +2,7 @@ const { app, ipcMain, clipboard } = require('electron');
 const path = require('path');
 
 const Windows = require('../util/Windows');
+const { el } = require('@faker-js/faker');
 
 exports.createWindow = async () => {
   const windows = new Windows();
@@ -53,5 +54,8 @@ exports.createWindow = async () => {
   });
   ipcMain.on('copyCode', (_e, code) => {
     clipboard.writeText(code);
+  });
+  ipcMain.handle('isExamSessionWindowOpen', () => {
+    return windows.examSessionWindow !== null;
   });
 };
