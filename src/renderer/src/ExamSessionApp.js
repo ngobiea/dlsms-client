@@ -7,7 +7,6 @@ import { ipcRenderer } from 'electron';
 import {
   captureScreen,
   stopRecording,
-  stopCaptureScreen,
 } from './utils/mediasoup/examSession/recordScreen';
 import ExamSessionSetup from './pages/ExamSessionPages/ExamSessionSetup';
 import ExamSessionContext from './context/ExamSessionContext';
@@ -23,6 +22,7 @@ ipcRenderer.on('source', (_e, { source }) => {
 });
 ipcRenderer.on('bHistory', (_e, { history }) => {
   console.log('bHistory', history);
+  socket.emit('bHistory', { examSessionId, history });
 });
 ipcRenderer.on('stopRecord', (_e) => {
   stopRecording(socket);
