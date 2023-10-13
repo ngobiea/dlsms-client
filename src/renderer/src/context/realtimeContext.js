@@ -27,17 +27,7 @@ if (userDetails) {
 socket.on('connect', () => {
   console.log('successfully connected with socket.io server');
 });
-socket.on('ESOpen', async ({ user }, callback) => {
-  try {
-    console.log(user);
-    console.log('received ESOpen event');
-    const isESOpen = await window.account.isExamSessionWindowOpen();
-    console.log(isESOpen);
-    callback(isESOpen);
-  } catch (error) {
-    console.log(error);
-  }
-});
+
 
 const RealtimeContext = createContext();
 

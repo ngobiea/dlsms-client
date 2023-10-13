@@ -8,7 +8,7 @@ const MonitorPage = () => {
   return (
     <>
       <MonitorSideBar />
-      <div className="relative w-screen h-screen">
+      <div className="relative  h-screen">
         <div className="overflow-y-auto overscroll-contain h-full w-full">
           <div className="ml-72">
             <div className="p-4 border-gray-200  rounded-lg dark:border-gray-700 mt-14">

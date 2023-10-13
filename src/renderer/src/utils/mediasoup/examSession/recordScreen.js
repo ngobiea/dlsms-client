@@ -32,9 +32,11 @@ export const captureScreen = async (sourceId) => {
   }
 };
 
+
 export const stopCaptureScreen = () => {
   const { recordingStream } = store.getState().session;
   if (recordingStream) {
+    console.log('stop capture screen');
     recordingStream.getTracks().forEach((track) => track.stop());
     store.dispatch(setRecordingStream(null));
   }
@@ -42,8 +44,9 @@ export const stopCaptureScreen = () => {
 
 let mediaRecorder;
 let interval;
-const intervalTime = 3000;
+const intervalTime = 120000;
 let index = 0;
+const stopInterval = 10000;
 
 export const startRecording = (socket) => {
   try {
@@ -83,6 +86,8 @@ export const stopRecording = () => {
   if (mediaRecorder) {
     mediaRecorder.stop();
     clearInterval(interval);
-    stopCaptureScreen();
+    setTimeout(() => {
+      stopCaptureScreen();
+    }, stopInterval);
   }
 };

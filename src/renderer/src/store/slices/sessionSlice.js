@@ -30,7 +30,11 @@ const sessionSlice = createSlice({
     videoParams: { params },
     screenShareParams: { params },
     activeStudentsInExamSession: [],
-    sessionViolations: [],
+    sessionViolations: [
+      {
+        
+      }
+    ],
     screenId: null,
   },
   reducers: {

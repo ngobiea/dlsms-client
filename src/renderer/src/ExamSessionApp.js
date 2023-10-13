@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import TitleNav from './components/TitleNav';
 import { setScreenId, store } from './store';
 import { ipcRenderer } from 'electron';
+
 import {
   captureScreen,
   stopRecording,
@@ -26,6 +27,16 @@ ipcRenderer.on('bHistory', (_e, { history }) => {
 });
 ipcRenderer.on('stopRecord', (_e) => {
   stopRecording(socket);
+});
+socket.on('ESOpen', async (callback) => {
+  try {
+    console.log('received ESOpen event');
+    const isESOpen = await ipcRenderer.invoke('isExamSessionWindowOpen');
+    console.log(isESOpen);
+    callback(isESOpen);
+  } catch (error) {
+    console.log(error);
+  }
 });
 const ExamSessionApp = () => {
   const { examSession } = useContext(ExamSessionContext);
@@ -61,7 +72,6 @@ const ExamSessionApp = () => {
         <Routes>
           <Route path="/" element={<ExamSessionSetup />} />
           <Route path=":examSessionId" element={<ExamSession />} />
-          {/* <Route path="closeWindow" element={<CloseWindow />} /> */}
         </Routes>
       )}
     </>

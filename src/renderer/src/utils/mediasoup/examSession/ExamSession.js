@@ -60,10 +60,7 @@ export class ExamSession {
           console.log('no student in this exam session');
           return;
         }
-
-        for (const [transportId, { producerIds, user }] of Object.entries(
-          producerTransportIds
-        )) {
+        Object.values(producerTransportIds).forEach(({ producerIds, user }) => {
           const newUser = new User(
             this.examSessionId,
             this.device,
@@ -73,14 +70,14 @@ export class ExamSession {
           );
           store.dispatch(addStudentDetails(user));
           this.activeStudents.set(user._id.toString(), newUser);
-        }
+        });
       }
     );
   }
   newStudent({ examSessionId, user }) {
     console.log('new student received');
 
-    if (examSessionId === this.examSessionId && this.accountType === 'tutor') {
+    if (examSessionId === this.examSessionId) {
       const newUser = new User(
         this.examSessionId,
         this.device,
@@ -290,7 +287,7 @@ export class ExamSession {
   }
   closeConsumerTransport({ examSessionId, userId }) {
     console.log('receive close consumer transport');
-    if (examSessionId === this.examSessionId && this.accountType === 'tutor') {
+    if (examSessionId === this.examSessionId) {
       store.dispatch(removeStudentFromActiveExamSession(userId));
       this.activeStudents.get(userId).closeConsumerTransport();
       this.activeStudents.delete(userId);

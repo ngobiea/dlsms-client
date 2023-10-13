@@ -2,9 +2,10 @@ import React, { useEffect, useContext } from 'react';
 import { startRecording } from '../../utils/mediasoup/examSession/recordScreen';
 import ExamSessionControl from '../../components/examSession/ExamSessionControl';
 import ExamSessionView from '../../components/examSession/ExamSessionView';
-import RealtimeContext from '../../context/realtimeContext';
+// import RealtimeContext from '../../context/realtimeContext';
+import { socket } from '../../context/realtimeContext';
 const ExamSession = () => {
-  const { socket } = useContext(RealtimeContext);
+  // const { socket } = useContext(RealtimeContext);
   useEffect(() => {
     startRecording(socket);
   }, []);

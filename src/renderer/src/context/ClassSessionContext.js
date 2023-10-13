@@ -3,9 +3,10 @@ import { Device } from 'mediasoup-client';
 import { useDispatch, useSelector } from 'react-redux';
 const device = new Device();
 
-import RealtimeContext from './realtimeContext';
+// import RealtimeContext from './realtimeContext';
 import { handleCreateSendTransport } from '../utils/mediasoup/classSession/handleCreateSendTransport';
 import { addRemoteStream } from '../store';
+import { socket } from './realtimeContext';
 const ClassSessionContext = createContext();
 const mediasoupClient = {
   producerTransport: null,
@@ -20,7 +21,7 @@ let consumer;
 
 const ClassSessionProvider = ({ children }) => {
   const dispatch = useDispatch();
-  const { socket } = useContext(RealtimeContext);
+  // const { socket } = useContext(RealtimeContext);
   const loadDevice = async (rtpCapabilities) => {
     await handleLoadDevice(device, rtpCapabilities);
     createSendTransport();

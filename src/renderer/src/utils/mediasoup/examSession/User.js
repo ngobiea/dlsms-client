@@ -1,5 +1,6 @@
-import { Socket } from 'socket.io-client';
-import { store, addStudentStream } from '../../../store';
+import { store, addStudentStream, addStudentViolation } from '../../../store';
+import { v4 as uuidv4 } from 'uuid';
+
 export class User {
   constructor(examSessionId, device, user, socket, producerIds) {
     this.setSocket(socket);
@@ -19,11 +20,27 @@ export class User {
     this.socket.on('closeESConsumer', this.closeConsumer.bind(this));
     this.socket.on('ESviolation', ({ examSessionId, user, violation }) => {
       console.log('received violation for:', user);
+      store.dispatch(
+        addStudentViolation({
+          ...user,
+          ...violation,
+          type: 'violation',
+          _id: uuidv4(),
+        })
+      );
       console.log(violation);
       console.log(examSessionId);
     });
     this.socket.on('BH', ({ examSessionId, user, history }) => {
       console.log('received browser history for:', user);
+      store.dispatch(
+        addStudentViolation({
+          ...user,
+          ...history,
+          type: 'history',
+          _id: uuidv4(),
+        })
+      );
       console.log(history);
       console.log(examSessionId);
     });
@@ -100,7 +117,7 @@ export class User {
         const { track } = consumer;
         const stream = new MediaStream([track]);
         stream.consumerId = consumer.id;
-        console.log(stream);
+
         if (producerAppData.video) {
           userStream.video = stream;
         } else if (producerAppData.audio) {
@@ -138,18 +155,20 @@ export class User {
     console.log(examSessionId);
     console.log(consumerId);
 
-    if (examSessionId === this.examSessionId) {
-      console.log('closing consumer', this.consumers.get(consumerId).appData);
-      if (this.consumers.get(consumerId).appData.video) {
+    if (
+      examSessionId === this.examSessionId &&
+      this.consumers.get(consumerId)
+    ) {
+      console.log('closing consumer', this.consumers.get(consumerId));
+      if (this.consumers.get(consumerId)?.appData.video) {
         userStream.video = null;
-      } else if (this.consumers.get(consumerId).appData.audio) {
+      } else if (this.consumers.get(consumerId)?.appData.audio) {
         userStream.audio = null;
-      } else if (this.consumers.get(consumerId).appData.screen) {
+      } else if (this.consumers.get(consumerId)?.appData.screen) {
         userStream.screen = null;
       }
       store.dispatch(addStudentStream(userStream));
       this.consumers.get(consumerId).close();
-      this.consumers.delete(consumerId);
     }
   }
 }

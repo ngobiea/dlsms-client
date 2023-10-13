@@ -11,6 +11,7 @@ window.account.blurExamQuestionWindow(() => {
       violation: {
         title: 'blur',
         description: 'Exam Question Window Loses Focus',
+        time: new Date(),
       },
     });
   }
@@ -23,6 +24,7 @@ window.account.minimizeExamQuestionWindow(() => {
       violation: {
         title: 'minimize',
         description: 'Exam Question Window Minimized',
+        time: new Date(),
       },
     });
   }
@@ -36,6 +38,7 @@ window.account.maximizeExamQuestionWindow(() => {
       violation: {
         title: 'maximize',
         description: 'Exam Question Window Maximized',
+        time: new Date(),
       },
     });
   }
@@ -48,6 +51,7 @@ window.account.focusExamQuestionWindow(() => {
       violation: {
         title: 'focus',
         description: 'Exam Question Window Gain Focus',
+        time: new Date(),
       },
     });
   }
