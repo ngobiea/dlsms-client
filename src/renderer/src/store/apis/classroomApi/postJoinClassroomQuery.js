@@ -1,9 +1,4 @@
-export const postJoinClassroomQuery = ({ images, classroomId }) => {
-  const formData = new FormData();
-  formData.append('classroomId', classroomId);
-  images.forEach((image) => {
-    formData.append(`files`, image);
-  });
+export const postJoinClassroomQuery = (formData) => {
   return {
     url: '/student/join-classroom',
     method: 'POST',

@@ -30,6 +30,8 @@ const ClassRoomPage = () => {
   });
   const { isShowExamSession } = useSelector((state) => state.examSession);
 
+  const { students } = useSelector((state) => state.classroom);
+
   const { data, isSuccess } = useFetchClassroomQuery({
     accountType,
     classroomId,
@@ -37,7 +39,10 @@ const ClassRoomPage = () => {
   useEffect(() => {
     dispatch(setClassRoomId(classroomId));
     if (socket) {
-      socket.emit('update-classroom', classroomId);
+      socket.emit('update-classroom', classroomId, (value) => {
+        dispatch(setStudents(value.students));
+        dispatch(setMessages(value.messages));
+      });
     }
   }, [socket]);
 
@@ -59,7 +64,7 @@ const ClassRoomPage = () => {
       return state.modal;
     }
   );
-
+  
   return (
     <div
       className="flex relative  pt-10 pl-20 overflow-hidden h-screen"

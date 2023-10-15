@@ -1,3 +1,5 @@
+const { desktopCapturer, Menu, session } = require('electron');
+const path = require('path');
 const { createAccountWindow } = require('../windows/accountWindow');
 const { createAppWindow } = require('../windows/mainAppWindow');
 const { createMonitorWindow } = require('../windows/monitorWindow');
@@ -6,8 +8,6 @@ const { createExamSessionWindow } = require('../windows/examSessionWindow');
 const { createExamQuestionWindow } = require('../windows/examQuestionWindow');
 const { readyToShow } = require('../util/events');
 const BrowserHistory = require('node-browser-history');
-
-const { desktopCapturer, Menu, session } = require('electron');
 
 module.exports = class Windows {
   constructor() {

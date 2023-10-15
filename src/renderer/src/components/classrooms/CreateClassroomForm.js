@@ -1,11 +1,10 @@
-import React, { useContext,useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { MdClose } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCreateClassroom, useCreateClassroomMutation } from '../../store';
 import Input from '../App/Input';
 import TextArea from '../App/TextArea';
 import AccountContext from '../../context/accountContext';
-
 
 const CreateClassroomForm = () => {
   const { accountType } = useSelector((state) => {
@@ -17,16 +16,15 @@ const CreateClassroomForm = () => {
 
   const dispatch = useDispatch();
 
-
   const handleCrateClassroom = (classroom) => {
     addClassroom({ classroom, accountType });
   };
-  useEffect(() => { 
-      if (isSuccess) {
-        dispatch(setCreateClassroom(false));
-        resetField('name', { keepValue: false });
-        resetField('description', { keepValue: false });
-      }
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(setCreateClassroom(false));
+      resetField('name', { keepValue: false });
+      resetField('description', { keepValue: false });
+    }
   }, [isSuccess]);
   return (
     <div className="fixed top-0 left-0 right-0 z-50 w-full py-12 overflow-x-hidden  bg-black bg-opacity-50 backdrop-filter overflow-y-auto md:inset-0 h-full max-h-full">

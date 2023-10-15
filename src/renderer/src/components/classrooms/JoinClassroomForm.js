@@ -32,7 +32,6 @@ const JoinClassroomForm = () => {
           <button
             onClick={() => {
               reset();
-
               dispatch(setJoinClassroom(false));
             }}
             type="button"

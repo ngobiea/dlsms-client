@@ -10,7 +10,7 @@ import {
   MdPersonOff,
   MdOutlineTabUnselected,
 } from 'react-icons/md';
-
+import { formatDateTime } from '../../utils/dateTime';
 const MonitorSideBar = () => {
   const { sessionViolations } = useSelector((state) => state.session);
   return (
@@ -24,7 +24,7 @@ const MonitorSideBar = () => {
                 <li className="" key={violation._id.toString()}>
                   <div className="text-green-800 relative h-36  flex flex-col border p-1 border-green-300 w-full rounded-lg bg-green-50 ">
                     <div className="text-sm">
-                      {violation.time.toUTCString()}
+                      {formatDateTime(violation.time)}
                     </div>
                     <div className=" text-sm">
                       {violation.firstName}@{violation.studentId}

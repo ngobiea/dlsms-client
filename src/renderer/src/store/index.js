@@ -48,6 +48,7 @@ import {
   setIsShowConfirmationModal,
   setNotification,
   setSocket,
+  setMOdelsPath,
 } from './slices/appSlice';
 
 import { chatReducer, addMessage, setMessages } from './slices/chatSlice';
@@ -93,6 +94,21 @@ import {
   setIsShowExamConfirm,
   setExamSessionIdStep,
 } from './slices/examSessionSlice';
+
+import {
+  joinReducer,
+  setDefaultWebcam,
+  setLocalStream,
+  setWebcams,
+  resetJoin,
+  setWebcamStatus,
+  addCaptureImage,
+  setCaptureImages,
+  setProgress,
+  setDetectionResult,
+  setJoinButtonText,
+} from './slices/join';
+
 import { accountApi } from './apis/accountsApi';
 import { classroomApi } from './apis/classroomsApi';
 import { examSessionApi } from './apis/examSessionApi';
@@ -108,6 +124,7 @@ const store = configureStore({
     chat: chatReducer,
     mediasoup: mediasoupReducer,
     examSession: examSessionReducer,
+    join: joinReducer,
     [accountApi.reducerPath]: accountApi.reducer,
     [classroomApi.reducerPath]: classroomApi.reducer,
     [examSessionApi.reducerPath]: examSessionApi.reducer,
@@ -153,6 +170,7 @@ export {
   setIsShowConfirmationModal,
   setNotification,
   setSocket,
+  setMOdelsPath,
 
   //classroom Slice
   setStudents,
@@ -205,6 +223,18 @@ export {
   setShowExamSession,
   setIsShowExamConfirm,
   setExamSessionIdStep,
+
+  //join slice
+  setDefaultWebcam,
+  setLocalStream,
+  setWebcams,
+  resetJoin,
+  setWebcamStatus,
+  addCaptureImage,
+  setCaptureImages,
+  setProgress,
+  setDetectionResult,
+  setJoinButtonText,
 };
 
 // Account Apis

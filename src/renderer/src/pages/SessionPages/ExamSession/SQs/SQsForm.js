@@ -8,7 +8,6 @@ import {
   removeAllFiles,
   usePostExamQuestionMutation,
 } from '../../../../store';
-import { generateUniqueId } from '../../../../utils/util';
 
 const SQsForm = () => {
   const dispatch = useDispatch();

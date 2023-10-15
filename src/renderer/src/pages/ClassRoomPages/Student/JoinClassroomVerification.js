@@ -1,180 +1,205 @@
 import React, { useEffect, useRef } from 'react';
 import {
-  MdOutlineVideocam,
   MdOutlineVerifiedUser,
-  MdOutlineVideocamOff,
+  MdVideocam,
+  MdVideocamOff,
+  MdRefresh,
+  MdOutlineArrowRightAlt,
 } from 'react-icons/md';
-import * as faceapi from '@vladmandic/face-api';
+import Toggle from 'react-toggle';
+
 import {
-  setIsWebcamActive,
-  setPercentageCount,
-  setVerificationResult,
   usePostJoinClassroomMutation,
   setStudents,
+  setDefaultWebcam,
+  resetJoin,
 } from '../../../store';
+import { Detection } from '../../../utils/face/detection';
+import { getWebCams, onWebCam, offWebCam } from '../../../utils/face/webcam';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { handleWebCam } from '../../../utils/webcam';
-import { setLandmarkModels } from '../../../utils/setLandmarkModels';
 import './style.css';
 
 const JoinClassroomVerification = () => {
+  const zero = 0;
+  let detection = new Detection();
+
   const params = useParams();
   const navigate = useNavigate();
   const { classroomId } = params;
   const dispatch = useDispatch();
-  const [postJoinClassroom, { isSuccess, data, error }] =
+  const [postJoinClassroom, { isSuccess, data, error, isError }] =
     usePostJoinClassroomMutation();
-  const { isWebcamActive, percentageCount, verificationResult } = useSelector(
-    (state) => {
-      return state.app;
-    }
-  );
 
-  let resultComponents = '';
-  if (verificationResult >= 0.75) {
-    resultComponents = <p>Verification passed</p>;
-  } else if (verificationResult >= 0 && verificationResult < 0.75) {
-    resultComponents = <p>Verification Fail</p>;
-  } else {
-    resultComponents = ' ';
-  }
-
-  const imagesArray = [];
-  const videoRef = useRef();
-  const canvasRef = useRef();
-
-  const captureAndVerify = async () => {
-    dispatch(setPercentageCount(0));
-    const detectionResults = [];
-    let count = 0;
-    const captureImage = async () => {
-      try {
-        const track = videoRef.current.srcObject.getVideoTracks()[0];
-        const imageCapture = new ImageCapture(track);
-        return await imageCapture.takePhoto();
-      } catch (err) {
-        console.error('Error capturing image:', err);
-        return null;
-      }
+  const {
+    webcams,
+    defaultWebcam,
+    localStream,
+    webcamStatus,
+    progress,
+    result,
+    buttonText,
+    detectionThreshold,
+    captureImages,
+  } = useSelector((state) => state.join);
+  useEffect(() => {
+    getWebCams();
+    return () => {
+      offWebCam();
+      dispatch(resetJoin());
+      detection = null;
     };
-    for (let i = 0; i < 5; i++) {
-      const images = await captureImage();
-      imagesArray.push(images);
-    }
-    for (const element of imagesArray) {
-      const image = await faceapi.bufferToImage(element);
-      const detections = await faceapi
-        .detectAllFaces(image, new faceapi.TinyFaceDetectorOptions())
-        .withFaceLandmarks();
-      const confidence =
-        detections && detections.length > 0 ? detections[0].detection.score : 0;
-      detectionResults.push(confidence);
-    }
-
-    const overallScore =
-      detectionResults.reduce((total, score) => total + score, 0) /
-      detectionResults.length;
-
-    const intervalId = setInterval(() => {
-      count++;
-      dispatch(setPercentageCount((count / 5) * 100));
-      if (count === 5) {
-        dispatch(setVerificationResult(overallScore));
-        if (overallScore >= 0.75) {
-          postJoinClassroom({ images: imagesArray, classroomId });
-        }
-        count = 1;
-        handleWebCam(videoRef, dispatch, setIsWebcamActive, isWebcamActive);
-
-        clearInterval(intervalId);
-      }
-    }, 1000);
-  };
+  }, []);
 
   useEffect(() => {
-    setLandmarkModels(faceapi);
+    videoRef.current.srcObject = localStream;
+  }, [localStream]);
+
+  let resultComponents = '';
+  if (result >= detectionThreshold) {
+    resultComponents = (
+      <div className="bg-green-600 hover:bg-green-700 p-8 text-md font-semibold text-white uppercase mt-8 text-center">
+        <p>Verification passed</p>
+      </div>
+    );
+  } else if (result >= zero && result < detectionThreshold) {
+    resultComponents = (
+      <div className="bg-red-500 hover:bg-red-700 p-8 text-md font-semibold text-white uppercase mt-8 text-center">
+        <p>Verification Fail</p>
+      </div>
+    );
+  } else {
+    resultComponents = (
+      <div className="bg-green-900  p-8 text-md font-semibold text-white uppercase mt-8 text-center"></div>
+    );
+  }
+  const videoRef = useRef();
+
+  const handleVideoChange = (event) => {
+    dispatch(setDefaultWebcam(event.target.value));
+    onWebCam();
+  };
+
+  const handleWebcam = (e) => {
+    const value = e.target.checked;
+    if (value) {
+      onWebCam();
+    } else {
+      offWebCam();
+    }
+  };
+  useEffect(() => {
     if (isSuccess) {
       dispatch(setStudents(data.students));
       navigate(`../../${classroomId}`);
     }
-  }, [isSuccess]);
+    if (isError) {
+      console.log(error);
+    }
+  }, [isSuccess, isError]);
+  const handleJoinClassroom = () => {
+    const formData = new FormData();
+    formData.append('classroomId', classroomId);
+    console.log(captureImages);
+    captureImages.forEach((image) => {
+      formData.append('files', image);
+    });
+
+    postJoinClassroom(formData);
+  };
+
   const activeClass =
     'text-white flex-col bg-[#06603a] hover:bg-[#3fa97b]/90  focus:outline-none  font-medium rounded-lg text-center inline-flex items-center w-32';
   const inactiveClass =
     'text-white flex-col bg-gray-400   focus:outline-none  font-medium rounded-lg text-center inline-flex items-center w-32';
 
   return (
-    <div className="h-full w-full overflow-y-auto overscroll-contain">
-      <p className="mt-20 text-3xl font-bold w-screen flex justify-center">
-        Image Verification
-      </p>
-
-      <div className="antialiased max-w-6xl mx-auto my-12 bg-gray-300 px-8">
-        <div className="relative block md:flex items-center">
-          <div className="w-full md:w-1/2 relative z-1 bg-gray-100 rounded shadow-lg overflow-hidden">
+    <div className="h-screen pt-10 ml-20 overflow-y-hidden">
+      <p className="text-3xl font-bold text-center p-5">Image Verification</p>
+      <div className="h-full flex justify-center">
+        <div className="bg-gray-800 w-2/5 h-3/4 relative">
+          <div className=" w-full h-5/6">
             <video
               ref={videoRef}
               autoPlay
-              width="600"
-              height="450"
-              className="w-full h-96"
+              muted
+              className=" h-full w-full object-cover"
             />
-            <canvas ref={canvasRef} style={{ display: 'none' }} />
-
-            <div className="flex justify-around bg-gray-200 p-3  text-gray-800">
-              <button
-                onClick={() =>
-                  handleWebCam(
-                    videoRef,
-                    dispatch,
-                    setIsWebcamActive,
-                    isWebcamActive
-                  )
-                }
-                type="button"
-                className="text-white flex-col bg-[#06603a] hover:bg-[#3fa97b]/90  focus:outline-none  font-medium rounded-lg text-center inline-flex items-center w-32"
-              >
-                {isWebcamActive ? (
-                  <MdOutlineVideocam className="w-10 h-12" />
-                ) : (
-                  <MdOutlineVideocamOff className="w-10 h-12" />
-                )}
-                {isWebcamActive ? 'Off WebCam' : 'On WebCam'}
-              </button>
-              <button
-                onClick={captureAndVerify}
-                type="button"
-                disabled={!isWebcamActive}
-                className={isWebcamActive ? activeClass : inactiveClass}
-              >
-                <MdOutlineVerifiedUser className="w-10 h-12" />
-                Verify Self
-              </button>
-            </div>
           </div>
-          <div className="w-full md:w-1/2 relative z-0 px-8 md:px-0 md:py-16">
-            <div className="bg-blue-900 text-white rounded-b md:rounded-b-none md:rounded-r shadow-lg overflow-hidden">
-              <div className="text-lg font-medium uppercase p-8 text-center border-b border-blue-800 tracking-wide">
+
+          <div className="flex justify-around w-full h-1/6 bg-gray-200 p-3  text-gray-800">
+            <div className="flex">
+              {webcamStatus ? (
+                <MdVideocam className="w-20 h-10 self-center text-green-800" />
+              ) : (
+                <MdVideocamOff className="w-20 h-10 self-center text-green-800" />
+              )}
+              <label className="relative inline-flex items-center my-4 self-center  cursor-pointer">
+                <Toggle
+                  icons={false}
+                  onChange={handleWebcam}
+                  checked={webcamStatus}
+                />
+              </label>
+            </div>
+            <button
+              onClick={detection.captureImages}
+              type="button"
+              disabled={!localStream}
+              className={localStream ? activeClass : inactiveClass}
+            >
+              {buttonText === 'verify' ? (
+                <MdOutlineVerifiedUser className="w-10 h-12" />
+              ) : (
+                <MdRefresh className="w-10 h-12" />
+              )}
+              {buttonText}
+            </button>
+          </div>
+        </div>
+        <div className="bg-gray-100 w-2/5 h-3/4 relative">
+          <div className="pl-20 pt-5 relative">
+            <label className="text-green-800 font-bold">Choose a Camera</label>
+            <select
+              value={defaultWebcam || ''}
+              onChange={handleVideoChange}
+              className="block py-2.5 px-0 w-96 text-sm text-green-800 bg-transparent border-0 border-b-2 border-green-500 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+            >
+              {webcams.length > 0 &&
+                webcams.map((source) => {
+                  return (
+                    <option key={source.deviceId} value={source.deviceId}>
+                      {source.label}
+                    </option>
+                  );
+                })}
+            </select>
+          </div>
+          <div className="w-full pt-20 ">
+            <div className="bg-green-900 text-white rounded-b md:rounded-b-none md:rounded-r shadow-lg overflow-hidden">
+              <div className="text-lg font-medium uppercase p-8 text-center border-b border-green-800 tracking-wide">
                 Image Processing
               </div>
               <div className=" bg-gray-200 rounded-full mr-3 ml-3">
                 <div
-                  className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-                  style={{ width: `${percentageCount}%` }}
+                  className="bg-green-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
+                  style={{ width: `${progress}%` }}
                 >
-                  {percentageCount + '%'}
+                  {progress + '%'}
                 </div>
               </div>
-
-              <a
-                className="flex items-center justify-center bg-blue-800 hover:bg-blue-700 p-8 text-md font-semibold text-gray-300 uppercase mt-8"
-                href="#"
-              >
-                {resultComponents}
-                <span className="font-medium text-gray-300 ml-2">➔</span>
-              </a>
+              {resultComponents}
             </div>
+            {result > detectionThreshold && (
+              <button
+                type="button"
+                onClick={handleJoinClassroom}
+                className="py-2.5 px-5 mr-2 mb-2 absolute bottom-10 left-56 text-center text-sm font-medium text-white focus:outline-none bg-green-700 rounded-lg border border-green-500 hover:bg-green-600 hover:text-white"
+              >
+                To Classroom
+                <MdOutlineArrowRightAlt className="w-5 h-5 inline-block" />
+              </button>
+            )}
           </div>
         </div>
       </div>

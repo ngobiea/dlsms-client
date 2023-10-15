@@ -23,6 +23,7 @@ const appSlice = createSlice({
       isActive: false,
     },
     socket: null,
+    modelsPath: '',
   },
   reducers: {
     setIsWebcamActive(state, action) {
@@ -81,6 +82,9 @@ const appSlice = createSlice({
     setSocket(state, action) {
       state.socket = action.payload;
     },
+    setMOdelsPath(state, action) {
+      state.modelsPath = action.payload;
+    },
   },
 });
 export const {
@@ -95,5 +99,6 @@ export const {
   setIsShowConfirmationModal,
   setNotification,
   setSocket,
+  setMOdelsPath,
 } = appSlice.actions;
 export const appReducer = appSlice.reducer;

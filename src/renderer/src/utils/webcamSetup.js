@@ -2,9 +2,7 @@ import {
   store,
   setLocalVideoStream,
   setLocalAudioStream,
-  setMicEnable,
   setVideoEnable,
-  setIsShareScreen,
   setMicState,
 } from '../store';
 const webcamError = 'Error accessing webcam';

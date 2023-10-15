@@ -11,6 +11,7 @@ module.exports = {
     examQuestion: './src/renderer/src/entries/examQuestion.js',
   },
   devtool: 'inline-source-map',
+
   target: 'electron-renderer',
   module: {
     rules: [

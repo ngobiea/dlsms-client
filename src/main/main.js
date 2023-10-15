@@ -7,7 +7,7 @@ app.setAppUserModelId('DLSMS');
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
-
+const electronReload = require('electron-reload');
 
 app.on('ready', windows.createWindow);
 try {

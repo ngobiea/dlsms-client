@@ -85,7 +85,7 @@ export const formatDateTime = (dateTimeString) => {
 export const formatCustomDateTime = (dateTimeString) => {
   const dateTime = new Date(dateTimeString);
 
-  const formattedDateTime = new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat('en-US', {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
@@ -93,7 +93,4 @@ export const formatCustomDateTime = (dateTimeString) => {
     minute: 'numeric',
     hour12: true,
   }).format(dateTime);
-
-  return formattedDateTime;
 };
-

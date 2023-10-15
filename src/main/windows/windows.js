@@ -2,16 +2,13 @@ const { app, ipcMain, clipboard } = require('electron');
 const path = require('path');
 
 const Windows = require('../util/Windows');
-const { el } = require('@faker-js/faker');
 
 exports.createWindow = async () => {
   const windows = new Windows();
 
-  const modelsPath = app.isPackaged
-    ? path.join(process.resourcesPath, 'public', 'models')
-    : path.join(__dirname, '../../renderer/public/models');
+  const modelsPath = path.join(__dirname, '../../renderer/public/models');
   ipcMain.handle('paths', () => {
-    return { modelsPath };
+    return { modelsPath: path.join(__dirname, '../../renderer/public/models') };
   });
 
   const cookie = await windows.getCookie('isLogin');

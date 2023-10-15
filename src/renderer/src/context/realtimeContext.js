@@ -7,13 +7,7 @@ import { joinClassroomHandler } from '../realTimeCommunication/classroom/joinCla
 import { classroomScheduleMessageHandle } from '../realTimeCommunication/classroom/classroomScheduleMessageHandle';
 import { examScheduleMessage } from '../realTimeCommunication/classroom/examScheduleMessageHandler';
 import { baseUrl, localhost } from '../utils/url';
-import {
-  useFetchClassroomsQuery,
-  setClassrooms,
-  setStudents,
-  store,
-  setMessages,
-} from '../store';
+import { useFetchClassroomsQuery, setClassrooms, store } from '../store';
 
 const userDetails = JSON.parse(localStorage.getItem('user'));
 let socket;
@@ -27,7 +21,11 @@ if (userDetails) {
 socket.on('connect', () => {
   console.log('successfully connected with socket.io server');
 });
-
+socket.on('connect_error', (err) => {
+  console.log(err instanceof Error);
+  console.log(err.message);
+  console.log(err.data);
+});
 
 const RealtimeContext = createContext();
 
@@ -38,19 +36,10 @@ const RealtimeProvider = ({ children }) => {
   const { accountType } = store.getState().account;
   const { data, isSuccess } = useFetchClassroomsQuery(accountType);
   const connectWithSocketServer = () => {
-    socket.on('connect_error', (err) => {
-      console.log(err instanceof Error);
-      console.log(err.message);
-      console.log(err.data);
-    });
     socket.on('update-classroom-members', (value) => {
       joinClassroomHandler(value, navigate);
     });
-    socket.on('send-classroom', (value) => {
-      console.log(value);
-      store.dispatch(setStudents(value.students));
-      store.dispatch(setMessages(value.messages));
-    });
+
     socket.on('classroom-schedule-message', (value) => {
       console.log('received class schedule message event');
 

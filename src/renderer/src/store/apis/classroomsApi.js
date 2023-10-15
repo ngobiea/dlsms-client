@@ -7,6 +7,7 @@ import { postJoinClassroomQuery } from './classroomApi/postJoinClassroomQuery';
 import { verifyClassroomCodeQuery } from './classroomApi/verifyClassroomCodeQuery';
 import { prepareHeaders } from './classroomApi/prepareHeaders';
 import { baseUrl, localhost } from '../../utils/url';
+
 const classroomApi = createApi({
   reducerPath: 'classroomApi',
   tagTypes: ['classroom'],

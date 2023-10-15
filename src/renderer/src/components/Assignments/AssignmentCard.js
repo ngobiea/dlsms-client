@@ -1,5 +1,4 @@
 import React from 'react';
-import { faker } from '@faker-js/faker';
 
 const AssignmentCard = () => {
   return (
@@ -9,12 +8,11 @@ const AssignmentCard = () => {
     >
       <div className="flex items-center">
         <span className="sr-only">Info</span>
-        <h3 className="text-lg font-medium">{faker.word.noun()}</h3>
+        <h3 className="text-lg font-medium"></h3>
       </div>
       <div className="mt-2 mb-4 text-sm flex w-full justify-between">
         {'Due September 11, 2023 11:59 PM'}
         <div className="font-bold">
-          {faker.number.int({ max: 50, min: 1 })}/ 50 Submitted
         </div>
       </div>
       <div className="flex">

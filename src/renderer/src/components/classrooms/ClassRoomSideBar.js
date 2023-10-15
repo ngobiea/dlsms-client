@@ -20,6 +20,7 @@ const ClassRoomSideBar = () => {
   const { name, tutor, students } = useSelector((state) => {
     return state.classroom;
   });
+  const { accountType } = useSelector((state) => state.account);
   const dispatch = useDispatch();
   return (
     <aside className=" w-1/6" aria-label="Sidebar">
