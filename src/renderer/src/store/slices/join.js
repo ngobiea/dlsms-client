@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { captureImages } from '../../utils/face/detection';
 
 const joinSlice = createSlice({
   name: 'join',
@@ -42,7 +41,6 @@ const joinSlice = createSlice({
       state.captureImages = [];
       state.result = -1;
       state.buttonText = 'verify';
-      
     },
     setWebcamStatus(state, action) {
       state.webcamStatus = action.payload;

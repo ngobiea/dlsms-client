@@ -14,7 +14,7 @@ import {
   setDefaultWebcam,
   resetJoin,
 } from '../../../store';
-import { Detection } from '../../../utils/face/detection';
+import { capturePhotos } from '../../../utils/face/detection';
 import { getWebCams, onWebCam, offWebCam } from '../../../utils/face/webcam';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -22,7 +22,6 @@ import './style.css';
 
 const JoinClassroomVerification = () => {
   const zero = 0;
-  let detection = new Detection();
 
   const params = useParams();
   const navigate = useNavigate();
@@ -47,7 +46,6 @@ const JoinClassroomVerification = () => {
     return () => {
       offWebCam();
       dispatch(resetJoin());
-      detection = null;
     };
   }, []);
 
@@ -55,7 +53,9 @@ const JoinClassroomVerification = () => {
     videoRef.current.srcObject = localStream;
   }, [localStream]);
 
-  let resultComponents = '';
+  let resultComponents = (
+    <div className="bg-green-900  p-8 text-md font-semibold text-white uppercase mt-8 text-center"></div>
+  );
   if (result >= detectionThreshold) {
     resultComponents = (
       <div className="bg-green-600 hover:bg-green-700 p-8 text-md font-semibold text-white uppercase mt-8 text-center">
@@ -67,10 +67,6 @@ const JoinClassroomVerification = () => {
       <div className="bg-red-500 hover:bg-red-700 p-8 text-md font-semibold text-white uppercase mt-8 text-center">
         <p>Verification Fail</p>
       </div>
-    );
-  } else {
-    resultComponents = (
-      <div className="bg-green-900  p-8 text-md font-semibold text-white uppercase mt-8 text-center"></div>
     );
   }
   const videoRef = useRef();
@@ -143,7 +139,7 @@ const JoinClassroomVerification = () => {
               </label>
             </div>
             <button
-              onClick={detection.captureImages}
+              onClick={capturePhotos}
               type="button"
               disabled={!localStream}
               className={localStream ? activeClass : inactiveClass}

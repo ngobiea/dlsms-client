@@ -18,7 +18,11 @@ const JoinClassroomForm = () => {
       const classroomId = data.classroomId._id;
       dispatch(setJoinClassroom(false));
       resetField('code');
-      navigate(classroomId + '/join');
+      if (data.status) {
+        navigate(`../../${classroomId}`);
+      } else {
+        navigate(classroomId + '/join');
+      }
     }
   }, [isSuccess]);
 

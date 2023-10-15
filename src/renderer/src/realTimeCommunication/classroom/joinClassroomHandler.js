@@ -27,19 +27,17 @@ export const joinClassroomHandler = (value, navigate) => {
         navigate(`/${classroom._id.toString()}`);
       };
     }
-  } else {
-    if (userId === studentId) {
-      store.dispatch(addClassroom(classroom));
+  } else if (userId === studentId) {
+    store.dispatch(addClassroom(classroom));
 
-      const notification = new window.Notification(
-        `Successfully joined ${classroom.name}`,
-        {
-          body: `Welcome to ${classroom.name}`,
-        }
-      );
-      notification.onclick = () => {
-        console.log('first');
-      };
-    }
+    const notification = new window.Notification(
+      `Successfully joined ${classroom.name}`,
+      {
+        body: `Welcome to ${classroom.name}`,
+      }
+    );
+    notification.onclick = () => {
+      console.log('first');
+    };
   }
 };
