@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { prepareHeaders } from './classroomApi/prepareHeaders';
-import { baseUrl,localhost } from '../../utils/url';
+import { baseUrl, localhost } from '../../utils/url';
 const examSessionApi = createApi({
   reducerPath: 'examSessionApi',
   baseQuery: fetchBaseQuery({
@@ -55,6 +55,14 @@ const examSessionApi = createApi({
           };
         },
       }),
+      getIsExamSessionEnded: builder.query({
+        query: ({ examSessionId }) => {
+          return {
+            url: `/student/examSession-status/${examSessionId}`,
+            method: 'GET',
+          };
+        },
+      }),
     };
   },
 });
@@ -65,6 +73,7 @@ export const {
   usePostExamQuestionMutation,
   useDeleteExamQuestionMutation,
   usePostSaveExamSessionMutation,
+  useGetIsExamSessionEndedQuery,
 } = examSessionApi;
 
 export { examSessionApi };

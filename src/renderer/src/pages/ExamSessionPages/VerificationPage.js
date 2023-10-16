@@ -8,26 +8,17 @@ import {
 } from 'react-icons/md';
 import Toggle from 'react-toggle';
 
-import {
-  usePostJoinClassroomMutation,
-  setDefaultWebcam,
-  resetJoin,
-} from '../../../store';
-import { capturePhotos } from '../../../utils/face/detection';
-import { getWebCams, onWebCam, offWebCam } from '../../../utils/face/webcam';
-import { useParams, useNavigate } from 'react-router-dom';
+import { setDefaultWebcam, resetJoin, setStudentImages } from '../../store';
+import { capturePhotos, loadModels } from '../../utils/face/sessionDetection';
+import { getWebCams, onWebCam, offWebCam } from '../../utils/face/webcam';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import './style.css';
-
-const JoinClassroomVerification = () => {
+import { socket } from '../../context/realtimeContext';
+const VerificationPage = () => {
   const zero = 0;
 
-  const params = useParams();
   const navigate = useNavigate();
-  const { classroomId } = params;
   const dispatch = useDispatch();
-  const [postJoinClassroom, { isSuccess, data, error, isError }] =
-    usePostJoinClassroomMutation();
 
   const {
     webcams,
@@ -41,7 +32,15 @@ const JoinClassroomVerification = () => {
     captureImages,
   } = useSelector((state) => state.join);
   useEffect(() => {
+    socket.emit('studentImages', ({ images }) => {
+      dispatch(setStudentImages(images));
+      loadModels()
+        .then(() => {})
+        .catch((err) => console.log(err));
+    });
+
     getWebCams();
+
     return () => {
       offWebCam();
       dispatch(resetJoin());
@@ -83,32 +82,9 @@ const JoinClassroomVerification = () => {
       offWebCam();
     }
   };
-  useEffect(() => {
-    if (isSuccess) {
-      const notification = new window.Notification(
-        `Successfully joined ${data.classroom.name}`,
-        {
-          body: `Welcome to ${data.classroom.name}`,
-        }
-      );
-      notification.onclick = () => {
-        console.log('first');
-      };
-      navigate(`../../${classroomId}`);
-    }
-    if (isError) {
-      console.log(error);
-    }
-  }, [isSuccess, isError]);
-  const handleJoinClassroom = () => {
-    const formData = new FormData();
-    formData.append('classroomId', classroomId);
-    console.log(captureImages);
-    captureImages.forEach((image) => {
-      formData.append('files', image);
-    });
 
-    postJoinClassroom(formData);
+  const handleJoinClassroom = () => {
+    console.log('join classroom');
   };
 
   const activeClass =
@@ -210,4 +186,4 @@ const JoinClassroomVerification = () => {
   );
 };
 
-export default JoinClassroomVerification;
+export default VerificationPage;

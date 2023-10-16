@@ -107,6 +107,7 @@ import {
   setProgress,
   setDetectionResult,
   setJoinButtonText,
+  setStudentImages,
 } from './slices/join';
 
 import { accountApi } from './apis/accountsApi';
@@ -235,6 +236,7 @@ export {
   setProgress,
   setDetectionResult,
   setJoinButtonText,
+  setStudentImages,
 };
 
 // Account Apis
@@ -262,4 +264,5 @@ export {
   usePostExamQuestionMutation,
   useDeleteExamQuestionMutation,
   usePostSaveExamSessionMutation,
+  useGetIsExamSessionEndedQuery,
 } from './apis/examSessionApi';

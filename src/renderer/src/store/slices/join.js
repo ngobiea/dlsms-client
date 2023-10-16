@@ -12,6 +12,7 @@ const joinSlice = createSlice({
     result: -1,
     buttonText: 'verify',
     detectionThreshold: 7.5,
+    studentImages: [],
   },
   reducers: {
     setLocalStream(state, action) {
@@ -61,6 +62,7 @@ const joinSlice = createSlice({
       state.captureImages = images;
       state.result = result;
     },
+
     setDetectionResult(state, action) {
       const { images, result } = action.payload;
       state.result = result;
@@ -68,13 +70,16 @@ const joinSlice = createSlice({
       if (result >= state.detectionThreshold) {
         state.captureImages = images;
       } else if (result < state.detectionThreshold) {
-        state.buttonText = 'Retry';
+        state.buttonText = 'retry';
         state.progress = 0;
       }
       console.log(state.captureImages);
     },
     setJoinButtonText(state, action) {
       state.buttonText = action.payload;
+    },
+    setStudentImages(state, action) {
+      state.studentImages = action.payload;
     },
   },
 });
@@ -90,5 +95,6 @@ export const {
   setCaptureImages,
   setDetectionResult,
   setJoinButtonText,
+  setStudentImages,
 } = joinSlice.actions;
 export const joinReducer = joinSlice.reducer;

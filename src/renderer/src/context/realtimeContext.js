@@ -45,14 +45,17 @@ const RealtimeProvider = ({ children }) => {
 
       classroomScheduleMessageHandle(value, navigate);
     });
+
     socket.on('exam-schedule-message', (value) => {
       console.log('received exam schedule message event');
       examScheduleMessage(value, navigate);
     });
+
     socket.on('esConnected', ({ name }) => {
       console.log(name);
       console.log('io is set for exam session');
     });
+
     socket.on('blurESQW', ({ examSessionId, user }) => {
       console.log('received blurExamQuestionWindow for:', user);
       console.log(examSessionId);

@@ -1,4 +1,5 @@
 import { store, setProgress, setDetectionResult } from '../../store';
+import { ipcRenderer } from 'electron';
 import { offWebCam } from './webcam';
 import * as faceapi from '@vladmandic/face-api';
 const numberOfImages = 10;
@@ -15,17 +16,27 @@ export const loadModels = async () => {
   console.log(accountType);
   try {
     if (accountType === 'student') {
-      const { modelsPath } = await window.account.getPaths();
+      const { modelsPath } = await ipcRenderer.invoke('paths');
       console.log(modelsPath);
       await faceapi.nets.tinyFaceDetector.loadFromUri(modelsPath);
+      await getLabeledFaceDescriptors();
     }
   } catch (error) {
     console.log('Error occur while Loading models', error);
   }
 };
 
-
-
+const getLabeledFaceDescriptors = async () => {
+  const label = store.getState().account.user;
+  console.log(label);
+  return Promise.all(
+    store.getState().join.studentImages.map(async (image) => {
+      console.log(image);
+      const img = await faceapi.fetchImage('https://dlsms-student-training-data.s3.ap-south-1.amazonaws.com/651567139798df28d47bbb86/1697422788582.jpg');
+      // const detections = await faceapi.detectSingleFace(image);
+    })
+  );
+};
 export const capturePhotos = async () => {
   const { localStream } = store.getState().join;
   imagesArray = [];

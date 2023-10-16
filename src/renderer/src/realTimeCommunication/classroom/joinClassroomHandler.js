@@ -1,43 +1,32 @@
-import { store, setStudents, addClassroom } from '../../store';
+import { store, addStudent, addClassroom } from '../../store';
 
 export const joinClassroomHandler = (value, navigate) => {
-  const { classroomId, classrooms } = store.getState().classroom;
+  const { classrooms } = store.getState().classroom;
   const { accountType } = store.getState().account;
 
   const userId = JSON.parse(localStorage.getItem('user')).userId;
-
-  const { classroom, students, studentId } = value;
+  console.log(value);
+  const { classroom, student } = value;
 
   const foundClassroom = classrooms.find(
-    (classR) => classR._id.toString() === classroom._id.toString()
+    (classR) => classR._id.toString() === classroom._id
   );
 
   if (foundClassroom) {
-    if (classroomId === classroom._id.toString()) {
-      store.dispatch(setStudents(students));
-    }
+    store.dispatch(addStudent(student));
+
     if (accountType === 'tutor') {
       const notification = new window.Notification(
-        `New Student Join ${classroom.name}`,
+        `New Student Join ${foundClassroom.name}`,
         {
-          body: `${studentId} has join ${classroom.name}`,
+          body: `${student.studentId} has join ${foundClassroom.name}`,
         }
       );
       notification.onclick = () => {
         navigate(`/${classroom._id.toString()}`);
       };
     }
-  } else if (userId === studentId) {
+  } else if (userId === student._id.toString()) {
     store.dispatch(addClassroom(classroom));
-
-    const notification = new window.Notification(
-      `Successfully joined ${classroom.name}`,
-      {
-        body: `Welcome to ${classroom.name}`,
-      }
-    );
-    notification.onclick = () => {
-      console.log('first');
-    };
   }
 };
