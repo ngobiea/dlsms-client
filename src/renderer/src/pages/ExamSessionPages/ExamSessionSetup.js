@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useContext } from 'react';
 import { ipcRenderer } from 'electron';
 import Toggle from 'react-toggle';
 import { getDevices } from '../../utils/getDevices';
@@ -7,6 +7,7 @@ import {
   disableWebCam,
   enableWebCam,
 } from '../../utils/webcamSetup';
+import ExamSessionContext from '../../context/ExamSessionContext';
 import { shareScreen, stopShareScreen } from '../../utils/screen';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -24,10 +25,12 @@ import {
   MdScreenShare,
   MdStopScreenShare,
 } from 'react-icons/md';
-
-const sessionId = localStorage.getItem('examSessionId');
+import { socket } from '../../context/realtimeContext';
+const examSessionId = localStorage.getItem('examSessionId');
 
 const ExamSessionSetup = () => {
+  const { examSession } = useContext(ExamSessionContext);
+
   const videoRef = useRef();
   const screenRef = useRef();
   const navigate = useNavigate();
@@ -52,7 +55,7 @@ const ExamSessionSetup = () => {
   });
 
   const handleToClassSession = () => {
-    navigate('' + sessionId);
+    navigate('/examSession' );
     ipcRenderer.send('openExamQuestionWindow');
   };
   const handleMic = (e) => {
@@ -66,6 +69,19 @@ const ExamSessionSetup = () => {
   const handleCancel = () => {
     ipcRenderer.send('closeExamS');
   };
+
+  useEffect(() => {
+    socket.emit(
+      'newExamSession',
+      { examSessionId },
+      async ({ rtpCapabilities }) => {
+        await examSession.loadDevice(rtpCapabilities, socket);
+      }
+    );
+    ipcRenderer.send('showScreenSources');
+  }, []);
+
+  const { isDeviceSet } = useSelector((state) => state.session);
 
   useEffect(() => {
     getDevices();

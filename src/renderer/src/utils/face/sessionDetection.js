@@ -1,13 +1,12 @@
-import { store, setProgress, setDetectionResult } from '../../store';
+import { store, setProgress, setRecognitionResult } from '../../store';
 import { ipcRenderer } from 'electron';
 import { offWebCam } from './webcam';
 import * as faceapi from '@vladmandic/face-api';
 const numberOfImages = 10;
 const intervalTime = 1000;
 const processTime = 11000;
-const detectionThreshold = 7.5;
-let detections = [];
-let result = 0;
+const recognitionThreshold = 2;
+let recognitions = [];
 let camera = null;
 let imagesArray = [];
 
@@ -19,7 +18,9 @@ export const loadModels = async () => {
       const { modelsPath } = await ipcRenderer.invoke('paths');
       console.log(modelsPath);
       await faceapi.nets.tinyFaceDetector.loadFromUri(modelsPath);
-      await getLabeledFaceDescriptors();
+      await faceapi.nets.ssdMobilenetv1.loadFromUri(modelsPath);
+      await faceapi.nets.faceLandmark68Net.loadFromUri(modelsPath);
+      await faceapi.nets.faceRecognitionNet.loadFromUri(modelsPath);
     }
   } catch (error) {
     console.log('Error occur while Loading models', error);
@@ -27,99 +28,84 @@ export const loadModels = async () => {
 };
 
 const getLabeledFaceDescriptors = async () => {
-  const label = store.getState().account.user;
-  console.log(label);
+  const labels = [store.getState().account.user.email];
+  console.log(store.getState().join.studentImages.length);
+  console.log(labels);
   return Promise.all(
-    store.getState().join.studentImages.map(async (image) => {
-      console.log(image);
-      const img = await faceapi.fetchImage('https://dlsms-student-training-data.s3.ap-south-1.amazonaws.com/651567139798df28d47bbb86/1697422788582.jpg');
-      // const detections = await faceapi.detectSingleFace(image);
+    labels.map(async (label) => {
+      const descriptions = [];
+      store.getState().join.studentImages.map(async (image) => {
+        const img = await faceapi.fetchImage(image.location);
+        const detections = await faceapi
+          .detectSingleFace(img)
+          .withFaceLandmarks()
+          .withFaceDescriptor();
+        if (detections) {
+          descriptions.push(detections.descriptor);
+        }
+      });
+      return new faceapi.LabeledFaceDescriptors(label, descriptions);
     })
   );
 };
-export const capturePhotos = async () => {
-  const { localStream } = store.getState().join;
-  imagesArray = [];
-  detections = [];
-  store.dispatch(setDetectionResult({ images: [], result: -1 }));
 
-  let interval;
+export const processRecognition = async (localStream) => {
   try {
-    interval = setInterval(async () => {
-      camera = new ImageCapture(localStream.getVideoTracks()[0]);
-      const pic = await takePhoto(camera.track);
-      imagesArray.push(pic);
+    store.dispatch(setRecognitionResult({ result: -1 }));
+    const labeledFaceDescriptors = await getLabeledFaceDescriptors();
+    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors);
 
-      store.dispatch(setProgress(imagesArray.length * numberOfImages));
-      const image = await faceapi.bufferToImage(pic);
-      const detection = await faceapi.detectAllFaces(
-        image,
-        new faceapi.TinyFaceDetectorOptions()
-      );
-      console.log(detection);
-      detections.push(detection);
-      if (imagesArray.length >= numberOfImages) {
+    const interval = setInterval(async () => {
+      const detections = await faceapi
+        .detectAllFaces(localStream)
+        .withFaceLandmarks()
+        .withFaceDescriptors();
+
+      const results = detections.map((detection) => {
+        const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
+        return {
+          label: bestMatch.label,
+          match: bestMatch.distance,
+        };
+      });
+
+      console.log(results);
+      recognitions.push(results);
+      store.dispatch(setProgress(recognitions.length * numberOfImages));
+
+      if (recognitions.length >= numberOfImages) {
         clearInterval(interval);
+        processResult();
       }
-    }, intervalTime);
-    setTimeout(() => {
-      processDetection();
-    }, processTime);
+    }, 3000);
   } catch (error) {
-    console.log(error);
+    console.log('Error occur while processing recognition', error);
   }
 };
-export const processDetection = () => {
-  console.log('Processing Detection');
-  for (const detection of detections) {
-    if (detection.length === 1) {
-      console.log(detection[0]);
-      result += detection[0].score;
-    } else if (detection.length > 1 || detection.length === 0) {
+
+const processResult = () => {
+  console.log('Processing Result');
+  const label = store.getState().account.user.email;
+  let result = 0;
+
+  for (const recognition of recognitions) {
+    if (recognition.length === 0) {
+      result = 0;
+      break;
+    } else if (recognition.length === 1) {
+      if (recognition[0].label === label) {
+        result += recognition[0].match;
+      }
+    } else if (recognition.length > 1) {
       result = 0;
       break;
     }
   }
-
-  console.log(result);
-
-  store.dispatch(setDetectionResult({ images: imagesArray, result }));
-  if (result >= detectionThreshold) {
+  if (result >= recognitionThreshold) {
     offWebCam();
+    store.dispatch(setRecognitionResult({ result }));
+  } else {
+    store.dispatch(setRecognitionResult({ result, statusText: 'retry' }));
   }
-  detections = [];
-  result = 0;
-  imagesArray = [];
-};
-export const takePhoto = (track) => {
-  // 1. Check readyState
-  if (track.readyState !== 'live') {
-    return Promise.reject(new DOMException('InvalidStateError'));
-  }
-
-  // 2. Create promise
-  // 4. Return promise
-  return new Promise((resolve, reject) => {
-    // 3. Run in parallel
-    track.readyState === 'live' &&
-      (async () => {
-        try {
-          // 3a. Gather data into Blob
-          const blob = await camera.takePhoto({
-            /* settings */
-          });
-
-          // 3b. Reject on error
-          if (!blob) {
-            reject(new DOMException('UnknownError'));
-            return;
-          }
-
-          // 3c. Resolve with Blob
-          resolve(blob);
-        } catch (error) {
-          reject(error);
-        }
-      })();
-  });
+  recognitions = [];
 };

@@ -24,8 +24,6 @@ export const loadModels = async () => {
   }
 };
 
-
-
 export const capturePhotos = async () => {
   const { localStream } = store.getState().join;
   imagesArray = [];
@@ -34,6 +32,8 @@ export const capturePhotos = async () => {
 
   let interval;
   try {
+    await loadModels();
+
     interval = setInterval(async () => {
       camera = new ImageCapture(localStream.getVideoTracks()[0]);
       const pic = await takePhoto(camera.track);

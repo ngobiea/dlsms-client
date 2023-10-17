@@ -108,6 +108,7 @@ import {
   setDetectionResult,
   setJoinButtonText,
   setStudentImages,
+  setRecognitionResult,
 } from './slices/join';
 
 import { accountApi } from './apis/accountsApi';
@@ -237,6 +238,7 @@ export {
   setDetectionResult,
   setJoinButtonText,
   setStudentImages,
+  setRecognitionResult,
 };
 
 // Account Apis

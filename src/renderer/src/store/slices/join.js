@@ -12,7 +12,9 @@ const joinSlice = createSlice({
     result: -1,
     buttonText: 'verify',
     detectionThreshold: 7.5,
+    recognitionThreshold: 2,
     studentImages: [],
+    recognitionResult: -1,
   },
   reducers: {
     setLocalStream(state, action) {
@@ -45,11 +47,6 @@ const joinSlice = createSlice({
     },
     setWebcamStatus(state, action) {
       state.webcamStatus = action.payload;
-      if (action.payload) {
-        state.result = -1;
-        state.progress = 0;
-        state.captureImages = [];
-      }
     },
     setProgress(state, action) {
       state.progress = action.payload;
@@ -81,6 +78,16 @@ const joinSlice = createSlice({
     setStudentImages(state, action) {
       state.studentImages = action.payload;
     },
+    setRecognitionResult(state, action) {
+      const { result, statusText } = action.payload;
+      if (result < 0) {
+        state.buttonText = 'verify';
+        state.progress = 0;
+      } else if (result < state.recognitionThreshold) {
+        state.buttonText = statusText;
+      }
+      state.recognitionResult = result;
+    },
   },
 });
 
@@ -96,5 +103,6 @@ export const {
   setDetectionResult,
   setJoinButtonText,
   setStudentImages,
+  setRecognitionResult,
 } = joinSlice.actions;
 export const joinReducer = joinSlice.reducer;

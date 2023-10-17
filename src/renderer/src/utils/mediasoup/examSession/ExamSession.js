@@ -34,6 +34,7 @@ export class ExamSession {
     }
   }
 
+
   setSocket(socket) {
     this.socket = socket;
     this.socket.on('newESStudent', this.newStudent.bind(this));

@@ -7,9 +7,11 @@ import {
   MdOutlineArrowRightAlt,
 } from 'react-icons/md';
 import Toggle from 'react-toggle';
-
 import { setDefaultWebcam, resetJoin, setStudentImages } from '../../store';
-import { capturePhotos, loadModels } from '../../utils/face/sessionDetection';
+import {
+  loadModels,
+  processRecognition,
+} from '../../utils/face/sessionDetection';
 import { getWebCams, onWebCam, offWebCam } from '../../utils/face/webcam';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -26,10 +28,11 @@ const VerificationPage = () => {
     localStream,
     webcamStatus,
     progress,
-    result,
+
     buttonText,
-    detectionThreshold,
-    captureImages,
+
+    recognitionThreshold,
+    recognitionResult,
   } = useSelector((state) => state.join);
   useEffect(() => {
     socket.emit('studentImages', ({ images }) => {
@@ -54,13 +57,16 @@ const VerificationPage = () => {
   let resultComponents = (
     <div className="bg-green-900  p-8 text-md font-semibold text-white uppercase mt-8 text-center"></div>
   );
-  if (result >= detectionThreshold) {
+  if (recognitionResult >= recognitionThreshold) {
     resultComponents = (
       <div className="bg-green-600 hover:bg-green-700 p-8 text-md font-semibold text-white uppercase mt-8 text-center">
         <p>Verification passed</p>
       </div>
     );
-  } else if (result >= zero && result < detectionThreshold) {
+  } else if (
+    recognitionResult >= zero &&
+    recognitionResult < recognitionThreshold
+  ) {
     resultComponents = (
       <div className="bg-red-500 hover:bg-red-700 p-8 text-md font-semibold text-white uppercase mt-8 text-center">
         <p>Verification Fail</p>
@@ -83,7 +89,8 @@ const VerificationPage = () => {
     }
   };
 
-  const handleJoinClassroom = () => {
+  const handleJoinExam = () => {
+    navigate('/setup');
     console.log('join classroom');
   };
 
@@ -122,7 +129,9 @@ const VerificationPage = () => {
               </label>
             </div>
             <button
-              onClick={capturePhotos}
+              onClick={() => {
+                processRecognition(videoRef.current);
+              }}
               type="button"
               disabled={!localStream}
               className={localStream ? activeClass : inactiveClass}
@@ -169,13 +178,13 @@ const VerificationPage = () => {
               </div>
               {resultComponents}
             </div>
-            {result > detectionThreshold && (
+            {recognitionResult > recognitionThreshold && (
               <button
                 type="button"
-                onClick={handleJoinClassroom}
+                onClick={handleJoinExam}
                 className="py-2.5 px-5 mr-2 mb-2 absolute bottom-10 left-56 text-center text-sm font-medium text-white focus:outline-none bg-green-700 rounded-lg border border-green-500 hover:bg-green-600 hover:text-white"
               >
-                To Classroom
+                Setup Session
                 <MdOutlineArrowRightAlt className="w-5 h-5 inline-block" />
               </button>
             )}
