@@ -30,11 +30,7 @@ const sessionSlice = createSlice({
     videoParams: { params },
     screenShareParams: { params },
     activeStudentsInExamSession: [],
-    sessionViolations: [
-      {
-        
-      }
-    ],
+    sessionViolations: [{}],
     screenId: null,
   },
   reducers: {
@@ -206,7 +202,7 @@ const sessionSlice = createSlice({
             : student;
         }
       );
-      state.sessionViolations.push(action.payload);
+      state.sessionViolations = [action.payload, ...state.sessionViolations];
     },
     setSessionViolations(state, action) {
       state.sessionViolations = action.payload;
@@ -219,7 +215,6 @@ const sessionSlice = createSlice({
     setScreenId(state, action) {
       state.screenId = action.payload;
     },
-  
   },
 });
 

@@ -7,6 +7,7 @@ import {
   disableWebCam,
   enableWebCam,
 } from '../../utils/webcamSetup';
+import { loadModels } from '../../utils/face/realtime';
 import ExamSessionContext from '../../context/ExamSessionContext';
 import { shareScreen, stopShareScreen } from '../../utils/screen';
 import { useSelector, useDispatch } from 'react-redux';
@@ -81,9 +82,9 @@ const ExamSessionSetup = () => {
     ipcRenderer.send('showScreenSources');
   }, []);
 
-  const { isDeviceSet } = useSelector((state) => state.session);
 
   useEffect(() => {
+    loadModels();
     getDevices();
   }, []);
   useEffect(() => {

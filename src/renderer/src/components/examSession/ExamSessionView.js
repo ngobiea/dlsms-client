@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-
+import { realTimeRecognition } from '../../utils/face/realtime';
 import { useSelector } from 'react-redux';
 const ExamSessionView = () => {
-  const videoRef = useRef();
+  const videoRef = useRef(null);
   const shareScreenRef = useRef();
 
   const { activeBorder, localVideoStream, localScreenStream } = useSelector(
@@ -11,6 +11,14 @@ const ExamSessionView = () => {
     }
   );
 
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await realTimeRecognition(videoRef.current);
+    }, 5000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
   useEffect(() => {
     if (localVideoStream) {
       videoRef.current.srcObject = localVideoStream;

@@ -62,7 +62,7 @@ const MonitorSideBar = () => {
                     </div>
                     <div className="flex">
                       <TbWorldWww className="text-red-500 text-3xl" />
-                      <div className=" self-center">{'Disabled WebCam '}</div>
+                      <div className=" self-center">{'Visit Website'}</div>
                     </div>
                     <div className=" absolute top-2 right-2">
                       <button className="mx-2 px-2 py-1 text-white bg-green-500 rounded-lg">
