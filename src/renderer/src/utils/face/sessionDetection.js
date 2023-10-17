@@ -30,7 +30,6 @@ export const loadModels = async () => {
 const getLabeledFaceDescriptors = async () => {
   const labels = [store.getState().account.user.email];
   console.log(store.getState().join.studentImages.length);
-  console.log(labels);
   return Promise.all(
     labels.map(async (label) => {
       const descriptions = [];
@@ -50,6 +49,7 @@ const getLabeledFaceDescriptors = async () => {
 };
 
 export const processRecognition = async (localStream) => {
+  console.log(localStream);
   try {
     store.dispatch(setRecognitionResult({ result: -1 }));
     const labeledFaceDescriptors = await getLabeledFaceDescriptors();
@@ -77,7 +77,7 @@ export const processRecognition = async (localStream) => {
         clearInterval(interval);
         processResult();
       }
-    }, 3000);
+    }, 2000);
   } catch (error) {
     console.log('Error occur while processing recognition', error);
   }

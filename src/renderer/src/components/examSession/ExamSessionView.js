@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { realTimeRecognition } from '../../utils/face/realtime';
 import { useSelector } from 'react-redux';
+let interval;
 const ExamSessionView = () => {
   const videoRef = useRef(null);
   const shareScreenRef = useRef();
@@ -10,11 +11,10 @@ const ExamSessionView = () => {
       return state.session;
     }
   );
-
+  interval = setInterval(async () => {
+    await realTimeRecognition();
+  }, 5000);
   useEffect(() => {
-    const interval = setInterval(async () => {
-      await realTimeRecognition(videoRef.current);
-    }, 5000);
     return () => {
       clearInterval(interval);
     };
