@@ -6,7 +6,6 @@ const joinSlice = createSlice({
     localStream: null,
     webcams: [],
     defaultWebcam: null,
-    webcamStatus: false,
     progress: 0,
     captureImages: [],
     result: -1,
@@ -21,8 +20,12 @@ const joinSlice = createSlice({
       state.localStream = action.payload;
 
       if (!action.payload) {
-        state.webcamStatus = false;
         state.buttonText = 'verify';
+      } else {
+        state.result = -1;
+        state.recognitionResult = -1;
+        state.progress = 0;
+        state.captureImages = [];
       }
     },
     setWebcams(state, action) {
@@ -39,15 +42,12 @@ const joinSlice = createSlice({
       state.localStream = null;
       state.webcams = [];
       state.defaultWebcam = null;
-      state.webcamStatus = false;
       state.progress = 0;
       state.captureImages = [];
       state.result = -1;
       state.buttonText = 'verify';
     },
-    setWebcamStatus(state, action) {
-      state.webcamStatus = action.payload;
-    },
+
     setProgress(state, action) {
       state.progress = action.payload;
     },
@@ -61,32 +61,30 @@ const joinSlice = createSlice({
     },
 
     setDetectionResult(state, action) {
-      const { images, result } = action.payload;
-      state.result = result;
+      const { images, result, statusText } = action.payload;
 
-      if (result >= state.detectionThreshold) {
-        state.captureImages = images;
+      if (result < 0) {
+        state.buttonText = 'verify';
       } else if (result < state.detectionThreshold) {
-        state.buttonText = 'retry';
-        state.progress = 0;
+        state.buttonText = statusText;
       }
-      console.log(state.captureImages);
+      state.result = result;
+      state.captureImages = images;
+    },
+    setRecognitionResult(state, action) {
+      const { result, statusText } = action.payload;
+      if (result < 0) {
+        state.buttonText = 'verify';
+      } else if (result < state.recognitionThreshold) {
+        state.buttonText = statusText;
+      }
+      state.recognitionResult = result;
     },
     setJoinButtonText(state, action) {
       state.buttonText = action.payload;
     },
     setStudentImages(state, action) {
       state.studentImages = action.payload;
-    },
-    setRecognitionResult(state, action) {
-      const { result, statusText } = action.payload;
-      if (result < 0) {
-        state.buttonText = 'verify';
-        state.progress = 0;
-      } else if (result < state.recognitionThreshold) {
-        state.buttonText = statusText;
-      }
-      state.recognitionResult = result;
     },
   },
 });
@@ -96,7 +94,6 @@ export const {
   setWebcams,
   setDefaultWebcam,
   resetJoin,
-  setWebcamStatus,
   setProgress,
   addCaptureImage,
   setCaptureImages,

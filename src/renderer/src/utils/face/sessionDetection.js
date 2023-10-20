@@ -3,12 +3,8 @@ import { ipcRenderer } from 'electron';
 import { offWebCam } from './webcam';
 import * as faceapi from '@vladmandic/face-api';
 const numberOfImages = 10;
-const intervalTime = 1000;
-const processTime = 11000;
 const recognitionThreshold = 2;
 let recognitions = [];
-let camera = null;
-let imagesArray = [];
 
 export const loadModels = async () => {
   const accountType = store.getState().account.accountType;

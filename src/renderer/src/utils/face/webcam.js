@@ -2,7 +2,6 @@ import {
   store,
   setWebcams,
   setLocalStream,
-  setWebcamStatus,
 } from '../../store';
 
 export const onWebCam = async () => {
@@ -11,7 +10,6 @@ export const onWebCam = async () => {
     offWebCam();
   }
   try {
-    store.dispatch(setWebcamStatus(true));
 
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: false,

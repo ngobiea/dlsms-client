@@ -10,7 +10,7 @@ export const examScheduleMessage = (data, navigate) => {
     (classR) => classR._id.toString() === data.classroomId.toString()
   );
 
-  if (foundClassroom && accountType === 'student') {
+  if (foundClassroom) {
     if (classroomId === data.classroomId.toString()) {
       store.dispatch(addMessage(data.message));
     }

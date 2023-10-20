@@ -9,7 +9,8 @@ import Input from '../../components/accountComponents/Input';
 import ErrorMessage from '../../components/error/ErrorMessage';
 const SignupPage = () => {
   const navigate = useNavigate();
-  const [addUser, {isSuccess,isError,error,reset}] = useSignupUserMutation();
+  const [addUser, { isSuccess, data, isError, error, reset }] =
+    useSignupUserMutation();
   const { accountType } = useSelector((state) => {
     return state.account;
   });
@@ -20,15 +21,16 @@ const SignupPage = () => {
     addUser(user);
   };
 
-useEffect(() => {
-  if (isSuccess) {
-    resetField('firstName');
-    resetField('lastName');
-    resetField('institution');
-    resetField('studentId');
-    navigate('/');
-  }
-}, [isSuccess]);
+  useEffect(() => {
+    if (isSuccess) {
+      localStorage.setItem('email', JSON.stringify(data.email));
+      resetField('firstName');
+      resetField('lastName');
+      resetField('institution');
+      resetField('studentId');
+      navigate('/');
+    }
+  }, [isSuccess]);
   const idClass =
     accountType === 'student' ? 'grid sm:grid-cols-2 sm:gap-6' : '';
   return (

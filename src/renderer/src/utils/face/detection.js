@@ -3,21 +3,17 @@ import { offWebCam } from './webcam';
 import * as faceapi from '@vladmandic/face-api';
 const numberOfImages = 10;
 const intervalTime = 1000;
-const processTime = 11000;
 const detectionThreshold = 7.5;
-let detections = [];
-let result = 0;
-let camera = null;
 let imagesArray = [];
+let detections = [];
 
 export const loadModels = async () => {
   const accountType = store.getState().account.accountType;
-  console.log(accountType);
   try {
     if (accountType === 'student') {
       const { modelsPath } = await window.account.getPaths();
-      console.log(modelsPath);
       await faceapi.nets.tinyFaceDetector.loadFromUri(modelsPath);
+      console.log('Models Loaded');
     }
   } catch (error) {
     console.log('Error occur while Loading models', error);
@@ -25,42 +21,53 @@ export const loadModels = async () => {
 };
 
 export const capturePhotos = async () => {
-  const { localStream } = store.getState().join;
   imagesArray = [];
-  detections = [];
   store.dispatch(setDetectionResult({ images: [], result: -1 }));
 
   let interval;
   try {
-    await loadModels();
-
     interval = setInterval(async () => {
-      camera = new ImageCapture(localStream.getVideoTracks()[0]);
-      const pic = await takePhoto(camera.track);
+      const pic = await captureImageFromWebcam();
       imagesArray.push(pic);
-
       store.dispatch(setProgress(imagesArray.length * numberOfImages));
-      const image = await faceapi.bufferToImage(pic);
-      const detection = await faceapi.detectAllFaces(
-        image,
-        new faceapi.TinyFaceDetectorOptions()
-      );
-      console.log(detection);
-      detections.push(detection);
       if (imagesArray.length >= numberOfImages) {
+        console.log('Done Processing Detection');
+        processDetection();
         clearInterval(interval);
       }
     }, intervalTime);
-    setTimeout(() => {
-      processDetection();
-    }, processTime);
   } catch (error) {
     console.log(error);
   }
 };
-export const processDetection = () => {
+
+const processDetection = async () => {
+  detections = [];
+  try {
+    await Promise.all(
+      imagesArray.map(async (pic) => {
+        const image = await faceapi.bufferToImage(pic);
+        const detection = await faceapi.detectAllFaces(
+          image,
+          new faceapi.TinyFaceDetectorOptions()
+        );
+        detections.push(detection);
+      })
+    );
+
+    processResult();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const processResult = () => {
+  let result = 0;
+
   console.log('Processing Detection');
+
   for (const detection of detections) {
+    console.log(detection);
     if (detection.length === 1) {
       console.log(detection[0]);
       result += detection[0].score;
@@ -72,43 +79,80 @@ export const processDetection = () => {
 
   console.log(result);
 
-  store.dispatch(setDetectionResult({ images: imagesArray, result }));
+  // store.dispatch(setDetectionResult({ images: imagesArray, result }));
   if (result >= detectionThreshold) {
     offWebCam();
+    store.dispatch(setDetectionResult({ images: imagesArray, result, }));
+  } else {
+    store.dispatch(
+      setDetectionResult({ images: [], statusText: 'retry', result })
+    );
   }
-  detections = [];
-  result = 0;
   imagesArray = [];
+  detections = [];
 };
-export const takePhoto = (track) => {
-  // 1. Check readyState
-  if (track.readyState !== 'live') {
-    return Promise.reject(new DOMException('InvalidStateError'));
+
+const captureImageFromWebcam = async () => {
+  try {
+    const { localStream } = store.getState().join;
+    const cloneStream = localStream.clone();
+
+    const videoElement = document.createElement('video');
+    videoElement.style.display = 'none';
+    document.body.appendChild(videoElement);
+    videoElement.srcObject = cloneStream;
+    videoElement.autoplay = true;
+    videoElement.width = 584;
+    videoElement.height = 485;
+
+    // Wait for the video to be ready to avoid capturing blank frames
+    await new Promise((resolve) => {
+      videoElement.onloadeddata = resolve;
+    });
+
+    // Create a canvas element
+    const canvas = document.createElement('canvas');
+    canvas.width = videoElement.videoWidth;
+    canvas.height = videoElement.videoHeight;
+
+    const context = canvas.getContext('2d');
+    context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+    const imageBlob = await new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        resolve(blob);
+      }, 'image/png');
+    });
+
+    document.body.removeChild(videoElement);
+    cloneStream.getTracks().forEach((track) => track.stop());
+
+    return imageBlob;
+  } catch (error) {
+    console.log(error);
+    return null;
   }
+};
 
-  // 2. Create promise
-  // 4. Return promise
-  return new Promise((resolve, reject) => {
-    // 3. Run in parallel
-    track.readyState === 'live' &&
-      (async () => {
-        try {
-          // 3a. Gather data into Blob
-          const blob = await camera.takePhoto({
-            /* settings */
-          });
-
-          // 3b. Reject on error
-          if (!blob) {
-            reject(new DOMException('UnknownError'));
-            return;
-          }
-
-          // 3c. Resolve with Blob
-          resolve(blob);
-        } catch (error) {
-          reject(error);
-        }
-      })();
-  });
+const captureTenImages = async () => {
+  const capturePromises = [];
+  for (let i = 0; i < numberOfImages; i++) {
+    const capturePromise = new Promise(async (resolve, reject) => {
+      try {
+        const pic = await captureImageFromWebcam();
+        resolve(pic);
+      } catch (error) {
+        console.log(error);
+        reject(error);
+      }
+    });
+    capturePromises.push(capturePromise);
+  }
+  try {
+    const capturedImages = await Promise.all(capturePromises);
+    return capturedImages;
+  } catch (error) {
+    console.error('Error while capturing images', error);
+    throw error;
+  }
 };

@@ -13,7 +13,7 @@ import {
   setDefaultWebcam,
   resetJoin,
 } from '../../../store';
-import { capturePhotos } from '../../../utils/face/detection';
+import { capturePhotos, loadModels } from '../../../utils/face/detection';
 import { getWebCams, onWebCam, offWebCam } from '../../../utils/face/webcam';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -33,7 +33,6 @@ const JoinClassroomVerification = () => {
     webcams,
     defaultWebcam,
     localStream,
-    webcamStatus,
     progress,
     result,
     buttonText,
@@ -42,6 +41,7 @@ const JoinClassroomVerification = () => {
   } = useSelector((state) => state.join);
   useEffect(() => {
     getWebCams();
+    loadModels();
     return () => {
       offWebCam();
       dispatch(resetJoin());
@@ -132,7 +132,7 @@ const JoinClassroomVerification = () => {
 
           <div className="flex justify-around w-full h-1/6 bg-gray-200 p-3  text-gray-800">
             <div className="flex">
-              {webcamStatus ? (
+              {localStream ? (
                 <MdVideocam className="w-20 h-10 self-center text-green-800" />
               ) : (
                 <MdVideocamOff className="w-20 h-10 self-center text-green-800" />
@@ -141,7 +141,7 @@ const JoinClassroomVerification = () => {
                 <Toggle
                   icons={false}
                   onChange={handleWebcam}
-                  checked={webcamStatus}
+                  checked={localStream === null ? false : true}
                 />
               </label>
             </div>

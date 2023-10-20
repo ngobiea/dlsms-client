@@ -26,7 +26,6 @@ const VerificationPage = () => {
     webcams,
     defaultWebcam,
     localStream,
-    webcamStatus,
     progress,
 
     buttonText,
@@ -115,7 +114,7 @@ const VerificationPage = () => {
 
           <div className="flex justify-around w-full h-1/6 bg-gray-200 p-3  text-gray-800">
             <div className="flex">
-              {webcamStatus ? (
+              {localStream ? (
                 <MdVideocam className="w-20 h-10 self-center text-green-800" />
               ) : (
                 <MdVideocamOff className="w-20 h-10 self-center text-green-800" />
@@ -124,7 +123,7 @@ const VerificationPage = () => {
                 <Toggle
                   icons={false}
                   onChange={handleWebcam}
-                  checked={webcamStatus}
+                  checked={localStream===null?false:true}
                 />
               </label>
             </div>
