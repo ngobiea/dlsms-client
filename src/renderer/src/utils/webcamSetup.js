@@ -14,11 +14,11 @@ export const enableWebCam = () => {
     videoConstraints = {
       deviceId: { ideal: defaultVideoOutputDevice },
       width: {
-        min: 560,
+        min: 600,
         max: 1920,
       },
       height: {
-        min: 400,
+        min: 450,
         max: 1080,
       },
     };
@@ -70,11 +70,14 @@ export const setUpWebCam = () => {
 };
 
 export const disableWebCam = () => {
-  const { localVideoStream } = store.getState().session;
+  const { localVideoStream, cloneVideoStream } = store.getState().session;
 
   if (localVideoStream) {
     const tracks = localVideoStream.getTracks();
     tracks.forEach((track) => {
+      track.stop();
+    });
+    cloneVideoStream.getTracks().forEach((track) => {
       track.stop();
     });
     store.dispatch(setLocalVideoStream(null));

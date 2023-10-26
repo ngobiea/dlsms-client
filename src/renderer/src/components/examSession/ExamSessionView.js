@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-let interval;
+import FaceApi from '../../utils/face/FaceApi';
+import profile from '../../../public/images/sessionProfile.jpg';
 const ExamSessionView = () => {
-  const videoRef = useRef(null);
+  const videoRef = useRef();
   const shareScreenRef = useRef();
 
   const { activeBorder, localVideoStream, localScreenStream } = useSelector(
@@ -10,13 +11,11 @@ const ExamSessionView = () => {
       return state.session;
     }
   );
-  // interval = setInterval(async () => {
-  //   await realTimeRecognition();
-  // }, 5000);
 
   useEffect(() => {
     if (localVideoStream) {
       videoRef.current.srcObject = localVideoStream;
+      FaceApi.processRealTimeRecognition(videoRef.current);
     }
   }, [localVideoStream]);
 
@@ -41,18 +40,28 @@ const ExamSessionView = () => {
           <div className="w-1/2 h-full">
             <video
               autoPlay
-              className="h-full w-fit bg-blue-900"
+              className="h-full w-fit object-cover bg-blue-900"
               ref={videoRef}
               muted={!!localVideoStream}
             ></video>
           </div>
-          <div className="w-1/2 h-full object-cover  ">
-            <video
-              autoPlay
-              className="h-full bg-blue-900 object-cover "
-              ref={shareScreenRef}
-              muted
-            ></video>
+          <div className="w-1/2 h-full">
+            <div className="h-1/2 w-full">
+              <video
+                autoPlay
+                className=" h-fit w-full bg-blue-900 object-cover "
+                ref={shareScreenRef}
+                muted
+              ></video>
+            </div>
+            <div className=" h-1/2 w-full flex justify-center bg-blue-900">
+              <img src={profile} className=" object-contain h-fit   "></img>
+              {/* <video
+                autoPlay
+                className="h-full bg-blue-900 object-cover "
+                muted
+              ></video> */}
+            </div>
           </div>
         </div>
       </div>

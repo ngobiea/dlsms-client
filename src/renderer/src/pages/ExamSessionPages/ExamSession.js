@@ -5,6 +5,7 @@ import ExamSessionView from '../../components/examSession/ExamSessionView';
 import { socket } from '../../context/realtimeContext';
 const ExamSession = () => {
   useEffect(() => {
+
     startRecording(socket);
   }, []);
 

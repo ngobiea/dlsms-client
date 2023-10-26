@@ -18,6 +18,7 @@ const sessionSlice = createSlice({
     defaultAudioOutputDevice: null,
     defaultVideoOutputDevice: null,
     localVideoStream: null,
+    cloneVideoStream: null,
     localScreenStream: null,
     localAudioStream: null,
     recordingStream: null,
@@ -104,6 +105,7 @@ const sessionSlice = createSlice({
           track: action.payload.getVideoTracks()[0],
           appData: { video: true },
         };
+        state.cloneVideoStream = action.payload.clone();
       } else {
         state.isVideoEnable = false;
       }

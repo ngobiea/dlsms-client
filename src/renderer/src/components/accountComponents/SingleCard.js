@@ -11,7 +11,7 @@ const SingleUserCard = ({ userImage, user, userTitle }) => {
     <div
       className="bg-green-700 shadow-md border border-gray-200 rounded-lg w-36 h-36  dark:bg-green-700 dark:border-green-800 cursor-pointer hover:bg-green-900"
       onClick={() => {
-        dispatch(changeAccountType(user))
+        dispatch(changeAccountType(user));
       }}
     >
       <img className="rounded-t-lg w-36 max-h-28" src={userImage} />

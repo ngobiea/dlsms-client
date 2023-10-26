@@ -1,8 +1,4 @@
-import {
-  store,
-  setWebcams,
-  setLocalStream,
-} from '../../store';
+import { store, setWebcams, setLocalStream } from '../../store';
 
 export const onWebCam = async () => {
   const { defaultWebcam, localStream } = store.getState().join;
@@ -10,7 +6,6 @@ export const onWebCam = async () => {
     offWebCam();
   }
   try {
-
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: false,
       video: {
@@ -32,10 +27,11 @@ export const onWebCam = async () => {
 };
 
 export const offWebCam = () => {
-  const { localStream } = store.getState().join;
+  const { localStream, cloneStream } = store.getState().join;
   if (localStream) {
     console.log('stop capture screen');
     localStream.getTracks().forEach((track) => track.stop());
+    cloneStream.getTracks().forEach((track) => track.stop());
     store.dispatch(setLocalStream(null));
   }
 };

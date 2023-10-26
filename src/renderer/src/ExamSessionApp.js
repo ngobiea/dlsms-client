@@ -1,20 +1,20 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import TitleNav from './components/TitleNav';
-import { setScreenId, store } from './store';
+import { setScreenId, store, setStudentImages } from './store';
 import { ipcRenderer } from 'electron';
-
 import {
   captureScreen,
   stopRecording,
 } from './utils/mediasoup/examSession/recordScreen';
+import FaceApi from './utils/face/FaceApi';
 import ExamSessionSetup from './pages/ExamSessionPages/ExamSessionSetup';
-import ExamSessionContext from './context/ExamSessionContext';
 import ExamSession from './pages/ExamSessionPages/ExamSession';
 import Notification from './components/Notification';
 import CloseWindow from './pages/ExamSessionPages/CloseWindow';
 import { socket } from './context/realtimeContext';
+
 import RulesPage from './pages/ExamSessionPages/RulesPage';
 import VerificationPage from './pages/ExamSessionPages/VerificationPage';
 const examSessionId = localStorage.getItem('examSessionId');
@@ -25,7 +25,15 @@ ipcRenderer.on('source', (_e, { source }) => {
 });
 ipcRenderer.on('bHistory', (_e, { history }) => {
   console.log('bHistory', history);
-  socket.emit('bHistory', { examSessionId, history });
+  socket.emit('bHistory', {
+    examSessionId,
+    history: {
+      title: history.title,
+      url: history.url,
+      time: new Date(),
+      browser: history.browser,
+    },
+  });
 });
 ipcRenderer.on('stopRecord', (_e) => {
   stopRecording(socket);
@@ -41,11 +49,9 @@ socket.on('ESOpen', async (callback) => {
   }
 });
 const ExamSessionApp = () => {
-  const { examSession } = useContext(ExamSessionContext);
   const { notification } = useSelector((state) => state.app);
   const [message, setMessage] = useState('');
-
-
+  const dispatch = useDispatch();
   useEffect(() => {
     socket.emit('examStatus', { examSessionId }, ({ status }) => {
       if (status === 'studentEnded') {
@@ -53,6 +59,10 @@ const ExamSessionApp = () => {
         console.log('Student ended exam session, Close Exam session window');
       } else if (status === 'ongoing') {
         setMessage('');
+        socket.emit('studentImages', ({ images }) => {
+          dispatch(setStudentImages(images));
+          FaceApi.loadRecognitionModels();
+        });
       } else if (status === 'ended') {
         setMessage('Exam session ended, Close Window');
         console.log('Exam session ended, Close Exam session window');
@@ -72,7 +82,7 @@ const ExamSessionApp = () => {
     <>
       <TitleNav />
       {message !== '' && <CloseWindow message={message} />}
-      {notification.isActive && <Notification />}(
+      {notification.isActive && <Notification />}
       {message === '' && (
         <Routes>
           <Route path="/" element={<RulesPage />} />
@@ -81,7 +91,6 @@ const ExamSessionApp = () => {
           <Route path="verify" element={<VerificationPage />} />
         </Routes>
       )}
-      )
     </>
   );
 };

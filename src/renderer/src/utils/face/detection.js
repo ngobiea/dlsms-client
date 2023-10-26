@@ -79,10 +79,9 @@ const processResult = () => {
 
   console.log(result);
 
-  // store.dispatch(setDetectionResult({ images: imagesArray, result }));
   if (result >= detectionThreshold) {
     offWebCam();
-    store.dispatch(setDetectionResult({ images: imagesArray, result, }));
+    store.dispatch(setDetectionResult({ images: imagesArray, result }));
   } else {
     store.dispatch(
       setDetectionResult({ images: [], statusText: 'retry', result })
@@ -149,8 +148,7 @@ const captureTenImages = async () => {
     capturePromises.push(capturePromise);
   }
   try {
-    const capturedImages = await Promise.all(capturePromises);
-    return capturedImages;
+    return await Promise.all(capturePromises);
   } catch (error) {
     console.error('Error while capturing images', error);
     throw error;

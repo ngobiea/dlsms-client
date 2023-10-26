@@ -4,6 +4,7 @@ const joinSlice = createSlice({
   name: 'join',
   initialState: {
     localStream: null,
+    cloneStream: null,
     webcams: [],
     defaultWebcam: null,
     progress: 0,
@@ -18,10 +19,10 @@ const joinSlice = createSlice({
   reducers: {
     setLocalStream(state, action) {
       state.localStream = action.payload;
-
       if (!action.payload) {
         state.buttonText = 'verify';
       } else {
+        state.cloneStream = action.payload.clone();
         state.result = -1;
         state.recognitionResult = -1;
         state.progress = 0;

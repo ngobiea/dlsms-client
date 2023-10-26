@@ -7,15 +7,12 @@ import {
   MdOutlineArrowRightAlt,
 } from 'react-icons/md';
 import Toggle from 'react-toggle';
-import { setDefaultWebcam, resetJoin, setStudentImages } from '../../store';
-import {
-  loadModels,
-  processRecognition,
-} from '../../utils/face/sessionDetection';
+import { setDefaultWebcam, resetJoin } from '../../store';
+import FaceApi from '../../utils/face/FaceApi';
+
 import { getWebCams, onWebCam, offWebCam } from '../../utils/face/webcam';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { socket } from '../../context/realtimeContext';
 const VerificationPage = () => {
   const zero = 0;
 
@@ -27,22 +24,12 @@ const VerificationPage = () => {
     defaultWebcam,
     localStream,
     progress,
-
     buttonText,
-
     recognitionThreshold,
     recognitionResult,
   } = useSelector((state) => state.join);
   useEffect(() => {
-    socket.emit('studentImages', ({ images }) => {
-      dispatch(setStudentImages(images));
-      loadModels()
-        .then(() => {})
-        .catch((err) => console.log(err));
-    });
-
     getWebCams();
-
     return () => {
       offWebCam();
       dispatch(resetJoin());
@@ -123,13 +110,13 @@ const VerificationPage = () => {
                 <Toggle
                   icons={false}
                   onChange={handleWebcam}
-                  checked={localStream===null?false:true}
+                  checked={localStream !== null}
                 />
               </label>
             </div>
             <button
               onClick={() => {
-                processRecognition(videoRef.current);
+                FaceApi.processRecognition(videoRef.current);
               }}
               type="button"
               disabled={!localStream}

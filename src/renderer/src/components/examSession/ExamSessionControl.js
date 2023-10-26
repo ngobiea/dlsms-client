@@ -137,7 +137,7 @@ const ExamSessionControl = () => {
   const inActiveBorderClass =
     'flex flex-col px-2 mx-2  text-green-800 cursor-pointer hover:text-green-500 border-green-800';
   return (
-    <div className="absolute flex justify-between h-16 bg-gray-300 w-full">
+    <div className="absolute top-10 flex justify-between h-16 bg-gray-300 w-full">
       <div className=" self-center flex pl-5">
         {isRecording ? (
           <PiRecordFill className="self-center text-red-600 pt-1 w-6 h-6" />

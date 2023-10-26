@@ -7,7 +7,6 @@ import {
   disableWebCam,
   enableWebCam,
 } from '../../utils/webcamSetup';
-import { loadModels } from '../../utils/face/realtime';
 import ExamSessionContext from '../../context/ExamSessionContext';
 import { shareScreen, stopShareScreen } from '../../utils/screen';
 import { useSelector, useDispatch } from 'react-redux';
@@ -54,10 +53,15 @@ const ExamSessionSetup = () => {
   } = useSelector((state) => {
     return state.session;
   });
-
   const handleToClassSession = () => {
-    navigate('/examSession' );
-    ipcRenderer.send('openExamQuestionWindow');
+    socket.emit('addStudentToExam', { examSessionId }, ({ error, success }) => {
+      if (success) {
+        navigate('/examSession');
+        ipcRenderer.send('openExamQuestionWindow');
+      } else if (error) {
+        console.log(error);
+      }
+    });
   };
   const handleMic = (e) => {
     const value = e.target.checked;
@@ -82,9 +86,7 @@ const ExamSessionSetup = () => {
     ipcRenderer.send('showScreenSources');
   }, []);
 
-
   useEffect(() => {
-    loadModels();
     getDevices();
   }, []);
   useEffect(() => {
@@ -132,7 +134,7 @@ const ExamSessionSetup = () => {
   const joinDisableStyle =
     'py-2.5 px-5 mr-2 w-20  text-sm font-medium text-white focus:outline-none bg-gray-400 rounded-lg border border-gray-200';
   return (
-    <div className="h-screen m-auto pt-28">
+    <div className="h-full m-auto pt-28">
       <div className="flex justify-around">
         <p className="text-title  text-center">
           Choose you audio and video setting for

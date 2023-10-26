@@ -7,13 +7,13 @@ import {
   MdOutlineArrowRightAlt,
 } from 'react-icons/md';
 import Toggle from 'react-toggle';
-
+import { statusCode } from '../../../utils/statusCodes';
 import {
   usePostJoinClassroomMutation,
   setDefaultWebcam,
   resetJoin,
 } from '../../../store';
-import { capturePhotos, loadModels } from '../../../utils/face/detection';
+import { loadModels, capturePhotos } from '../../../utils/face/detection';
 import { getWebCams, onWebCam, offWebCam } from '../../../utils/face/webcam';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -96,8 +96,12 @@ const JoinClassroomVerification = () => {
       };
       navigate(`../../${classroomId}`);
     }
+
     if (isError) {
       console.log(error);
+      if (error.status === statusCode.CONFLICT) {
+        navigate(`/`);
+      }
     }
   }, [isSuccess, isError]);
   const handleJoinClassroom = () => {
@@ -141,7 +145,7 @@ const JoinClassroomVerification = () => {
                 <Toggle
                   icons={false}
                   onChange={handleWebcam}
-                  checked={localStream === null ? false : true}
+                  checked={localStream !== null}
                 />
               </label>
             </div>
