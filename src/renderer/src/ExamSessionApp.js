@@ -14,7 +14,6 @@ import ExamSession from './pages/ExamSessionPages/ExamSession';
 import Notification from './components/Notification';
 import CloseWindow from './pages/ExamSessionPages/CloseWindow';
 import { socket } from './context/realtimeContext';
-
 import RulesPage from './pages/ExamSessionPages/RulesPage';
 import VerificationPage from './pages/ExamSessionPages/VerificationPage';
 const examSessionId = localStorage.getItem('examSessionId');
@@ -28,6 +27,7 @@ ipcRenderer.on('bHistory', (_e, { history }) => {
   socket.emit('bHistory', {
     examSessionId,
     history: {
+      type: 'history',
       title: history.title,
       url: history.url,
       time: new Date(),
@@ -37,6 +37,7 @@ ipcRenderer.on('bHistory', (_e, { history }) => {
 });
 ipcRenderer.on('stopRecord', (_e) => {
   stopRecording(socket);
+  FaceApi.stopRealTimeRecognition();
 });
 socket.on('ESOpen', async (callback) => {
   try {

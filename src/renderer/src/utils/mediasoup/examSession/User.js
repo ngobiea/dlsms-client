@@ -1,6 +1,7 @@
 import { store, addStudentStream, addStudentViolation } from '../../../store';
 import { v4 as uuidv4 } from 'uuid';
 
+
 export class User {
   constructor(examSessionId, device, user, socket, producerIds) {
     this.setSocket(socket);
@@ -22,9 +23,9 @@ export class User {
       console.log('received violation for:', user);
       store.dispatch(
         addStudentViolation({
-          ...user,
+          user,
           ...violation,
-          type: 'violation',
+          kind: 'violation',
           _id: uuidv4(),
         })
       );
@@ -35,9 +36,9 @@ export class User {
       console.log('received browser history for:', user);
       store.dispatch(
         addStudentViolation({
-          ...user,
+          user,
           ...history,
-          type: 'history',
+          kind: 'history',
           _id: uuidv4(),
         })
       );

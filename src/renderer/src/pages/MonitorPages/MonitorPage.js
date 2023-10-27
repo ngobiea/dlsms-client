@@ -6,11 +6,11 @@ const MonitorPage = () => {
   const { activeStudentsInExamSession } = useSelector((state) => state.session);
 
   return (
-    <>
+    <div className="flex container">
       <MonitorSideBar />
-      <div className="relative  h-screen">
-        <div className="overflow-y-auto overscroll-contain h-full w-full">
-          <div className="ml-72">
+      <div className="relative w-3/4  h-screen">
+        <div className="overflow-y-auto overscroll-contain h-monitorView w-full">
+          <div className="">
             <div className="p-4 border-gray-200  rounded-lg dark:border-gray-700 mt-14">
               <div className="grid grid-cols-4 gap-1 h-0">
                 {activeStudentsInExamSession.map((student) => {
@@ -26,7 +26,7 @@ const MonitorPage = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

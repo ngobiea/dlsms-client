@@ -39,13 +39,7 @@ const ExamSessionSetup = () => {
   const {
     isMicEnable,
     isVideoEnable,
-    audioInputDevices,
-    audioOutputDevices,
-    videoOutputDevices,
     localVideoStream,
-    defaultAudioInputDevice,
-    defaultAudioOutputDevice,
-    defaultVideoOutputDevice,
     micState,
     isScreenEnable,
     localScreenStream,
@@ -228,64 +222,84 @@ const ExamSessionSetup = () => {
             </div>
           </div>
         </div>
-        <div className="mr-48 flex flex-col justify-around">
-          <div className="ml-20 relative">
-            <label className="text-green-800 font-bold">
-              Choose a microphone
-            </label>
-            <select
-              value={defaultAudioInputDevice || ''}
-              onChange={handleAudioInputChange}
-              className="block py-2.5 px-0 w-96 text-sm text-green-800 bg-transparent border-0 border-b-2 border-green-500 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-            >
-              {audioInputDevices.length > 0 &&
-                audioInputDevices.map((source) => {
-                  return (
-                    <option key={source.deviceId} value={source.deviceId}>
-                      {source.label}
-                    </option>
-                  );
-                })}
-            </select>
-          </div>
-          <div className="ml-20 relative">
-            <label className="text-green-800 font-bold">Choose a Speaker</label>
-            <select
-              value={defaultAudioOutputDevice || ''}
-              onChange={handleAudioOutputChange}
-              className="block py-2.5 px-0 w-96 text-sm text-green-800 bg-transparent border-0 border-b-2 border-green-500 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-            >
-              {audioOutputDevices.length > 0 &&
-                audioOutputDevices.map((source) => {
-                  return (
-                    <option key={source.deviceId} value={source.deviceId}>
-                      {source.label}
-                    </option>
-                  );
-                })}
-            </select>
-          </div>
-          <div className="ml-20 relative">
-            <label className="text-green-800 font-bold">Choose a Camera</label>
-            <select
-              value={defaultVideoOutputDevice || ''}
-              onChange={handleVideoChange}
-              className="block py-2.5 px-0 w-96 text-sm text-green-800 bg-transparent border-0 border-b-2 border-green-500 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-            >
-              {videoOutputDevices.length > 0 &&
-                videoOutputDevices.map((source) => {
-                  return (
-                    <option key={source.deviceId} value={source.deviceId}>
-                      {source.label}
-                    </option>
-                  );
-                })}
-            </select>
-          </div>
-        </div>
+        <Result
+          handleAudioInputChange={handleAudioInputChange}
+          handleAudioOutputChange={handleAudioOutputChange}
+          handleVideoChange={handleVideoChange}
+        />
       </div>
     </div>
   );
 };
-
+const Result = ({
+  handleAudioInputChange,
+  handleAudioOutputChange,
+  handleVideoChange,
+}) => {
+  const {
+    audioInputDevices,
+    audioOutputDevices,
+    videoOutputDevices,
+    defaultAudioInputDevice,
+    defaultAudioOutputDevice,
+    defaultVideoOutputDevice,
+  } = useSelector((state) => {
+    return state.session;
+  });
+  return (
+    <div className="mr-48 flex flex-col justify-around">
+      <div className="ml-20 relative">
+        <label className="text-green-800 font-bold">Choose a microphone</label>
+        <select
+          value={defaultAudioInputDevice || ''}
+          onChange={handleAudioInputChange}
+          className="block py-2.5 px-0 w-96 text-sm text-green-800 bg-transparent border-0 border-b-2 border-green-500 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+        >
+          {audioInputDevices.length > 0 &&
+            audioInputDevices.map((source) => {
+              return (
+                <option key={source.deviceId} value={source.deviceId}>
+                  {source.label}
+                </option>
+              );
+            })}
+        </select>
+      </div>
+      <div className="ml-20 relative">
+        <label className="text-green-800 font-bold">Choose a Speaker</label>
+        <select
+          value={defaultAudioOutputDevice || ''}
+          onChange={handleAudioOutputChange}
+          className="block py-2.5 px-0 w-96 text-sm text-green-800 bg-transparent border-0 border-b-2 border-green-500 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+        >
+          {audioOutputDevices.length > 0 &&
+            audioOutputDevices.map((source) => {
+              return (
+                <option key={source.deviceId} value={source.deviceId}>
+                  {source.label}
+                </option>
+              );
+            })}
+        </select>
+      </div>
+      <div className="ml-20 relative">
+        <label className="text-green-800 font-bold">Choose a Camera</label>
+        <select
+          value={defaultVideoOutputDevice || ''}
+          onChange={handleVideoChange}
+          className="block py-2.5 px-0 w-96 text-sm text-green-800 bg-transparent border-0 border-b-2 border-green-500 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+        >
+          {videoOutputDevices.length > 0 &&
+            videoOutputDevices.map((source) => {
+              return (
+                <option key={source.deviceId} value={source.deviceId}>
+                  {source.label}
+                </option>
+              );
+            })}
+        </select>
+      </div>
+    </div>
+  );
+};
 export default ExamSessionSetup;

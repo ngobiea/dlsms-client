@@ -1,9 +1,11 @@
 import React, { useContext, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { PiPhoneDisconnectFill, PiRecordFill } from 'react-icons/pi';
+import { PiPhoneDisconnectFill } from 'react-icons/pi';
 import { ipcRenderer } from 'electron';
 import ExamSessionContext from '../../context/ExamSessionContext';
 import { shareScreen, stopShareScreen } from '../../utils/screen';
+const examSessionId = localStorage.getItem('examSessionId');
+
 import {
   MdOutlineChat,
   MdPeopleOutline,
@@ -15,11 +17,7 @@ import {
   MdStopScreenShare,
   MdOutlineKeyboardArrowDown,
 } from 'react-icons/md';
-import {
-  setIsShowParticipants,
-  setIsShowChat,
-  setIsRecording,
-} from '../../store';
+import { setIsShowParticipants, setIsShowChat } from '../../store';
 import {
   disableWebCam,
   enableWebCam,
@@ -27,6 +25,7 @@ import {
   muteMic,
   unmuteMic,
 } from '../../utils/webcamSetup';
+import { socket } from '../../context/realtimeContext';
 
 const ExamSessionControl = () => {
   const dispatch = useDispatch();
@@ -37,8 +36,6 @@ const ExamSessionControl = () => {
     isScreenEnable,
     isShowChat,
     isShowParticipants,
-    isRecording,
-    activeBorder,
     localVideoStream,
     localScreenStream,
     micState,
@@ -68,13 +65,7 @@ const ExamSessionControl = () => {
         });
     }
   }, []);
-  const handleRecoding = () => {
-    if (isRecording) {
-      dispatch(setIsRecording(false));
-    } else {
-      dispatch(setIsRecording(true));
-    }
-  };
+
   const handleShowChat = () => {
     if (isShowChat) {
       dispatch(setIsShowChat(false));
@@ -93,8 +84,26 @@ const ExamSessionControl = () => {
   const handleVideo = () => {
     if (isVideoEnable) {
       disableWebCam();
+      socket.emit('violation', {
+        examSessionId,
+        violation: {
+          type: 'dVideo',
+          title: 'Webcam Disabled',
+          description: 'Student disabled webCam',
+          time: new Date(),
+        },
+      });
       examSession.closeESProducer('video');
     } else {
+      socket.emit('violation', {
+        examSessionId,
+        violation: {
+          type: 'video',
+          title: 'Webcam Enabled',
+          description: 'Student enabled webCam',
+          time: new Date(),
+        },
+      });
       enableWebCam();
     }
   };
@@ -104,22 +113,67 @@ const ExamSessionControl = () => {
       enableMic()
         .then((stream) => {
           examSession.produceAudio(stream);
+          socket.emit('violation', {
+            examSessionId,
+            violation: {
+              type: 'mic',
+              title: 'Mic Enabled',
+              description: 'Student enabled mic',
+              time: new Date(),
+            },
+          });
         })
         .catch((error) => {
           console.log(error);
         });
     } else if (micState === 'mute') {
       unmuteMic();
+      socket.emit('violation', {
+        examSessionId,
+        violation: {
+          type: 'mic',
+          title: 'Mic Enabled',
+          description: 'Student enabled mic',
+          time: new Date(),
+        },
+      });
     } else if (micState === 'unmute') {
       muteMic();
+      socket.emit('violation', {
+        examSessionId,
+        violation: {
+          type: 'mic',
+          title: 'Mic Disabled',
+          description: 'Student disabled mic',
+          time: new Date(),
+        },
+      });
     }
   };
   const handleShareScreen = () => {
     if (isScreenEnable) {
       stopShareScreen();
+      socket.emit('violation', {
+        examSessionId,
+        violation: {
+          type: 'screen',
+          title: 'Screen Disabled',
+          description: 'Student disabled screen',
+          time: new Date(),
+        },
+      });
       examSession.closeESProducer('screen');
     } else {
       shareScreen(screenId);
+      socket.emit('violation', {
+        examSessionId,
+        violation: {
+          type: 'screen',
+          title: 'Screen Enabled',
+          description: 'Student enabled screen',
+          time: new Date(),
+        },
+      });
     }
   };
 
@@ -132,29 +186,52 @@ const ExamSessionControl = () => {
 
     ipcRenderer.send('closeSessionWindow');
   };
+
+  return (
+    <div className="absolute top-10 flex justify-between h-16 bg-gray-300 w-full">
+      <div className=" self-center flex pl-5">
+        <div className="self-center align-middle text-center">{'--:--'}</div>
+      </div>
+      <SessionControl
+        handleEndSession={handleEndSession}
+        handleLeaveSession={handleLeaveSession}
+        handleShowChat={handleShowChat}
+        handleShowParticipants={handleShowParticipants}
+        handleVideo={handleVideo}
+        handleMic={handleMic}
+        handleShareScreen={handleShareScreen}
+      />
+    </div>
+  );
+};
+
+const SessionControl = ({
+  handleEndSession,
+  handleLeaveSession,
+  handleShowChat,
+  handleShowParticipants,
+  handleVideo,
+  handleMic,
+  handleShareScreen,
+}) => {
+  const {
+    isVideoEnable,
+    isScreenEnable,
+    isShowChat,
+    isShowParticipants,
+    activeBorder,
+    micState,
+  } = useSelector((state) => {
+    return state.session;
+  });
   const activeBorderClass =
     'flex flex-col px-2 mx-2 text-green-800 cursor-pointer hover:text-green-500 hover:border-green-500 border-b-2 border-green-800';
   const inActiveBorderClass =
     'flex flex-col px-2 mx-2  text-green-800 cursor-pointer hover:text-green-500 border-green-800';
   return (
-    <div className="absolute top-10 flex justify-between h-16 bg-gray-300 w-full">
-      <div className=" self-center flex pl-5">
-        {isRecording ? (
-          <PiRecordFill className="self-center text-red-600 pt-1 w-6 h-6" />
-        ) : (
-          '   '
-        )}
-        <div className="self-center align-middle text-center">{'--:--'}</div>
-      </div>
+    <>
       <div className="self-center pr-3 flex">
         <div className="border-r-2 flex border-green-800">
-          <div
-            onClick={handleRecoding}
-            className="flex flex-col px-2 mx-2 text-green-800 cursor-pointer hover:text-green-500"
-          >
-            <PiRecordFill className="self-center  pt-1 w-6 h-6" />
-            <p>Record</p>
-          </div>
           <div
             onClick={handleShowChat}
             className={
@@ -227,7 +304,7 @@ const ExamSessionControl = () => {
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

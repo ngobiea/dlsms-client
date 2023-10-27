@@ -150,22 +150,67 @@ export default class FaceApi {
 
   static processRealTimeRecognitionResult() {
     console.log('Processing Result');
+
+    const {
+      countUnknownLabels,
+      countEmptyResults,
+      countMatchingLabels,
+      moreFaces,
+    } = FaceApi.processUtil();
+    if (moreFaces) {
+      return;
+    }
+    console.log(countMatchingLabels, countUnknownLabels, countEmptyResults);
+    if (countMatchingLabels >= matchLimit) {
+      console.log('verified');
+    } else if (countUnknownLabels >= unknownLimit) {
+      console.log('unknown');
+      socket.emit('violation', {
+        examSessionId,
+        violation: {
+          type: 'unknown',
+          title: 'Unknown Person',
+          description: 'UnKnown person Detected',
+          time: new Date(),
+        },
+      });
+    } else if (countEmptyResults >= emptyLimit) {
+      console.log('empty');
+      socket.emit('violation', {
+        examSessionId,
+        violation: {
+          type: 'empty',
+          title: 'No Face',
+          description: 'No face or person detected',
+          time: new Date(),
+        },
+      });
+    }
+
+    recognitions = [];
+  }
+  static stopRealTimeRecognition() {
+    clearInterval(intervalRef);
+  }
+  static processUtil() {
     let countMatchingLabels = 0;
     let countUnknownLabels = 0;
     let countEmptyResults = 0;
     const label = store.getState().account.user.email;
+
     for (const recognition of recognitions) {
       if (recognition.length > 1) {
         socket.emit('violation', {
           examSessionId,
           violation: {
-            title: 'twoFace',
+            type: 'moreFaces',
+            title: 'More Faces Detected',
             description: 'More than one face detected',
             time: new Date(),
           },
         });
         recognitions = [];
-        return;
+        return { moreFaces: true };
       }
 
       if (
@@ -182,31 +227,6 @@ export default class FaceApi {
         countEmptyResults++;
       }
     }
-    console.log(countMatchingLabels, countUnknownLabels, countEmptyResults);
-    if (countMatchingLabels >= matchLimit) {
-      console.log('verified');
-    } else if (countUnknownLabels >= unknownLimit) {
-      console.log('unknown');
-      socket.emit('violation', {
-        examSessionId,
-        violation: {
-          title: 'unknown',
-          description: 'UnKnown person Detected',
-          time: new Date(),
-        },
-      });
-    } else if (countEmptyResults >= emptyLimit) {
-      console.log('empty');
-      socket.emit('violation', {
-        examSessionId,
-        violation: {
-          title: 'empty',
-          description: 'No face detected',
-          time: new Date(),
-        },
-      });
-    }
-
-    recognitions = [];
+    return { countMatchingLabels, countUnknownLabels, countEmptyResults };
   }
 }

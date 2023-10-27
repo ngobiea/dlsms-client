@@ -9,7 +9,8 @@ window.account.blurExamQuestionWindow(() => {
     socket.emit('violation', {
       examSessionId,
       violation: {
-        title: 'blur',
+        type: 'blur',
+        title: 'Window Lost Focus',
         description: 'Exam Question Window Loses Focus',
         time: new Date(),
       },
@@ -22,7 +23,8 @@ window.account.minimizeExamQuestionWindow(() => {
     socket.emit('violation', {
       examSessionId,
       violation: {
-        title: 'minimize',
+        type: 'minimize',
+        title: 'Minimize Window',
         description: 'Exam Question Window Minimized',
         time: new Date(),
       },
@@ -36,7 +38,8 @@ window.account.maximizeExamQuestionWindow(() => {
     socket.emit('violation', {
       examSessionId,
       violation: {
-        title: 'maximize',
+        type: 'maximize',
+        title: 'Maximize Window',
         description: 'Exam Question Window Maximized',
         time: new Date(),
       },
@@ -49,7 +52,8 @@ window.account.focusExamQuestionWindow(() => {
     socket.emit('violation', {
       examSessionId,
       violation: {
-        title: 'focus',
+        type: 'focus',
+        title: 'Window Gain Focus',
         description: 'Exam Question Window Gain Focus',
         time: new Date(),
       },
