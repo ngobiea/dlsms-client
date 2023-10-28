@@ -191,6 +191,7 @@ export default class FaceApi {
   }
   static stopRealTimeRecognition() {
     clearInterval(intervalRef);
+    intervalRef = null;
   }
   static processUtil() {
     let countMatchingLabels = 0;

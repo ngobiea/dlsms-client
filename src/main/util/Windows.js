@@ -6,6 +6,7 @@ const { createMonitorWindow } = require('../windows/monitorWindow');
 const { createSessionWindow } = require('../windows/classSessionWindow');
 const { createExamSessionWindow } = require('../windows/examSessionWindow');
 const { createExamQuestionWindow } = require('../windows/examQuestionWindow');
+const { createTutorSessionWindow } = require('../windows/tutorSessionWindow');
 const { readyToShow } = require('../util/events');
 const BrowserHistory = require('node-browser-history');
 
@@ -17,6 +18,7 @@ module.exports = class Windows {
     this.sessionWindow = null;
     this.examSessionWindow = null;
     this.examQuestionWindow = null;
+    this.tutorSessionWindow = null;
     this.session = session.defaultSession;
     this.bHInterval = null;
     this.bHIntervalTime = 0.25;
@@ -145,6 +147,17 @@ module.exports = class Windows {
       });
     }
   }
+  createTutorSessionWindow() {
+    if (!this.tutorSessionWindow) {
+      this.tutorSessionWindow = createTutorSessionWindow(false);
+      this.tutorSessionWindow.on(readyToShow, () => {
+        this.tutorSessionWindow.show();
+      });
+      this.tutorSessionWindow.on('closed', () => {
+        this.tutorSessionWindow = null;
+      });
+    }
+  }
   closeMainWindow() {
     if (this.mainWindow) {
       this.mainWindow.close();
@@ -172,6 +185,11 @@ module.exports = class Windows {
   }
   closeExamQuestionWindow() {
     this.examQuestionWindow.close();
+  }
+  closeTutorSessionWindow() {
+    if (this.tutorSessionWindow) {
+      this.tutorSessionWindow.close();
+    }
   }
 
   async showScreenSources() {

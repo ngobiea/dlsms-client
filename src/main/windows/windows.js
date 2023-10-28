@@ -6,7 +6,6 @@ const Windows = require('../util/Windows');
 exports.createWindow = async () => {
   const windows = new Windows();
 
-  const modelsPath = path.join(__dirname, '../../renderer/public/models');
   ipcMain.handle('paths', () => {
     return { modelsPath: path.join(__dirname, '../../renderer/public/models') };
   });
@@ -23,6 +22,7 @@ exports.createWindow = async () => {
   });
   ipcMain.on('openMonitorWindow', (_e) => {
     windows.createMonitWindow();
+    windows.createTutorSessionWindow();
   });
 
   ipcMain.on('openSessionWindow', (_e) => {
@@ -40,6 +40,10 @@ exports.createWindow = async () => {
   ipcMain.on('openExamQuestionWindow', () => {
     windows.createExamQuestionWindow();
   });
+  ipcMain.on('openTutorSessionWindow', () => {
+    windows.createTutorSessionWindow();
+  });
+
   ipcMain.on('login', (_e, isLogin) => {
     windows.login(isLogin);
   });
@@ -54,5 +58,13 @@ exports.createWindow = async () => {
   });
   ipcMain.handle('isExamSessionWindowOpen', () => {
     return windows.examSessionWindow !== null;
+  });
+  ipcMain.handle('closeExamWindow', () => {
+    try {
+      windows.createExamQuestionWindow();
+      return true;
+    } catch (error) {
+      return false;
+    }
   });
 };

@@ -1,7 +1,6 @@
 import { store, addStudentStream, addStudentViolation } from '../../../store';
 import { v4 as uuidv4 } from 'uuid';
 
-
 export class User {
   constructor(examSessionId, device, user, socket, producerIds) {
     this.setSocket(socket);

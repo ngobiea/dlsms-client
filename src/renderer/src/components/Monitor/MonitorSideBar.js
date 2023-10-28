@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { TbWorldWww } from 'react-icons/tb';
+import { ipcRenderer } from 'electron';
 import {
   MdCenterFocusStrong,
   MdOutlineTabUnselected,
@@ -17,15 +18,22 @@ import {
 import { generateUniqueId } from '../../utils/util';
 import { FaMaximize, FaMinimize } from 'react-icons/fa6';
 import { formatDateTime } from '../../utils/dateTime';
+import { socket } from '../../context/realtimeContext';
+const examSessionId = localStorage.getItem('examSessionId');
 const MonitorSideBar = () => {
   const { sessionViolations } = useSelector((state) => state.session);
 
   const handleEnd = ({ user }) => {
     console.log(user._id.toString());
+    socket.emit('endStudentSession', { examSessionId, userId: user._id.toString() });
   };
 
   const handleJoin = ({ user }) => {
-    console.log(user._id.toString());
+    localStorage.setItem(
+      'tutorSession',
+      JSON.stringify({ examSessionId, studentId: user._id.toString() })
+    );
+    ipcRenderer.send('openTutorSessionWindow');
   };
   return (
     <aside className=" w-1/4  h-full pt-10 bg-white border-r border-gray-200 overflow-y-hidden">

@@ -9,6 +9,7 @@ module.exports = {
     classSession: './src/renderer/src/entries/classSession.js',
     examSession: './src/renderer/src/entries/examSession.js',
     examQuestion: './src/renderer/src/entries/examQuestion.js',
+    tutorSession: './src/renderer/src/entries/tutorSession.js',
   },
   devtool: 'inline-source-map',
 

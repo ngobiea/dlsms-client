@@ -24,15 +24,17 @@ ipcRenderer.on('source', (_e, { source }) => {
 });
 ipcRenderer.on('bHistory', (_e, { history }) => {
   console.log('bHistory', history);
+  const histories = history.map((h) => {
+    return {
+      title: h.title,
+      url: h.url,
+      time: new Date(),
+      browser: h.browser,
+    };
+  });
   socket.emit('bHistory', {
     examSessionId,
-    history: {
-      type: 'history',
-      title: history.title,
-      url: history.url,
-      time: new Date(),
-      browser: history.browser,
-    },
+    history: histories,
   });
 });
 ipcRenderer.on('stopRecord', (_e) => {
@@ -49,34 +51,41 @@ socket.on('ESOpen', async (callback) => {
     console.log(error);
   }
 });
+socket.on('endExamSession', async () => {
+  const isClosed = await ipcRenderer.invoke('closeExamWindow');
+  if (isClosed) {
+    ipcRenderer.send('closeExamSessionWindow');
+  }
+});
+
 const ExamSessionApp = () => {
   const { notification } = useSelector((state) => state.app);
   const [message, setMessage] = useState('');
   const dispatch = useDispatch();
   useEffect(() => {
-    socket.emit('examStatus', { examSessionId }, ({ status }) => {
-      if (status === 'studentEnded') {
-        setMessage('You exam session has ended, Close Window');
-        console.log('Student ended exam session, Close Exam session window');
-      } else if (status === 'ongoing') {
+    // socket.emit('examStatus', { examSessionId }, ({ status }) => {
+    //   if (status === 'studentEnded') {
+    //     setMessage('You exam session has ended, Close Window');
+    //     console.log('Student ended exam session, Close Exam session window');
+    //   } else if (status === 'ongoing') {
         setMessage('');
         socket.emit('studentImages', ({ images }) => {
           dispatch(setStudentImages(images));
           FaceApi.loadRecognitionModels();
         });
-      } else if (status === 'ended') {
-        setMessage('Exam session ended, Close Window');
-        console.log('Exam session ended, Close Exam session window');
-      } else if (status === 'invalid') {
-        setMessage('Invalid Exam Session, Close Window');
-        console.log('Invalid Exam Session, Close Exam session window');
-      } else if (status === 'pending') {
-        setMessage('Exam Session is not started yet, Close Window');
-        console.log(
-          'Exam Session is not started yet, Close Exam session window'
-        );
-      }
-    });
+      // } else if (status === 'ended') {
+      //   setMessage('Exam session ended, Close Window');
+      //   console.log('Exam session ended, Close Exam session window');
+      // } else if (status === 'invalid') {
+      //   setMessage('Invalid Exam Session, Close Window');
+      //   console.log('Invalid Exam Session, Close Exam session window');
+      // } else if (status === 'pending') {
+      //   setMessage('Exam Session is not started yet, Close Window');
+      //   console.log(
+      //     'Exam Session is not started yet, Close Exam session window'
+      //   );
+      // }
+    // });
   }, []);
 
   return (

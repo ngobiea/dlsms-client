@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld('account', {
   getRequire: () => ipcRenderer.invoke('require'),
   getMediasoup: () => ipcRenderer.invoke('mediasoup-client'),
   openSessionWindow: () => ipcRenderer.send('openSessionWindow'),
+  openTutorSessionWindow: () => ipcRenderer.send('openTutorSessionWindow'),
   closeSessionWindow: () => ipcRenderer.send('closeSessionWindow'),
   openExamSessionWindow: () => ipcRenderer.send('openExamSessionWindow'),
   openExamQuestionWindow: () => ipcRenderer.send('openExamQuestionWindow'),
