@@ -1844,11 +1844,6 @@ ajv@^8.0.0, ajv@^8.8.2, ajv@^8.9.0:
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
-ansi-colors@^4.1.1:
-  version "4.1.3"
-  resolved "https://registry.npmjs.org/ansi-colors/-/ansi-colors-4.1.3.tgz"
-  integrity sha512-/6w/C21Pm1A7aZitlI5Ni/2J6FFQN8i1Cvz3kHABAAbw93v/NlvKdVOqz7CCWz/3iv/JplRSEEZ83XION15ovw==
-
 ansi-escapes@^4.3.0:
   version "4.3.2"
   resolved "https://registry.npmjs.org/ansi-escapes/-/ansi-escapes-4.3.2.tgz"
@@ -2662,14 +2657,6 @@ enhanced-resolve@^5.15.0:
   dependencies:
     graceful-fs "^4.2.4"
     tapable "^2.2.0"
-
-"enquirer@>= 2.3.0 < 3":
-  version "2.4.1"
-  resolved "https://registry.npmjs.org/enquirer/-/enquirer-2.4.1.tgz"
-  integrity sha512-rRqJg/6gd538VHvR3PSrdRBb/1Vy2YfzHqzvbhGIQpDRKIa4FgV/54b5Q1xYSxOOwKvjXweS26E0Q+nAMwp2pQ==
-  dependencies:
-    ansi-colors "^4.1.1"
-    strip-ansi "^6.0.1"
 
 env-paths@^2.2.0:
   version "2.2.1"
@@ -5234,7 +5221,8 @@ sprintf-js@^1.1.2:
 
 "sqlite-async@github:tance77/sqlite-async":
   version "1.1.1"
-  resolved "git+ssh://git@github.com/tance77/sqlite-async.git#25311b96f1cd297f2113c8b1967affe08cd072d9"
+  resolved "git+ssh://git@github.com/tance77/sqlite-async.git"
+  integrity sha512-krgCbogsGfmVF6JRe8buBtG1TDvMnqe0cTPI6/8p6udOkQ3nn1O7dlNUypqLgOJ9SpLcJxZWMrGtVC0hUgEiLw==
   dependencies:
     sqlite3 "^5.0.2"
 

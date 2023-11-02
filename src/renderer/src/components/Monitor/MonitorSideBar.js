@@ -25,7 +25,7 @@ const MonitorSideBar = () => {
 
   const handleEnd = ({ user }) => {
     console.log(user._id.toString());
-    socket.emit('endStudentSession', { examSessionId, userId: user._id.toString() });
+    socket.emit('endStudentSession', { examSessionId, studentId: user._id.toString() });
   };
 
   const handleJoin = ({ user }) => {
@@ -52,13 +52,13 @@ const MonitorSideBar = () => {
                       {violation.user.firstName}@{violation.user.studentId}
                     </div>
                     <ViolationIcons violation={violation} />
-                    <div
-                      onClick={() => {
-                        handleJoin({ user: violation.user });
-                      }}
-                      className=" absolute top-2 right-2"
-                    >
-                      <button className="mx-2 px-2 py-1 text-white bg-green-500 rounded-lg">
+                    <div className=" absolute top-2 right-2">
+                      <button
+                        onClick={() => {
+                          handleJoin({ user: violation.user });
+                        }}
+                        className="mx-2 px-2 py-1 text-white bg-green-500 rounded-lg"
+                      >
                         Join
                       </button>
                       <button

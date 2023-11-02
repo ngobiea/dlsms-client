@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { PiPhoneDisconnectFill, PiRecordFill } from 'react-icons/pi';
 import { ipcRenderer } from 'electron';
 import classSessionContext from '../../context/ClassSessionContext';
+import { shareScreen, stopShareScreen } from '../../utils/screen';
 import {
   MdOutlineChat,
   MdPeopleOutline,
@@ -21,16 +22,27 @@ import {
   setMicEnable,
   setVideoEnable,
   setIsRecording,
+  store,
 } from '../../store';
 import {
   disableWebCam,
   enableWebCam,
   enableMic,
   disableMic,
+  muteMic,
+  unmuteMic,
 } from '../../utils/webcamSetup';
 
+ipcRenderer.on('source', (_e, { source }) => {
+  console.log('source', source);
+  // store.dispatch(setScreenId(source.id));
+  store.dispatch(setIsShareScreen(true));
+  shareScreen(source.id);
+});
+
 const SessionControl = () => {
-  const { connectSendTransport } = useContext(classSessionContext);
+  const { classSession } = useContext(classSessionContext);
+  console.log(classSession);
   const dispatch = useDispatch();
   const {
     isMicEnable,
@@ -41,15 +53,21 @@ const SessionControl = () => {
     isRecording,
     activeBorder,
     localVideoStream,
+    localScreenStream,
   } = useSelector((state) => {
     return state.session;
   });
 
   useEffect(() => {
     if (localVideoStream) {
-      connectSendTransport();
+      classSession.produceVideo();
     }
   }, [localVideoStream]);
+  useEffect(() => {
+    if (localScreenStream) {
+      classSession.produceScreen();
+    }
+  }, [localScreenStream]);
 
   const handleRecoding = () => {
     if (isRecording) {
@@ -77,15 +95,9 @@ const SessionControl = () => {
     console.log(isVideoEnable);
     if (isVideoEnable) {
       disableWebCam();
-      if (isMicEnable) {
-        enableWebCam(isMicEnable, false);
-      }
-    } else if (isMicEnable) {
-      enableWebCam(isMicEnable, true);
     } else {
       enableWebCam(isMicEnable, true);
     }
-    dispatch(setVideoEnable(!isVideoEnable));
   };
   const handleMic = () => {
     if (isMicEnable) {
@@ -103,9 +115,10 @@ const SessionControl = () => {
   };
   const handleShareScreen = () => {
     if (isScreenEnable) {
+      stopShareScreen();
       dispatch(setIsShareScreen(false));
     } else {
-      dispatch(setIsShareScreen(true));
+      ipcRenderer.send('showScreenSources');
     }
   };
   const handleLeaveSession = () => {
@@ -115,7 +128,6 @@ const SessionControl = () => {
   };
   const handleEndSession = () => {
     window.account.closeSessionWindow('closeSessionWindow');
-
     ipcRenderer.send('closeSessionWindow');
   };
   const activeBorderClass =

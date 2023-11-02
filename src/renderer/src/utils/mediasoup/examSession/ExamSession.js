@@ -34,12 +34,12 @@ export class ExamSession {
     }
   }
 
-
   setSocket(socket) {
     this.socket = socket;
     this.socket.on('newESStudent', this.newStudent.bind(this));
     this.socket.on('newESSProducer', this.newProducer.bind(this));
     this.socket.on('closeESCT', this.closeConsumerTransport.bind(this));
+    this.socket.on('connectToTutor', this.connectToTutor.bind(this));
   }
 
   setUpUser() {
@@ -293,5 +293,11 @@ export class ExamSession {
       this.activeStudents.get(userId).closeConsumerTransport();
       this.activeStudents.delete(userId);
     }
+  }
+  connectToTutor({ examSessionId, userId }) {
+    console.log('receive connect to tutor');
+    // if (examSessionId === this.examSessionId) {
+    //   this.activeStudents.get(userId).connectToTutor();
+    // }
   }
 }

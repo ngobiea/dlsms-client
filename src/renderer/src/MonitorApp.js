@@ -13,7 +13,7 @@ const MonitorApp = () => {
       'newExamSession',
       { examSessionId },
       async ({ rtpCapabilities }) => {
-        await examSession.loadDevice(rtpCapabilities,socket);
+        await examSession.loadDevice(rtpCapabilities, socket);
       }
     );
   }, []);

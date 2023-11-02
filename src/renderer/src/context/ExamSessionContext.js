@@ -1,3 +1,4 @@
+import React, { createContext } from 'react';
 import { ExamSession } from '../utils/mediasoup/examSession/ExamSession';
 
 const examSessionId = localStorage.getItem('examSessionId');
@@ -21,5 +22,5 @@ const ExamSessionProvider = ({ children }) => {
   );
 };
 
-export { ExamSessionProvider, examSession };
+export { ExamSessionProvider };
 export default ExamSessionContext;

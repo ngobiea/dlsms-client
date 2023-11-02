@@ -22,7 +22,6 @@ exports.createWindow = async () => {
   });
   ipcMain.on('openMonitorWindow', (_e) => {
     windows.createMonitWindow();
-    windows.createTutorSessionWindow();
   });
 
   ipcMain.on('openSessionWindow', (_e) => {
@@ -61,7 +60,7 @@ exports.createWindow = async () => {
   });
   ipcMain.handle('closeExamWindow', () => {
     try {
-      windows.createExamQuestionWindow();
+      windows.closeExamQuestionWindow();
       return true;
     } catch (error) {
       return false;

@@ -1,14 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useContext } from 'react';
 import { ipcRenderer } from 'electron';
 import Toggle from 'react-toggle';
 import { getDevices } from '../../utils/getDevices';
-import {
-  setUpWebCam,
-  disableWebCam,
-  enableWebCam,
-} from '../../utils/webcamSetup';
+import ClassSessionContext from '../../context/ClassSessionContext';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+
 import {
   setMicEnable,
   setVideoEnable,
@@ -17,19 +14,25 @@ import {
   setDefaultVideoOutputDevice,
 } from '../../store';
 import {
+  setUpWebCam,
+  disableWebCam,
+  enableWebCam,
+} from '../../utils/webcamSetup';
+import {
   MdVideocam,
   MdVideocamOff,
   MdOutlineMic,
   MdOutlineMicOff,
 } from 'react-icons/md';
+import { socket } from '../../context/realtimeContext';
 
-const sessionId = localStorage.getItem('sessionId');
-
+const classSessionId = localStorage.getItem('sessionId');
+console.log(classSessionId);
 const ClassSessionSetup = () => {
+  const { classSession } = useContext(ClassSessionContext);
   const videoRef = useRef();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const {
     isMicEnable,
     isVideoEnable,
@@ -45,8 +48,7 @@ const ClassSessionSetup = () => {
   });
 
   const handleToClassSession = () => {
-    // disableWebCam()
-    navigate('/' + sessionId);
+    navigate('/session');
   };
   const handleMic = (e) => {
     const value = e.target.checked;
@@ -58,6 +60,13 @@ const ClassSessionSetup = () => {
 
   useEffect(() => {
     getDevices();
+    socket.emit(
+      'newSession',
+      { classSessionId },
+      async ({ rtpCapabilities, peers }) => {
+        classSession.loadDevice(rtpCapabilities, socket, peers);
+      }
+    );
   }, []);
   useEffect(() => {
     if (localVideoStream) {

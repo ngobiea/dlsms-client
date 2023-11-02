@@ -4,16 +4,25 @@ import { useSelector } from 'react-redux';
 
 const SessionView = () => {
   const videoRef = useRef();
-
-  const { activeBorder, localVideoStream } = useSelector((state) => {
-    return state.session;
-  });
+  const shareScreenRef = useRef();
+  const { activeBorder, localVideoStream, localScreenStream } = useSelector(
+    (state) => {
+      return state.session;
+    }
+  );
 
   useEffect(() => {
     if (localVideoStream) {
       videoRef.current.srcObject = localVideoStream;
     }
   }, [localVideoStream]);
+
+  useEffect(() => {
+    console.log(localScreenStream);
+    if (localScreenStream) {
+      shareScreenRef.current.srcObject = localScreenStream;
+    }
+  }, [localScreenStream]);
 
   const activeFullScreenClass = 'h-full relative w-full bg-green-800';
   const inActiveFullScreenClass = 'h-full relative w-4/5 bg-green-800';
@@ -30,83 +39,9 @@ const SessionView = () => {
           <div>
             <video
               className="h-auto bg-blue-900 max-w-full "
-              // ref={videoRef}
-            ></video>
-          </div>
-          <div>
-            <video
-              className="h-auto bg-blue-900 max-w-full "
-              // ref={videoRef}
-            ></video>
-          </div>
-          <div>
-            <video
+              ref={shareScreenRef}
               autoPlay
-              className="h-auto bg-blue-900 max-w-full "
-              ref={videoRef}
-            ></video>
-          </div>
-          <div>
-            <video
-              autoPlay
-              className="h-auto bg-blue-900 max-w-full "
-              // ref={videoRef}
-            ></video>
-          </div>
-          <div>
-            <video
-              autoPlay
-              className="h-auto bg-blue-900 max-w-full "
-              // ref={videoRef}
-            ></video>
-          </div>
-          <div>
-            <video
-              autoPlay
-              className="h-auto bg-blue-900 max-w-full "
-              ref={videoRef}
-            ></video>
-          </div>
-          <div>
-            <video
-              autoPlay
-              className="h-auto bg-blue-900 max-w-full "
-              ref={videoRef}
-            ></video>
-          </div>
-          <div>
-            <video
-              autoPlay
-              className="h-auto bg-blue-900 max-w-full "
-              ref={videoRef}
-            ></video>
-          </div>
-          <div>
-            <video
-              autoPlay
-              className="h-auto bg-blue-900 max-w-full "
-              ref={videoRef}
-            ></video>
-          </div>
-          <div>
-            <video
-              autoPlay
-              className="h-auto bg-blue-900 max-w-full "
-              ref={videoRef}
-            ></video>
-          </div>
-          <div>
-            <video
-              autoPlay
-              className="h-auto bg-blue-900 max-w-full "
-              ref={videoRef}
-            ></video>
-          </div>
-          <div>
-            <video
-              autoPlay
-              className="h-auto bg-blue-900 max-w-full "
-              ref={videoRef}
+              muted
             ></video>
           </div>
         </div>

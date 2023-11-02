@@ -81,6 +81,9 @@ import {
   setSessionViolations,
   setRecordingStream,
   setScreenId,
+  addPeerStream,
+  addPeers,
+  removePeer,
 } from './slices/sessionSlice';
 
 import { mediasoupReducer } from './slices/mediasoupSlice';
@@ -216,6 +219,9 @@ export {
   setSessionViolations,
   setRecordingStream,
   setScreenId,
+  addPeerStream,
+  addPeers,
+  removePeer,
 
   //examSession slice
   setCorrectOption,

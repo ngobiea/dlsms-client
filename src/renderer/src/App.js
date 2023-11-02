@@ -1,7 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import ClassRoomsPage from './pages/ClassRoomPages/ClassRoomsPage';
-import MonitorPage from './pages/MonitorPages/MonitorPage';
 import AssignmentPage from './pages/AssignmentPages/AssignmentPage';
 import NotificationPage from './pages/NotificationPages/NotificationPage';
 import ReportPage from './pages/ReportPages/ReportPage';
@@ -21,7 +20,6 @@ import ExamConfirm from './components/App/ExamConfirm';
 import Notification from './components/Notification';
 import { useSelector } from 'react-redux';
 
-console.log(localStorage.getItem('examSessionId'));
 const App = () => {
   const { isShowExamConfirm } = useSelector((state) => state.examSession);
   const { notification } = useSelector((state) => state.app);
@@ -45,7 +43,6 @@ const App = () => {
             <Route path="create" element={<CreateAssignment />} />
           </Route>
         </Route>
-        <Route path="monitor" element={<MonitorPage />} />
         <Route path="assignment" element={<AssignmentPage />} />
         <Route path="report" element={<ReportPage />} />
         <Route path="notification" element={<NotificationPage />} />

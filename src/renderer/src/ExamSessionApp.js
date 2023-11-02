@@ -52,10 +52,12 @@ socket.on('ESOpen', async (callback) => {
   }
 });
 socket.on('endExamSession', async () => {
+  console.log('received endExamSession event');
   const isClosed = await ipcRenderer.invoke('closeExamWindow');
-  if (isClosed) {
+  console.log('isClosed examQuestionWindow', isClosed);
+  setTimeout(() => {
     ipcRenderer.send('closeExamSessionWindow');
-  }
+  }, 3000);
 });
 
 const ExamSessionApp = () => {
@@ -68,23 +70,23 @@ const ExamSessionApp = () => {
     //     setMessage('You exam session has ended, Close Window');
     //     console.log('Student ended exam session, Close Exam session window');
     //   } else if (status === 'ongoing') {
-        setMessage('');
-        socket.emit('studentImages', ({ images }) => {
-          dispatch(setStudentImages(images));
-          FaceApi.loadRecognitionModels();
-        });
-      // } else if (status === 'ended') {
-      //   setMessage('Exam session ended, Close Window');
-      //   console.log('Exam session ended, Close Exam session window');
-      // } else if (status === 'invalid') {
-      //   setMessage('Invalid Exam Session, Close Window');
-      //   console.log('Invalid Exam Session, Close Exam session window');
-      // } else if (status === 'pending') {
-      //   setMessage('Exam Session is not started yet, Close Window');
-      //   console.log(
-      //     'Exam Session is not started yet, Close Exam session window'
-      //   );
-      // }
+    setMessage('');
+    socket.emit('studentImages', ({ images }) => {
+      dispatch(setStudentImages(images));
+      FaceApi.loadRecognitionModels();
+    });
+    // } else if (status === 'ended') {
+    //   setMessage('Exam session ended, Close Window');
+    //   console.log('Exam session ended, Close Exam session window');
+    // } else if (status === 'invalid') {
+    //   setMessage('Invalid Exam Session, Close Window');
+    //   console.log('Invalid Exam Session, Close Exam session window');
+    // } else if (status === 'pending') {
+    //   setMessage('Exam Session is not started yet, Close Window');
+    //   console.log(
+    //     'Exam Session is not started yet, Close Exam session window'
+    //   );
+    // }
     // });
   }, []);
 

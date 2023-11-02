@@ -13,6 +13,10 @@ import FaceApi from '../../utils/face/FaceApi';
 import { getWebCams, onWebCam, offWebCam } from '../../utils/face/webcam';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { ipcRenderer } from 'electron';
+
+
+
 const VerificationPage = () => {
   const zero = 0;
 

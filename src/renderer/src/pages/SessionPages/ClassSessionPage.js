@@ -2,7 +2,7 @@ import React from 'react';
 
 import SessionControl from './SessionControl';
 import SessionView from './SessionView';
-const ClassSession = () => {
+const ClassSessionPage = () => {
   return (
     <div className="relative pt-10 h-screen overflow-hidden">
       <SessionControl />
@@ -11,4 +11,4 @@ const ClassSession = () => {
   );
 };
 
-export default ClassSession;
+export default ClassSessionPage;

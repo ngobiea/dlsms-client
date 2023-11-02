@@ -18,7 +18,7 @@ exports.createSessionWindow = (isShow) => {
       symbolColor: 'white',
       height: 40,
     },
-    title: 'main',
+    title: 'session',
     show: isShow,
     icon: path.join(__dirname, '../../renderer/public/images/dlsms2.png'),
   });

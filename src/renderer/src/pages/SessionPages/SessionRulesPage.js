@@ -2,7 +2,7 @@ import React from 'react';
 import { AiOutlineArrowRight, AiOutlineClose } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
 
-const RulesPage = () => {
+const SessionRulesPage = () => {
   return (
     <div className="overflow-y-auto overflow-x-hidden overscroll-contain h-full w-full">
       <div className="p-8">
@@ -97,8 +97,7 @@ const RulesPage = () => {
                 <AiOutlineClose className="w-5 h-5 ml-2 -mr-1" />
               </Link>
               <Link
-                // to={`verify`}
-                to={`/setup`}
+                to={`/verify`}
                 type="button"
                 className="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
@@ -112,4 +111,4 @@ const RulesPage = () => {
     </div>
   );
 };
-export default RulesPage;
+export default SessionRulesPage;

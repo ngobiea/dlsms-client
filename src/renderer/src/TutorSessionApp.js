@@ -1,21 +1,20 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect } from 'react';
 import TitleNav from './components/TitleNav';
-
+import { Tutor } from './utils/mediasoup/examSession/Tutor';
 const { studentId, examSessionId } = JSON.parse(
   localStorage.getItem('tutorSession')
 );
-
+const tutor = new Tutor(examSessionId, studentId);
 console.log(studentId, examSessionId);
 import { socket } from './context/realtimeContext';
 const TutorSessionApp = () => {
-  const { examSession } = useContext(ExamSessionContext);
   useEffect(() => {
     socket.emit(
       'newExamSession',
       { examSessionId },
       async ({ rtpCapabilities }) => {
         console.log(rtpCapabilities);
-        examSession.loadTutorDevice(rtpCapabilities, socket, studentId);
+        tutor.loadDevice(rtpCapabilities, socket, studentId);
       }
     );
   }, []);

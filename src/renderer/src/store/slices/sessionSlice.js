@@ -31,6 +31,7 @@ const sessionSlice = createSlice({
     videoParams: { params },
     screenShareParams: { params },
     activeStudentsInExamSession: [],
+    peers: [],
     sessionViolations: [{}],
     screenId: null,
   },
@@ -163,6 +164,9 @@ const sessionSlice = createSlice({
     addStudentDetails(state, action) {
       state.activeStudentsInExamSession.push({ ...action.payload });
     },
+    addPeers(state, action) {
+      state.peers.push(action.payload);
+    },
 
     addStudentStream(state, action) {
       const { id } = action.payload;
@@ -173,6 +177,14 @@ const sessionSlice = createSlice({
             : student;
         }
       );
+    },
+    addPeerStream(state, action) {
+      const { id } = action.payload;
+      state.peers = state.peers.map((peer) => {
+        return peer._id.toString() === id
+          ? { ...peer, ...action.payload }
+          : peer;
+      });
     },
 
     updateActiveStudentsInExamSession(state, action) {
@@ -185,11 +197,24 @@ const sessionSlice = createSlice({
         }
       );
     },
+    updatePeers(state, action) {
+      const { id } = action.payload;
+      state.peers = state.peers.map((peer) => {
+        return peer._id.toString() === id
+          ? { ...peer, ...action.payload }
+          : peer;
+      });
+    },
     removeStudentFromActiveExamSession(state, action) {
       state.activeStudentsInExamSession =
         state.activeStudentsInExamSession.filter(
           (student) => student._id.toString() !== action.payload
         );
+    },
+    removePeer(state, action) {
+      state.peers = state.peers.filter(
+        (peer) => peer._id.toString() !== action.payload
+      );
     },
     addStudentViolation(state, action) {
       const { id } = action.payload;
@@ -248,5 +273,8 @@ export const {
   setSessionViolations,
   setRecordingStream,
   setScreenId,
+  addPeerStream,
+  addPeers,
+  removePeer,
 } = sessionSlice.actions;
 export const sessionReducer = sessionSlice.reducer;
