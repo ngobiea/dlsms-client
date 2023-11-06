@@ -3,7 +3,6 @@ import { params } from '../../utils/mediasoup/params';
 const sessionSlice = createSlice({
   name: 'session',
   initialState: {
-    isMicEnable: false,
     micState: 'disable',
     isVideoEnable: false,
     isShowChat: false,
@@ -36,9 +35,6 @@ const sessionSlice = createSlice({
     screenId: null,
   },
   reducers: {
-    setMicEnable(state, action) {
-      state.isMicEnable = action.payload;
-    },
     setMicState(state, action) {
       state.micState = action.payload;
     },
@@ -126,7 +122,6 @@ const sessionSlice = createSlice({
     },
     setLocalAudioStream(state, action) {
       state.localAudioStream = action.payload;
-      console.log(action.payload);
       if (action.payload) {
         state.audioParams = {
           ...state.audioParams,

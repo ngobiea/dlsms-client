@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import {
-  setMicEnable,
+  setMicState,
   setVideoEnable,
   setDefaultAudioInputDevice,
   setDefaultAudioOutputDevice,
@@ -27,14 +27,12 @@ import {
 import { socket } from '../../context/realtimeContext';
 
 const classSessionId = localStorage.getItem('sessionId');
-console.log(classSessionId);
 const ClassSessionSetup = () => {
   const { classSession } = useContext(ClassSessionContext);
   const videoRef = useRef();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {
-    isMicEnable,
     isVideoEnable,
     audioInputDevices,
     audioOutputDevices,
@@ -43,6 +41,7 @@ const ClassSessionSetup = () => {
     defaultAudioInputDevice,
     defaultAudioOutputDevice,
     defaultVideoOutputDevice,
+    micState,
   } = useSelector((state) => {
     return state.session;
   });
@@ -52,7 +51,11 @@ const ClassSessionSetup = () => {
   };
   const handleMic = (e) => {
     const value = e.target.checked;
-    dispatch(setMicEnable(value));
+    if (value) {
+      dispatch(setMicState('enable'));
+    } else {
+      dispatch(setMicState('disable'));
+    }
   };
   const handleCancel = () => {
     ipcRenderer.send('closeSessionWindow');
@@ -132,7 +135,7 @@ const ClassSessionSetup = () => {
               </label>
             </div>
             <div className="flex">
-              {isMicEnable ? (
+              {micState === 'unmute' || micState == 'enable' ? (
                 <MdOutlineMic className="w-10 h-6 self-center" />
               ) : (
                 <MdOutlineMicOff className="w-10 h-6 self-center" />
@@ -141,7 +144,7 @@ const ClassSessionSetup = () => {
                 <Toggle
                   icons={false}
                   onChange={handleMic}
-                  checked={isMicEnable}
+                  checked={micState === 'unmute' || micState == 'enable'}
                 />
               </label>
             </div>

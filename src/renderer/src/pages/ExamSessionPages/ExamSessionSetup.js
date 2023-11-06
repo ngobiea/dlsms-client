@@ -37,7 +37,6 @@ const ExamSessionSetup = () => {
   const dispatch = useDispatch();
 
   const {
-    isMicEnable,
     isVideoEnable,
     localVideoStream,
     micState,
@@ -170,7 +169,7 @@ const ExamSessionSetup = () => {
               </label>
             </div>
             <div className="flex">
-              {isMicEnable ? (
+              {micState ==='unmute' || micState==='enable' ? (
                 <MdOutlineMic className="w-10 h-6 self-center" />
               ) : (
                 <MdOutlineMicOff className="w-10 h-6 self-center" />

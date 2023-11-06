@@ -18,7 +18,6 @@ const SessionView = () => {
   }, [localVideoStream]);
 
   useEffect(() => {
-    console.log(localScreenStream);
     if (localScreenStream) {
       shareScreenRef.current.srcObject = localScreenStream;
     }

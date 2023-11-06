@@ -267,7 +267,6 @@ export class ClassSession {
             return;
           }
           this.audioProducer.pause();
-          this.audioProducer = null;
           console.log('Audio producer paused');
         }
       );

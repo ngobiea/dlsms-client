@@ -16,6 +16,10 @@ export class Peer {
   }
   setSocket(socket) {
     this.socket = socket;
+    this.socket.on('closeCSConsumer', this.closeConsumer.bind(this));
+    this.socket.on('pauseCSConsumer', this.pauseConsumer.bind(this));
+    this.socket.on('resumeCSConsumer', this.resumeConsumer.bind(this));
+
   }
   createConsumerTransport() {
     this.socket.emit(
@@ -140,4 +144,23 @@ export class Peer {
       this.consumers.delete(consumerId);
     }
   }
+  pauseConsumer({classSessionId,consumerId}) {
+    console.log('pause consumer received');
+    if (
+      classSessionId === this.classSessionId &&
+      this.consumers.has(consumerId)
+    ) {
+      this.consumers.get(consumerId).pause();
+    }
+  }
+  resumeConsumer({classSessionId,consumerId}) {
+    console.log('resume consumer received');
+    if (
+      classSessionId === this.classSessionId &&
+      this.consumers.has(consumerId)
+    ) {
+      this.consumers.get(consumerId).resume();
+    }
+  }
+
 }

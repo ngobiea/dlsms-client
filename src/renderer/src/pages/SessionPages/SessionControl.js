@@ -28,7 +28,6 @@ import {
   disableWebCam,
   enableWebCam,
   enableMic,
-  disableMic,
   muteMic,
   unmuteMic,
 } from '../../utils/webcamSetup';
@@ -42,10 +41,9 @@ ipcRenderer.on('source', (_e, { source }) => {
 
 const SessionControl = () => {
   const { classSession } = useContext(classSessionContext);
-  console.log(classSession);
   const dispatch = useDispatch();
   const {
-    isMicEnable,
+    micState,
     isVideoEnable,
     isScreenEnable,
     isShowChat,
@@ -69,6 +67,18 @@ const SessionControl = () => {
     }
   }, [localScreenStream]);
 
+  useEffect(() => {
+    if (micState === 'enable') {
+      enableMic()
+        .then((stream) => {
+          classSession.produceAudio(stream);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, []);
+
   const handleRecoding = () => {
     if (isRecording) {
       dispatch(setIsRecording(false));
@@ -91,27 +101,27 @@ const SessionControl = () => {
     }
   };
   const handleVideo = () => {
-    console.log(isMicEnable);
-    console.log(isVideoEnable);
     if (isVideoEnable) {
       disableWebCam();
+      classSession.closeProducer('video');
     } else {
-      enableWebCam(isMicEnable, true);
+      enableWebCam();
     }
   };
   const handleMic = () => {
-    if (isMicEnable) {
-      if (isVideoEnable) {
-        disableMic();
-      } else {
-        disableWebCam();
-      }
-    } else if (isVideoEnable) {
-      enableMic();
-    } else {
-      enableWebCam(true, isVideoEnable);
+    console.log('micState ', micState);
+    if (micState === 'disable') {
+      enableMic().then((stream) => {
+        classSession.produceAudio(stream);
+      });
+      classSession.produceAudio();
+    } else if (micState === 'mute') {
+      classSession.resumeAudioProducer();
+      unmuteMic();
+    } else if (micState === 'unmute' || micState === 'enable') {
+      classSession.pauseAudioProducer();
+      muteMic();
     }
-    dispatch(setMicEnable(!isMicEnable));
   };
   const handleShareScreen = () => {
     if (isScreenEnable) {
@@ -147,7 +157,9 @@ const SessionControl = () => {
       <div className="self-center pr-3 flex">
         <div className="border-r-2 flex border-green-800">
           <div
-            onClick={handleRecoding}
+            onClick={() => {
+              handleRecoding();
+            }}
             className="flex flex-col px-2 mx-2 text-green-800 cursor-pointer hover:text-green-500"
           >
             <PiRecordFill className="self-center  pt-1 w-6 h-6" />
@@ -192,7 +204,7 @@ const SessionControl = () => {
             onClick={handleMic}
             className="flex flex-col px-2 mx-2 text-green-600 cursor-pointer hover:text-green-500"
           >
-            {isMicEnable ? (
+            {micState === 'unmute' || micState === 'enable' ? (
               <MdOutlineMic className="self-center pt-1 w-6 h-6" />
             ) : (
               <MdOutlineMicOff className="self-center pt-1 w-6 h-6" />
