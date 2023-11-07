@@ -19,8 +19,6 @@ import {
   setIsShareScreen,
   setIsShowParticipants,
   setIsShowChat,
-  setMicEnable,
-  setVideoEnable,
   setIsRecording,
   store,
 } from '../../store';

@@ -1,15 +1,14 @@
 import React, { useEffect, useRef } from 'react';
-
+import SessionUserCard from '../../components/classSession/SessionUserCard';
 import { useSelector } from 'react-redux';
 
 const SessionView = () => {
   const videoRef = useRef();
   const shareScreenRef = useRef();
-  const { activeBorder, localVideoStream, localScreenStream } = useSelector(
-    (state) => {
+  const { activeBorder, localVideoStream, localScreenStream, peers } =
+    useSelector((state) => {
       return state.session;
-    }
-  );
+    });
 
   useEffect(() => {
     if (localVideoStream) {
@@ -35,20 +34,15 @@ const SessionView = () => {
         }
       >
         <div className="grid grid-cols-2 md:grid-cols-5 gap-1">
-          <div>
-            <video
-              className="h-auto bg-blue-900 max-w-full "
-              ref={shareScreenRef}
-              autoPlay
-              muted
-            ></video>
-          </div>
+          {peers.map((peer) => {
+            return <SessionUserCard key={peer.userId} user={peer} />;
+          })}
         </div>
 
         <div className="absolute bottom-0 right-0  h-60  w-72 bg-blue-900">
           <video
             autoPlay
-            className=" h-max-full bg-blue-900 max-w-full "
+            className=" h-64 bg-blue-900 max-w-full "
             ref={videoRef}
           ></video>
         </div>
