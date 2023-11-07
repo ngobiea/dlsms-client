@@ -98,12 +98,14 @@ export class User {
         producerId,
       },
       async ({ serverParams }) => {
-        if (serverParams.error) {
-          console.log(serverParams.error);
+        const { id, kind, rtpParameters, producerAppData, error } =
+          serverParams;
+
+        if (error) {
+          console.log(error);
           return;
         }
 
-        const { id, kind, rtpParameters, producerAppData } = serverParams;
         const consumer = await this.consumerTransport.consume({
           id,
           producerId,

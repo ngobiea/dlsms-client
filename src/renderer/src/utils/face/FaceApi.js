@@ -18,6 +18,7 @@ let recognitions = [];
 
 export default class FaceApi {
   static realtimeInterval = rTInterval;
+  static labeledFaceDescriptors = null;
 
   static async loadRecognitionModels() {
     const accountType = store.getState().account.accountType;
@@ -29,6 +30,7 @@ export default class FaceApi {
         await faceapi.nets.faceLandmark68Net.loadFromUri(modelsPath);
         await faceapi.nets.faceRecognitionNet.loadFromUri(modelsPath);
         console.log('Recognition Models Loaded');
+        FaceApi.labeledFaceDescriptors = await this.getLabeledFaceDescriptors();
       }
     } catch (error) {
       console.log('Error occur while Loading models', error);
@@ -60,8 +62,7 @@ export default class FaceApi {
     recognitions = [];
     try {
       store.dispatch(setRecognitionResult({ result: -1 }));
-      const labeledFaceDescriptors = await FaceApi.getLabeledFaceDescriptors();
-      const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors);
+      const faceMatcher = new faceapi.FaceMatcher(FaceApi.labeledFaceDescriptors);
       let interval = null;
       interval = setInterval(async () => {
         const detectedFaces = await faceapi

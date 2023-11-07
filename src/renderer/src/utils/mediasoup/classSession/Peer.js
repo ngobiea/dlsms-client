@@ -19,7 +19,6 @@ export class Peer {
     this.socket.on('closeCSConsumer', this.closeConsumer.bind(this));
     this.socket.on('pauseCSConsumer', this.pauseConsumer.bind(this));
     this.socket.on('resumeCSConsumer', this.resumeConsumer.bind(this));
-
   }
   createConsumerTransport() {
     this.socket.emit(
@@ -72,11 +71,13 @@ export class Peer {
         producerId,
       },
       async ({ serverParams }) => {
-        if (serverParams.error) {
-          console.log(serverParams.error);
+        const { id, kind, rtpParameters, producerAppData, error } =
+          serverParams;
+
+        if (error) {
+          console.log(error);
           return;
         }
-        const { id, kind, rtpParameters, producerAppData } = serverParams;
 
         const consumer = await this.consumerTransport.consume({
           id,
@@ -110,7 +111,7 @@ export class Peer {
           this.consumers.delete(consumer.id);
         });
         this.socket.emit('resumeCSC', {
-          examSessionId: this.examSessionId,
+          classSessionId: this.classSessionId,
           consumerId: id,
         });
       }
@@ -144,7 +145,7 @@ export class Peer {
       this.consumers.delete(consumerId);
     }
   }
-  pauseConsumer({classSessionId,consumerId}) {
+  pauseConsumer({ classSessionId, consumerId }) {
     console.log('pause consumer received');
     if (
       classSessionId === this.classSessionId &&
@@ -153,7 +154,7 @@ export class Peer {
       this.consumers.get(consumerId).pause();
     }
   }
-  resumeConsumer({classSessionId,consumerId}) {
+  resumeConsumer({ classSessionId, consumerId }) {
     console.log('resume consumer received');
     if (
       classSessionId === this.classSessionId &&
@@ -162,5 +163,4 @@ export class Peer {
       this.consumers.get(consumerId).resume();
     }
   }
-
 }

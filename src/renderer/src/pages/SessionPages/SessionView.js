@@ -35,7 +35,7 @@ const SessionView = () => {
       >
         <div className="grid grid-cols-2 md:grid-cols-5 gap-1">
           {peers.map((peer) => {
-            return <SessionUserCard key={peer.userId} user={peer} />;
+            return <SessionUserCard key={peer._id.toString()} user={peer} />;
           })}
         </div>
 

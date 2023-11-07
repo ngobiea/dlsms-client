@@ -1,4 +1,4 @@
-import { store, addPeers } from '../../../store';
+import { store, addPeers, removePeer } from '../../../store';
 import { Device } from 'mediasoup-client';
 import { Peer } from './Peer';
 export class ClassSession {
@@ -33,6 +33,7 @@ export class ClassSession {
     this.socket = socket;
     socket.on('newCSPeer', this.newPeer.bind(this));
     socket.on('newCSProducer', this.newProducer.bind(this));
+    socket.on('closeCSCT', this.closeConsumerTransport.bind(this));
   }
   addPeers(peers) {
     console.log(peers);
@@ -209,6 +210,7 @@ export class ClassSession {
     }
   }
   newProducer({ classSessionId, userId, producerId }) {
+    console.log('receive new producer');
     try {
       if (this.classSessionId !== classSessionId) {
         console.log('Not this class session producer');
@@ -291,6 +293,19 @@ export class ClassSession {
           console.log('Audio producer resumed');
         }
       );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  closeConsumerTransport({ classSessionId, userId }) {
+    try {
+      if (this.classSessionId !== classSessionId) {
+        console.log('Not this class session consumer transport');
+        return;
+      }
+      store.dispatch(removePeer(userId));
+      this.peers.get(userId).closeConsumerTransport();
+      this.peers.delete(userId);
     } catch (error) {
       console.log(error);
     }

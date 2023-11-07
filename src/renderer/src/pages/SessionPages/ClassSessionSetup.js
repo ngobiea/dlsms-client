@@ -135,7 +135,7 @@ const ClassSessionSetup = () => {
               </label>
             </div>
             <div className="flex">
-              {micState === 'unmute' || micState == 'enable' ? (
+              {micState === 'unmute' || micState === 'enable' ? (
                 <MdOutlineMic className="w-10 h-6 self-center" />
               ) : (
                 <MdOutlineMicOff className="w-10 h-6 self-center" />
@@ -144,7 +144,7 @@ const ClassSessionSetup = () => {
                 <Toggle
                   icons={false}
                   onChange={handleMic}
-                  checked={micState === 'unmute' || micState == 'enable'}
+                  checked={micState === 'unmute' || micState === 'enable'}
                 />
               </label>
             </div>
