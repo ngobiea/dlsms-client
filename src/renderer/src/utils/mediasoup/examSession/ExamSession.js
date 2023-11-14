@@ -3,9 +3,11 @@ import {
   store,
   addStudentDetails,
   removeStudentFromActiveExamSession,
+  addPeers,
 } from '../../../store';
 import { Device } from 'mediasoup-client';
 import { User } from './User';
+import { OneUser } from './OneUser';
 export class ExamSession {
   constructor(examSessionId, accountType) {
     this.socket = null;
@@ -17,7 +19,7 @@ export class ExamSession {
     this.screenProducer = null;
     this.producerTransport = null;
     this.activeStudents = new Map();
-    this.tutorConsumerTransport = null;
+    this.tutor = null;
   }
   async loadDevice(rtpCapabilities, ws) {
     this.setSocket(ws);
@@ -39,7 +41,8 @@ export class ExamSession {
     this.socket.on('newESStudent', this.newStudent.bind(this));
     this.socket.on('newESSProducer', this.newProducer.bind(this));
     this.socket.on('closeESCT', this.closeConsumerTransport.bind(this));
-    this.socket.on('connectToTutor', this.connectToTutor.bind(this));
+    this.socket.on('tutor', this.connectToTutor.bind(this));
+    this.socket.on('tutorProducer', this.newTutorProducer.bind(this));
   }
 
   setUpUser() {
@@ -95,7 +98,7 @@ export class ExamSession {
     try {
       this.socket.emit(
         'createExamSessionTp',
-        { examSessionId: this.examSessionId, isProducer: true },
+        { examSessionId: this.examSessionId },
         ({ serverParams }) => {
           if (serverParams.error) {
             console.log(serverParams.error);
@@ -151,7 +154,6 @@ export class ExamSession {
       console.log(error);
     }
   }
-
   async produceAudio(stream) {
     const { micState } = store.getState().session;
     try {
@@ -243,7 +245,7 @@ export class ExamSession {
       producerId = this.screenProducer.id;
     }
     this.socket.emit(
-      'closeESProducer',
+      'closeESP',
       {
         examSessionId: this.examSessionId,
         producerId,
@@ -261,10 +263,9 @@ export class ExamSession {
       }
     );
   }
-
   async pauseAudioProducer() {
     this.socket.emit(
-      'pauseESAudioProducer',
+      'pauseESP',
       {
         examSessionId: this.examSessionId,
         producerId: this.audioProducer.id,
@@ -276,7 +277,7 @@ export class ExamSession {
   }
   async resumerAudioProducer() {
     this.socket.emit(
-      'resumeESAudioProducer',
+      'resumeESP',
       {
         examSessionId: this.examSessionId,
         producerId: this.audioProducer.id,
@@ -288,16 +289,36 @@ export class ExamSession {
   }
   closeConsumerTransport({ examSessionId, userId }) {
     console.log('receive close consumer transport');
-    if (examSessionId === this.examSessionId) {
+    if (examSessionId === this.examSessionId && this.accountType === 'tutor') {
       store.dispatch(removeStudentFromActiveExamSession(userId));
       this.activeStudents.get(userId).closeConsumerTransport();
       this.activeStudents.delete(userId);
+    }else if(examSessionId === this.examSessionId && this.accountType === 'student'){
+      this.tutor.closeConsumerTransport();
+      this.tutor = null;
     }
   }
-  connectToTutor({ examSessionId, userId }) {
-    console.log('receive connect to tutor');
-    // if (examSessionId === this.examSessionId) {
-    //   this.activeStudents.get(userId).connectToTutor();
-    // }
+  connectToTutor({ examSessionId, user }) {
+    try {
+      if (examSessionId !== this.examSessionId) {
+        console.log('Not this exam session tutor');
+        return;
+      }
+      this.tutor = new OneUser(
+        this.examSessionId,
+        this.device,
+        user,
+        this.socket,
+        null
+      );
+      store.dispatch(addPeers(user));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  newTutorProducer({ examSessionId, producerId }) {
+    if (examSessionId === this.examSessionId) {
+      this.tutor.createConsumer(producerId);
+    }
   }
 }

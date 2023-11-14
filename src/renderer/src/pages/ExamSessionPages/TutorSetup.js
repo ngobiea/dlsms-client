@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useContext } from 'react';
-import { ipcRenderer } from 'electron';
 import Toggle from 'react-toggle';
 import { getDevices } from '../../utils/getDevices';
-import ClassSessionContext from '../../context/ClassSessionContext';
+import TutorContext from '../../context/TutorContext';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,16 +26,6 @@ import {
 } from 'react-icons/md';
 import { socket } from '../../context/realtimeContext';
 
-const classSessionId = localStorage.getItem('sessionId');
-
-const handleMic = (e) => {
-  const value = e.target.checked;
-  if (value) {
-    store.dispatch(setMicState('enable'));
-  } else {
-    store.dispatch(setMicState('disable'));
-  }
-};
 const handleVideo = (e) => {
   const value = e.target.checked;
   if (value) {
@@ -46,37 +35,50 @@ const handleVideo = (e) => {
   }
   store.dispatch(setVideoEnable(value));
 };
-const ClassSessionSetup = () => {
-  const { classSession } = useContext(ClassSessionContext);
+
+const handleMic = (e) => {
+  const value = e.target.checked;
+  if (value) {
+    store.dispatch(setMicState('enable'));
+  } else {
+    store.dispatch(setMicState('disable'));
+  }
+};
+
+const TutorSetup = () => {
+  const { tutor } = useContext(TutorContext);
   const videoRef = useRef();
   const navigate = useNavigate();
+
   const { isVideoEnable, localVideoStream, micState } = useSelector((state) => {
     return state.session;
   });
+
+  useEffect(() => {
+    getDevices();
+    socket.emit(
+      'oneToOneSession',
+      { examSessionId: tutor.examSessionId, studentId: tutor.studentId },
+      async ({ rtpCapabilities, student }) => {
+        console.log(rtpCapabilities);
+        tutor.loadDevice(rtpCapabilities, socket, student);
+      }
+    );
+  }, []);
+
+  useEffect(() => {
+    if (localVideoStream) {
+      videoRef.current.srcObject = localVideoStream;
+    }
+  }, [localVideoStream]);
 
   const handleToClassSession = () => {
     navigate('/session');
   };
 
   const handleCancel = () => {
-    ipcRenderer.send('closeSessionWindow');
+    console.log('cancel');
   };
-
-  useEffect(() => {
-    getDevices();
-    socket.emit(
-      'newSession',
-      { classSessionId },
-      async ({ rtpCapabilities, peers }) => {
-        classSession.loadDevice(rtpCapabilities, socket, peers);
-      }
-    );
-  }, []);
-  useEffect(() => {
-    if (localVideoStream) {
-      videoRef.current.srcObject = localVideoStream;
-    }
-  }, [localVideoStream]);
 
   return (
     <div className="h-screen m-auto pt-28">
@@ -163,6 +165,7 @@ const DeviceSelect = () => {
   } = useSelector((state) => {
     return state.session;
   });
+
   const handleAudioInputChange = (event) => {
     dispatch(setDefaultAudioInputDevice(event.target.value));
   };
@@ -232,4 +235,4 @@ const DeviceSelect = () => {
   );
 };
 
-export default ClassSessionSetup;
+export default TutorSetup;

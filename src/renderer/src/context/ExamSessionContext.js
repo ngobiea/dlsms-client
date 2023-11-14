@@ -1,6 +1,5 @@
 import React, { createContext } from 'react';
 import { ExamSession } from '../utils/mediasoup/examSession/ExamSession';
-
 const examSessionId = localStorage.getItem('examSessionId');
 const accountType = JSON.parse(localStorage.getItem('accountType'));
 import { socket } from './realtimeContext';

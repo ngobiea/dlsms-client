@@ -127,7 +127,6 @@ export class ClassSession {
       console.log(error);
     }
   }
-
   async produceAudio(stream) {
     const { micState } = store.getState().session;
     try {
@@ -209,13 +208,14 @@ export class ClassSession {
       console.log(error);
     }
   }
+
   newProducer({ classSessionId, userId, producerId }) {
-    console.log('receive new producer');
     try {
       if (this.classSessionId !== classSessionId) {
         console.log('Not this class session producer');
         return;
       }
+      console.log('new producer', userId, producerId);
       this.peers.get(userId).createConsumer(producerId);
     } catch (error) {
       console.log(error);
@@ -235,7 +235,7 @@ export class ClassSession {
           classSessionId: this.classSessionId,
           producerId,
         },
-        (closed) => {
+        ({closed}) => {
           if (!closed) {
             console.log('Producer not closed');
             return;
@@ -263,8 +263,8 @@ export class ClassSession {
           classSessionId: this.classSessionId,
           producerId: this.audioProducer.id,
         },
-        (pause) => {
-          if (!pause) {
+        ({paused}) => {
+          if (!paused) {
             console.log('Audio producer not paused');
             return;
           }
@@ -284,7 +284,7 @@ export class ClassSession {
           classSessionId: this.classSessionId,
           producerId: this.audioProducer.id,
         },
-        (resumed) => {
+        ({resumed}) => {
           if (!resumed) {
             console.log('Audio producer not resumed');
             return;

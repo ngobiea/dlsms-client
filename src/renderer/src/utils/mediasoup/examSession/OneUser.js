@@ -1,31 +1,28 @@
 import { store, addPeerStream } from '../../../store';
-
-export class Peer {
-  constructor(classSessionId, device, user, socket, producerIds) {
-    this.classSessionId = classSessionId;
+export class OneUser {
+  constructor(examSessionId, device, user, socket, producerIds) {
+    this.examSessionId = examSessionId;
     this.device = device;
     this.user = user;
     this.socket = socket;
     this.producerIds = producerIds;
     this.consumerTransport = null;
     this.consumers = new Map();
-
     this.setSocket(socket);
-
     this.createConsumerTransport();
   }
   setSocket(socket) {
     this.socket = socket;
-    this.socket.on('closeCSConsumer', this.closeConsumer.bind(this));
-    this.socket.on('pauseCSConsumer', this.pauseConsumer.bind(this));
-    this.socket.on('resumeCSConsumer', this.resumeConsumer.bind(this));
+    this.socket.on('closeESConsumer', this.closeConsumer.bind(this));
+    this.socket.on('pauseESConsumer', this.pauseConsumer.bind(this));
+    this.socket.on('resumeESConsumer', this.resumeConsumer.bind(this));
   }
   createConsumerTransport() {
     this.socket.emit(
-      'createClassSessionTp',
+      'createOneToOneTp',
       {
-        classSessionId: this.classSessionId,
-        isProducer: false,
+        examSessionId: this.examSessionId,
+        isProducer: true,
         userId: this.user._id.toString(),
       },
       async ({ serverParams }) => {
@@ -42,9 +39,9 @@ export class Peer {
           'connect',
           async ({ dtlsParameters }, callback, errback) => {
             try {
-              await this.socket.emit('CSOnCTConnect', {
+              await this.socket.emit('connectOneToOneCT', {
                 dtlsParameters,
-                classSessionId: this.classSessionId,
+                examSessionId: this.examSessionId,
                 userId: this.user._id.toString(),
               });
               callback();
@@ -63,9 +60,9 @@ export class Peer {
   }
   async createConsumer(producerId) {
     await this.socket.emit(
-      'CSOnCTConsume',
+      'oneToOneConsumer',
       {
-        classSessionId: this.classSessionId,
+        examSessionId: this.examSessionId,
         rtpCapabilities: this.device.rtpCapabilities,
         userId: this.user._id.toString(),
         producerId,
@@ -110,26 +107,26 @@ export class Peer {
           this.consumers.get(consumer.id).close();
           this.consumers.delete(consumer.id);
         });
-        this.socket.emit('resumeCSC', {
-          classSessionId: this.classSessionId,
+        this.socket.emit('resumeOneC', {
+          examSessionId: this.examSessionId,
           consumerId: id,
         });
       }
     );
   }
-  closeConsumerTransport() {
+  async closeConsumerTransport() {
     if (this.consumerTransport) {
       this.consumerTransport.close();
       this.consumerTransport = null;
     }
   }
-  closeConsumer({ classSessionId, consumerId }) {
+  closeConsumer({ examSessionId, consumerId }) {
     console.log('close consumer received');
 
     const peerStream = { id: this.user._id.toString() };
 
     if (
-      classSessionId === this.classSessionId &&
+      examSessionId === this.examSessionId &&
       this.consumers.has(consumerId)
     ) {
       console.log('closing consumer');
@@ -145,20 +142,20 @@ export class Peer {
       this.consumers.delete(consumerId);
     }
   }
-  pauseConsumer({ classSessionId, consumerId }) {
+  pauseConsumer({ examSessionId, consumerId }) {
     console.log('pause consumer received');
     if (
-      classSessionId === this.classSessionId &&
+      examSessionId === this.examSessionId &&
       this.consumers.has(consumerId)
     ) {
       this.consumers.get(consumerId).pause();
       console.log(store.getState().session.peers);
     }
   }
-  resumeConsumer({ classSessionId, consumerId }) {
+  resumeConsumer({ examSessionId, consumerId }) {
     console.log('resume consumer received');
     if (
-      classSessionId === this.classSessionId &&
+      examSessionId === this.examSessionId &&
       this.consumers.has(consumerId)
     ) {
       this.consumers.get(consumerId).resume();

@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import 'react-toggle/style.css';
 
 import { RealtimeProvider } from '../context/realtimeContext';
+import { TutorProvider } from '../context/TutorContext';
 import { store } from '../store';
 
 import TutorSessionApp from '../TutorSessionApp';
@@ -14,7 +15,9 @@ root.render(
   <HashRouter>
     <Provider store={store}>
       <RealtimeProvider>
-        <TutorSessionApp />
+        <TutorProvider>
+          <TutorSessionApp />
+        </TutorProvider>
       </RealtimeProvider>
     </Provider>
   </HashRouter>

@@ -10,13 +10,14 @@ export class User {
     this.producerIds = producerIds;
     this.consumerTransport = null;
     this.consumers = new Map();
-
-
     this.createConsumerTransport();
   }
   setSocket(socket) {
     this.socket = socket;
     this.socket.on('closeESConsumer', this.closeConsumer.bind(this));
+    this.socket.on('pauseESConsumer', this.pauseConsumer.bind(this));
+    this.socket.on('resumeESConsumer', this.resumeConsumer.bind(this));
+
     this.socket.on('ESviolation', ({ examSessionId, user, violation }) => {
       console.log('received violation for:', user);
       store.dispatch(
@@ -170,6 +171,24 @@ export class User {
       }
       store.dispatch(addStudentStream(userStream));
       this.consumers.get(consumerId).close();
+    }
+  }
+  pauseConsumer({ examSessionId, consumerId }) {
+    console.log('pause consumer received');
+    if (
+      examSessionId === this.examSessionId &&
+      this.consumers.get(consumerId)
+    ) {
+      this.consumers.get(consumerId).pause();
+    }
+  }
+  resumeConsumer({ examSessionId, consumerId }) {
+    console.log('resume consumer received');
+    if (
+      examSessionId === this.examSessionId &&
+      this.consumers.get(consumerId)
+    ) {
+      this.consumers.get(consumerId).resume();
     }
   }
 }

@@ -5,11 +5,30 @@ import profile from '../../../public/images/sessionProfile.jpg';
 const ExamSessionView = () => {
   const videoRef = useRef();
   const shareScreenRef = useRef();
+  const tutorVideoRef = useRef();
+  const tutorAudioRef = useRef();
+  const tutorScreenRef = useRef();
 
-  const { activeBorder, localVideoStream, localScreenStream } = useSelector(
-    (state) => {
+  const { activeBorder, localVideoStream, localScreenStream, peers } =
+    useSelector((state) => {
       return state.session;
-    }
+    });
+
+  useEffect(
+    () => {
+      if (peers[0].video) {
+        tutorVideoRef.current.srcObject = peers[0].video;
+      }
+      if (peers[0].audio) {
+        tutorAudioRef.current.srcObject = peers[0].audio;
+        tutorAudioRef.current.play();
+      }
+      if (peers[0].screen) {
+        tutorScreenRef.current.srcObject = peers[0].screen;
+      }
+    },
+    [peers[0].video, peers[0].audio],
+    peers[0].screen
   );
 
   useEffect(() => {
@@ -42,7 +61,7 @@ const ExamSessionView = () => {
               autoPlay
               className="h-full w-fit object-cover bg-blue-900"
               ref={videoRef}
-              muted={!!localVideoStream}
+              muted={true}
             ></video>
           </div>
           <div className="w-1/2 h-full">
@@ -55,12 +74,16 @@ const ExamSessionView = () => {
               ></video>
             </div>
             <div className=" h-1/2 w-full flex justify-center bg-blue-900">
-              <img src={profile} className=" object-contain h-fit   "></img>
-              {/* <video
-                autoPlay
-                className="h-full bg-blue-900 object-cover "
-                muted
-              ></video> */}
+              {peers[0]?.video ? (
+                <video
+                  autoPlay
+                  className="h-full bg-blue-900 object-cover "
+                  muted={true}
+                ></video>
+              ) : (
+                <img src={profile} className=" object-contain h-fit   "></img>
+              )}
+              <audio autoPlay ref={tutorAudioRef} className=""></audio>
             </div>
           </div>
         </div>

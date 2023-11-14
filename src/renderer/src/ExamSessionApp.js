@@ -46,7 +46,9 @@ socket.on('ESOpen', async (callback) => {
     console.log('received ESOpen event');
     const isESOpen = await ipcRenderer.invoke('isExamSessionWindowOpen');
     console.log(isESOpen);
-    callback(isESOpen);
+    if (isESOpen) {
+      callback(isESOpen);
+    }
   } catch (error) {
     console.log(error);
   }

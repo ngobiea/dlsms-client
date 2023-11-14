@@ -112,7 +112,6 @@ const SessionControl = () => {
       enableMic().then((stream) => {
         classSession.produceAudio(stream);
       });
-      classSession.produceAudio();
     } else if (micState === 'mute') {
       classSession.resumeAudioProducer();
       unmuteMic();
@@ -131,7 +130,6 @@ const SessionControl = () => {
   };
   const handleLeaveSession = () => {
     window.account.closeSessionWindow('closeSessionWindow');
-
     ipcRenderer.send('closeSessionWindow');
   };
   const handleEndSession = () => {
@@ -154,7 +152,7 @@ const SessionControl = () => {
       </div>
       <div className="self-center pr-3 flex">
         <div className="border-r-2 flex border-green-800">
-          <div
+          <button
             onClick={() => {
               handleRecoding();
             }}
@@ -162,8 +160,8 @@ const SessionControl = () => {
           >
             <PiRecordFill className="self-center  pt-1 w-6 h-6" />
             <p>Record</p>
-          </div>
-          <div
+          </button>
+          <button
             onClick={handleShowChat}
             className={
               activeBorder === 'chat' || isShowChat
@@ -173,8 +171,8 @@ const SessionControl = () => {
           >
             <MdOutlineChat className="self-center pt-1 w-6 h-6" />
             <p>Chat</p>
-          </div>
-          <div
+          </button>
+          <button
             onClick={handleShowParticipants}
             className={
               activeBorder === 'participants' || isShowParticipants
@@ -184,10 +182,10 @@ const SessionControl = () => {
           >
             <MdPeopleOutline className="self-center pt-1 w-6 h-6" />
             <p>Participants</p>
-          </div>
+          </button>
         </div>
         <div className="flex">
-          <div
+          <button
             onClick={handleVideo}
             className="flex flex-col px-2 mx-2 text-green-600 cursor-pointer hover:text-green-500"
           >
@@ -197,8 +195,8 @@ const SessionControl = () => {
               <MdVideocamOff className="self-center pt-1 w-6 h-6" />
             )}
             <p>Camera</p>
-          </div>
-          <div
+          </button>
+          <button
             onClick={handleMic}
             className="flex flex-col px-2 mx-2 text-green-600 cursor-pointer hover:text-green-500"
           >
@@ -208,8 +206,8 @@ const SessionControl = () => {
               <MdOutlineMicOff className="self-center pt-1 w-6 h-6" />
             )}
             <p>Mic</p>
-          </div>
-          <div
+          </button>
+          <button
             onClick={handleShareScreen}
             className="flex flex-col px-2 mx-2 text-green-600 cursor-pointer hover:text-green-500"
           >
@@ -219,7 +217,7 @@ const SessionControl = () => {
               <MdStopScreenShare className="self-center pt-1 w-6 h-6" />
             )}
             <p>Share</p>
-          </div>
+          </button>
           <button
             onClick={handleLeaveSession}
             className="py-2.5 px-3 cursor-pointer mb-2 flex text-sm font-medium text-white focus:outline-none bg-red-600 rounded-lg rounded-tr-none rounded-br-none  border-gray-200 hover:bg-red-700 hover:text-white"
