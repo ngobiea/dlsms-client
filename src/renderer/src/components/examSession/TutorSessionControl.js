@@ -101,7 +101,7 @@ const TutorSessionControl = () => {
     window.account.closeSessionWindow('closeSessionWindow');
     ipcRenderer.send('closeExamSessionWindow');
   };
-  
+
   const handleEndSession = () => {
     window.account.closeSessionWindow('closeSessionWindow');
     ipcRenderer.send('closeSessionWindow');
