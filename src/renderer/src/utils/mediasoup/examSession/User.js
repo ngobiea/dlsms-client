@@ -51,7 +51,6 @@ export class User {
       'createExamSessionTp',
       {
         examSessionId: this.examSessionId,
-        isProducer: false,
         userId: this.user._id.toString(),
       },
       async ({ serverParams }) => {

@@ -22,7 +22,7 @@ export class OneUser {
       'createOneToOneTp',
       {
         examSessionId: this.examSessionId,
-        isProducer: true,
+        isProducer: false,
         userId: this.user._id.toString(),
       },
       async ({ serverParams }) => {
