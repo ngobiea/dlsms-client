@@ -4,32 +4,25 @@ import FaceApi from '../../utils/face/FaceApi';
 import profile from '../../../public/images/sessionProfile.jpg';
 const ExamSessionView = () => {
   const videoRef = useRef();
-  const shareScreenRef = useRef();
   const tutorVideoRef = useRef();
   const tutorAudioRef = useRef();
-  const tutorScreenRef = useRef();
+  const shareScreenRef = useRef();
 
   const { activeBorder, localVideoStream, localScreenStream, peers } =
     useSelector((state) => {
       return state.session;
     });
 
-  useEffect(
-    () => {
-      if (peers[0].video) {
-        tutorVideoRef.current.srcObject = peers[0].video;
-      }
-      if (peers[0].audio) {
-        tutorAudioRef.current.srcObject = peers[0].audio;
-        tutorAudioRef.current.play();
-      }
-      if (peers[0].screen) {
-        tutorScreenRef.current.srcObject = peers[0].screen;
-      }
-    },
-    [peers[0].video, peers[0].audio],
-    peers[0].screen
-  );
+  useEffect(() => {
+    console.log(peers[0]);
+    if (peers[0]?.video) {
+      tutorVideoRef.current.srcObject = peers[0].video;
+    }
+    if (peers[0]?.audio) {
+      tutorAudioRef.current.srcObject = peers[0].audio;
+      tutorAudioRef.current.play();
+    }
+  }, [peers[0]?.video, peers[0]?.audio, peers[0]?.screen]);
 
   useEffect(() => {
     if (localVideoStream) {
@@ -79,6 +72,7 @@ const ExamSessionView = () => {
                   autoPlay
                   className="h-full bg-blue-900 object-cover "
                   muted={true}
+                  ref={tutorVideoRef}
                 ></video>
               ) : (
                 <img src={profile} className=" object-contain h-fit   "></img>

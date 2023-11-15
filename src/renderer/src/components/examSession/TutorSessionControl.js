@@ -64,7 +64,7 @@ const TutorSessionControl = () => {
   const handleVideo = () => {
     if (isVideoEnable) {
       disableWebCam();
-      tutor.closeESProducer('video');
+      tutor.closeProducer('video');
     } else {
       enableWebCam();
     }

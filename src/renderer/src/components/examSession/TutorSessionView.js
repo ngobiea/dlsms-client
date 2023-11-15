@@ -2,37 +2,15 @@ import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 const TutorSessionView = () => {
   const videoRef = useRef();
-  const studentVideoRef = useRef();
-  const studentAudioRef = useRef();
-  const studentScreenRef = useRef();
-
-  const { activeBorder, localVideoStream, localScreenStream, peers } =
+  const { activeBorder, localVideoStream } =
     useSelector((state) => {
       return state.session;
     });
-  useEffect(
-    () => {
-      if (peers[0].video) {
-        studentVideoRef.current.srcObject = peers[0].video;
-      }
-      if (peers[0].audio) {
-        studentAudioRef.current.srcObject = peers[0].audio;
-        studentAudioRef.current.play();
-      }
-      if (peers[0].screen) {
-        studentScreenRef.current.srcObject = peers[0].screen;
-      }
-    },
-    [peers[0].video, peers[0].audio],
-    peers[0].screen
-  );
-
   useEffect(() => {
     if (localVideoStream) {
       videoRef.current.srcObject = localVideoStream;
     }
   }, [localVideoStream]);
-
 
   const activeFullScreenClass = 'h-full relative w-full bg-green-800';
   const inActiveFullScreenClass = 'h-full relative w-4/5 bg-green-800';
@@ -45,25 +23,7 @@ const TutorSessionView = () => {
             : activeFullScreenClass
         }
       >
-        <div className="flex w-full h-full">
-          <div className="w-1/2 h-full">
-            <video
-              autoPlay
-              className="h-full w-fit object-cover bg-blue-900"
-              ref={studentVideoRef}
-              muted
-            ></video>
-          </div>
-          <audio autoPlay ref={studentAudioRef} className=""></audio>
-          <div className="w-1/2 h-full">
-            <video
-              autoPlay
-              className=" h-fit w-full bg-blue-900 object-cover "
-              ref={studentScreenRef}
-              muted
-            ></video>
-          </div>
-        </div>
+        <StudentView />
         <div className="absolute bottom-0 right-0  h-60  w-72 bg-blue-900">
           <video
             autoPlay
@@ -90,6 +50,50 @@ const TutorSessionView = () => {
       ) : (
         ''
       )}
+    </div>
+  );
+};
+const StudentView = () => {
+  const studentVideoRef = useRef();
+  const studentAudioRef = useRef();
+  const studentScreenRef = useRef();
+  const { peers } = useSelector((state) => {
+    return state.session;
+  });
+  useEffect(() => {
+    if (peers[0]?.video) {
+      studentVideoRef.current.srcObject = peers[0]?.video;
+    }
+  }, [peers[0]?.video]);
+  useEffect(() => {
+    if (peers[0]?.audio) {
+      studentAudioRef.current.srcObject = peers[0]?.audio;
+    }
+  }, [peers[0]?.audio]);
+  useEffect(() => {
+    if (peers[0]?.screen) {
+      studentScreenRef.current.srcObject = peers[0]?.screen;
+    }
+  }, [peers[0]?.screen]);
+  return (
+    <div className="flex w-full h-full">
+      <div className="w-1/2 h-full">
+        <video
+          autoPlay
+          className="h-full w-fit object-cover bg-blue-900"
+          ref={studentVideoRef}
+          muted={true}
+        ></video>
+      </div>
+      <audio autoPlay ref={studentAudioRef} className=" hidden"></audio>
+      <div className="w-1/2 h-full">
+        <video
+          autoPlay
+          className=" h-fit w-full bg-blue-900 object-cover "
+          ref={studentScreenRef}
+          muted={true}
+        ></video>
+      </div>
     </div>
   );
 };
