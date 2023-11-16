@@ -1,4 +1,10 @@
-import { store, addPeers, removePeer } from '../../../store';
+import {
+  store,
+  addPeers,
+  removePeer,
+  disablePeerScreenStream,
+  setPeerScreenStream,
+} from '../../../store';
 import { Device } from 'mediasoup-client';
 import { Peer } from './Peer';
 export class ClassSession {
@@ -34,6 +40,8 @@ export class ClassSession {
     socket.on('newCSPeer', this.newPeer.bind(this));
     socket.on('newCSProducer', this.newProducer.bind(this));
     socket.on('closeCSCT', this.closeConsumerTransport.bind(this));
+    socket.on('newCSScreen', this.newScreen.bind(this));
+    socket.on('closeCSScreen', this.closeProducer.bind(this));
   }
   addPeers(peers) {
     console.log(peers);
@@ -235,7 +243,7 @@ export class ClassSession {
           classSessionId: this.classSessionId,
           producerId,
         },
-        ({closed}) => {
+        ({ closed }) => {
           if (!closed) {
             console.log('Producer not closed');
             return;
@@ -263,7 +271,7 @@ export class ClassSession {
           classSessionId: this.classSessionId,
           producerId: this.audioProducer.id,
         },
-        ({paused}) => {
+        ({ paused }) => {
           if (!paused) {
             console.log('Audio producer not paused');
             return;
@@ -284,7 +292,7 @@ export class ClassSession {
           classSessionId: this.classSessionId,
           producerId: this.audioProducer.id,
         },
-        ({resumed}) => {
+        ({ resumed }) => {
           if (!resumed) {
             console.log('Audio producer not resumed');
             return;
@@ -306,6 +314,28 @@ export class ClassSession {
       store.dispatch(removePeer(userId));
       this.peers.get(userId).closeConsumerTransport();
       this.peers.delete(userId);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  newScreen({ classSessionId, userId }) {
+    try {
+      if (this.classSessionId !== classSessionId) {
+        console.log('Not this class session screen');
+        return;
+      }
+      store.dispatch(setPeerScreenStream(userId));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  closeScreen({ classSessionId, userId }) {
+    try {
+      if (this.classSessionId !== classSessionId) {
+        console.log('Not this class session screen');
+        return;
+      }
+      store.dispatch(disablePeerScreenStream(userId));
     } catch (error) {
       console.log(error);
     }

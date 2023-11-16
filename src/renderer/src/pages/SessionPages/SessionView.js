@@ -4,23 +4,17 @@ import { useSelector } from 'react-redux';
 
 const SessionView = () => {
   const videoRef = useRef();
-  const shareScreenRef = useRef();
-  const { activeBorder, localVideoStream, localScreenStream, peers } =
-    useSelector((state) => {
+  const { activeBorder, localVideoStream, peers, isScreenShare } = useSelector(
+    (state) => {
       return state.session;
-    });
+    }
+  );
 
   useEffect(() => {
     if (localVideoStream) {
       videoRef.current.srcObject = localVideoStream;
     }
   }, [localVideoStream]);
-
-  useEffect(() => {
-    if (localScreenStream) {
-      // shareScreenRef.current.srcObject = localScreenStream;
-    }
-  }, [localScreenStream]);
 
   const activeFullScreenClass = 'h-full relative w-full bg-green-800';
   const inActiveFullScreenClass = 'h-full relative w-4/5 bg-green-800';
@@ -33,15 +27,24 @@ const SessionView = () => {
             : activeFullScreenClass
         }
       >
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-1">
-          {peers.map((peer) => {
-            return <SessionUserCard key={peer._id.toString()} user={peer} />;
-          })}
-        </div>
-        <div className="absolute bottom-0 right-0  h-60  w-72 bg-blue-900">
+        {isScreenShare ? (
+          <ScreenShareView />
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-1">
+            {peers.map((peer) => {
+              return <SessionUserCard key={peer._id.toString()} user={peer} />;
+            })}
+          </div>
+        )}
+
+        {peers.map((peer) => {
+          return <AudioView key={peer._id.toString()} peer={peer} />;
+        })}
+
+        <div className="absolute bottom-0 right-0 h-60 w-64 bg-blue-900">
           <video
             autoPlay
-            className=" h-64 bg-blue-900 max-w-full "
+            className=" h-full w-full bg-blue-900 object-cover"
             ref={videoRef}
           ></video>
         </div>
@@ -68,4 +71,64 @@ const SessionView = () => {
   );
 };
 
+const ScreenShareView = () => {
+  const screenRef = useRef();
+  const videoRef1 = useRef();
+  const videoRef2 = useRef();
+  const { peers, screenShareStream } = useSelector((state) => {
+    return state.session;
+  });
+  useEffect(() => {
+    if (screenShareStream) {
+      screenRef.current.srcObject = screenShareStream;
+    }
+  }, [screenShareStream]);
+
+  useEffect(() => {
+    if (peers.length > 0 && peers[0].video) {
+      videoRef1.current.srcObject = peers[0].video;
+    }
+    if (peers.length > 1 && peers[1].video) {
+      videoRef2.current.srcObject = peers[1].video;
+    }
+  }, [peers]);
+  return (
+    <div className=" w-full h-full bg-white flex">
+      <div className=" w-10/12 h-full bg-yellow-200">
+        <video
+          autoPlay
+          ref={screenRef}
+          className=" w-full h-full object-cover"
+        ></video>
+      </div>
+      <div className=" w-2/12 h-3/4 bg-red-400 flex flex-col">
+        <div className="h-60 w-full bg-sidebarHover">
+          <video
+            ref={videoRef1}
+            autoPlay
+            className="h-max w-full object-cover"
+          ></video>
+        </div>
+        <div className="h-60 w-full bg-purple-600">
+          <video
+            ref={videoRef2}
+            autoPlay
+            className="h-max w-full object-cover"
+          ></video>
+        </div>
+      </div>
+    </div>
+  );
+};
+const AudioView = (peer) => {
+  const audioRef = useRef();
+  useEffect(() => {
+    if (peer.audio) {
+      audioRef.current.srcObject = peer.audio;
+      audioRef.current.play();
+    }
+  }, [peer.audio]);
+
+  return <audio autoPlay ref={audioRef} className=" hidden" />;
+};
 export default SessionView;

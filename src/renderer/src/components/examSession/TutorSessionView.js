@@ -27,7 +27,7 @@ const TutorSessionView = () => {
         <div className="absolute bottom-0 right-0  h-60  w-72 bg-blue-900">
           <video
             autoPlay
-            className=" h-64 bg-blue-900 max-w-full "
+            className=" h-full bg-blue-900 w-full object-cover "
             ref={videoRef}
           ></video>
         </div>
@@ -89,7 +89,7 @@ const StudentView = () => {
       <div className="w-1/2 h-full">
         <video
           autoPlay
-          className=" h-fit w-full bg-blue-900 object-cover "
+          className=" h-full w-full bg-blue-900 object-cover "
           ref={studentScreenRef}
           muted={true}
         ></video>

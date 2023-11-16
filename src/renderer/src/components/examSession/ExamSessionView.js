@@ -61,21 +61,21 @@ const ExamSessionView = () => {
             <div className="h-1/2 w-full">
               <video
                 autoPlay
-                className=" h-fit w-full bg-blue-900 object-cover "
+                className=" h-full w-full bg-blue-900  "
                 ref={shareScreenRef}
                 muted
               ></video>
             </div>
-            <div className=" h-1/2 w-full flex justify-center bg-blue-900">
+            <div className=" h-1/2 w-full">
               {peers[0]?.video ? (
                 <video
                   autoPlay
-                  className="h-full bg-blue-900 object-cover "
+                  className="h-full w-full bg-blue-900 object-cover "
                   muted={true}
                   ref={tutorVideoRef}
                 ></video>
               ) : (
-                <img src={profile} className=" object-contain h-fit   "></img>
+                <img src={profile} className="h-full w-full"></img>
               )}
               <audio autoPlay ref={tutorAudioRef} className=""></audio>
             </div>

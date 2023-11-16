@@ -19,14 +19,14 @@ const SessionCard = ({ student }) => {
   console.log(student);
   return (
     <div
-      className="relative cursor-pointer h-60 bg-contain"
+      className="relative cursor-pointer h-60"
       style={{
         backgroundImage: `url(${studentProfile})`,
       }}
     >
       {student.video?.active && (
         <video
-          className=" h-max max-w-full block"
+          className="h-full w-full block object-cover"
           autoPlay
           ref={videoRef}
         ></video>

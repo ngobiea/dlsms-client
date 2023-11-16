@@ -33,6 +33,8 @@ const sessionSlice = createSlice({
     peers: [],
     sessionViolations: [{}],
     screenId: null,
+    isScreenShare: false,
+    screenShareStream: null,
   },
   reducers: {
     setMicState(state, action) {
@@ -61,6 +63,7 @@ const sessionSlice = createSlice({
     },
     setIsShareScreen(state, action) {
       state.isScreenEnable = action.payload;
+      state.isScreenShare = action.payload;
     },
     setIsRecording(state, action) {
       state.isRecording = action.payload;
@@ -109,6 +112,8 @@ const sessionSlice = createSlice({
     },
     setScreenStream(state, action) {
       state.localScreenStream = action.payload;
+      state.screenShareStream = action.payload;
+
       if (action.payload) {
         state.screenShareParams = {
           ...state.screenShareParams,
@@ -143,15 +148,12 @@ const sessionSlice = createSlice({
         appData: { screen: true },
       };
     },
-
     setIsProducer(state, action) {
       state.isProducer = action.payload;
     },
-
     addConsumerTransports(state, action) {
       state.consumerTransports.push(action.payload);
     },
-
     setIsDeviceSet(state, action) {
       state.isDeviceSet = action.payload;
     },
@@ -237,6 +239,18 @@ const sessionSlice = createSlice({
     setScreenId(state, action) {
       state.screenId = action.payload;
     },
+    setPeerScreenStream(state, action) {
+      const { id } = action.payload;
+      const peer = state.peers.find((peer) => peer._id.toString() === id);
+      if (peer) {
+        state.screenShareStream = peer.screen;
+        state.isScreenShare = true;
+      }
+    },
+    disablePeerScreenStream(state, action) {
+      state.screenShareStream = null;
+      state.isScreenShare = false;
+    },
   },
 });
 
@@ -271,5 +285,7 @@ export const {
   addPeerStream,
   addPeers,
   removePeer,
+  setPeerScreenStream,
+  disablePeerScreenStream,
 } = sessionSlice.actions;
 export const sessionReducer = sessionSlice.reducer;

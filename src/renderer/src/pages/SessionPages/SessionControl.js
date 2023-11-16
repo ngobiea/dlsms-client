@@ -30,11 +30,16 @@ import {
   unmuteMic,
 } from '../../utils/webcamSetup';
 
+import { socket } from '../../context/realtimeContext';
+const classSessionId = localStorage.getItem('sessionId');
+
 ipcRenderer.on('source', (_e, { source }) => {
   console.log('source', source);
-  // store.dispatch(setScreenId(source.id));
   store.dispatch(setIsShareScreen(true));
   shareScreen(source.id);
+  socket.emit('shareScreen', {
+    classSessionId,
+  });
 });
 
 const SessionControl = () => {
@@ -44,12 +49,10 @@ const SessionControl = () => {
     micState,
     isVideoEnable,
     isScreenEnable,
-    isShowChat,
-    isShowParticipants,
     isRecording,
-    activeBorder,
     localVideoStream,
     localScreenStream,
+    isScreenShare,
   } = useSelector((state) => {
     return state.session;
   });
@@ -77,27 +80,6 @@ const SessionControl = () => {
     }
   }, []);
 
-  const handleRecoding = () => {
-    if (isRecording) {
-      dispatch(setIsRecording(false));
-    } else {
-      dispatch(setIsRecording(true));
-    }
-  };
-  const handleShowChat = () => {
-    if (isShowChat) {
-      dispatch(setIsShowChat(false));
-    } else {
-      dispatch(setIsShowChat(true));
-    }
-  };
-  const handleShowParticipants = () => {
-    if (isShowParticipants) {
-      dispatch(setIsShowParticipants(false));
-    } else {
-      dispatch(setIsShowParticipants(true));
-    }
-  };
   const handleVideo = () => {
     if (isVideoEnable) {
       disableWebCam();
@@ -121,11 +103,14 @@ const SessionControl = () => {
     }
   };
   const handleShareScreen = () => {
-    if (isScreenEnable) {
+    if (!isScreenEnable) {
+      if (!isScreenShare) {
+        ipcRenderer.send('showScreenSources');
+      }
+    } else {
+      socket.emit('stopShareScreen', {classSessionId});
       stopShareScreen();
       dispatch(setIsShareScreen(false));
-    } else {
-      ipcRenderer.send('showScreenSources');
     }
   };
   const handleLeaveSession = () => {
@@ -136,10 +121,7 @@ const SessionControl = () => {
     window.account.closeSessionWindow('closeSessionWindow');
     ipcRenderer.send('closeSessionWindow');
   };
-  const activeBorderClass =
-    'flex flex-col px-2 mx-2 text-green-800 cursor-pointer hover:text-green-500 hover:border-green-500 border-b-2 border-green-800';
-  const inActiveBorderClass =
-    'flex flex-col px-2 mx-2  text-green-800 cursor-pointer hover:text-green-500 border-green-800';
+
   return (
     <div className="absolute flex justify-between h-16 bg-gray-300 w-full">
       <div className=" self-center flex pl-5">
@@ -151,39 +133,7 @@ const SessionControl = () => {
         <div className="self-center align-middle text-center">{'--:--'}</div>
       </div>
       <div className="self-center pr-3 flex">
-        <div className="border-r-2 flex border-green-800">
-          <button
-            onClick={() => {
-              handleRecoding();
-            }}
-            className="flex flex-col px-2 mx-2 text-green-800 cursor-pointer hover:text-green-500"
-          >
-            <PiRecordFill className="self-center  pt-1 w-6 h-6" />
-            <p>Record</p>
-          </button>
-          <button
-            onClick={handleShowChat}
-            className={
-              activeBorder === 'chat' || isShowChat
-                ? activeBorderClass
-                : inActiveBorderClass
-            }
-          >
-            <MdOutlineChat className="self-center pt-1 w-6 h-6" />
-            <p>Chat</p>
-          </button>
-          <button
-            onClick={handleShowParticipants}
-            className={
-              activeBorder === 'participants' || isShowParticipants
-                ? activeBorderClass
-                : inActiveBorderClass
-            }
-          >
-            <MdPeopleOutline className="self-center pt-1 w-6 h-6" />
-            <p>Participants</p>
-          </button>
-        </div>
+        <ChatControl />
         <div className="flex">
           <button
             onClick={handleVideo}
@@ -236,5 +186,69 @@ const SessionControl = () => {
     </div>
   );
 };
-
+const ChatControl = () => {
+  const dispatch = useDispatch();
+  const { isShowChat, isShowParticipants, isRecording, activeBorder } =
+    useSelector((state) => {
+      return state.session;
+    });
+  const handleRecoding = () => {
+    if (isRecording) {
+      dispatch(setIsRecording(false));
+    } else {
+      dispatch(setIsRecording(true));
+    }
+  };
+  const handleShowChat = () => {
+    if (isShowChat) {
+      dispatch(setIsShowChat(false));
+    } else {
+      dispatch(setIsShowChat(true));
+    }
+  };
+  const handleShowParticipants = () => {
+    if (isShowParticipants) {
+      dispatch(setIsShowParticipants(false));
+    } else {
+      dispatch(setIsShowParticipants(true));
+    }
+  };
+  const activeBorderClass =
+    'flex flex-col px-2 mx-2 text-green-800 cursor-pointer hover:text-green-500 hover:border-green-500 border-b-2 border-green-800';
+  const inActiveBorderClass =
+    'flex flex-col px-2 mx-2  text-green-800 cursor-pointer hover:text-green-500 border-green-800';
+  return (
+    <div className="border-r-2 flex border-green-800">
+      <button
+        onClick={handleRecoding}
+        className="flex flex-col px-2 mx-2 text-green-800 cursor-pointer hover:text-green-500"
+      >
+        <PiRecordFill className="self-center  pt-1 w-6 h-6" />
+        <p>Record</p>
+      </button>
+      <button
+        onClick={handleShowChat}
+        className={
+          activeBorder === 'chat' || isShowChat
+            ? activeBorderClass
+            : inActiveBorderClass
+        }
+      >
+        <MdOutlineChat className="self-center pt-1 w-6 h-6" />
+        <p>Chat</p>
+      </button>
+      <button
+        onClick={handleShowParticipants}
+        className={
+          activeBorder === 'participants' || isShowParticipants
+            ? activeBorderClass
+            : inActiveBorderClass
+        }
+      >
+        <MdPeopleOutline className="self-center pt-1 w-6 h-6" />
+        <p>Participants</p>
+      </button>
+    </div>
+  );
+};
 export default SessionControl;
