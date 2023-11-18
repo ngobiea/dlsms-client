@@ -35,6 +35,8 @@ const sessionSlice = createSlice({
     screenId: null,
     isScreenShare: false,
     screenShareStream: null,
+    recordButtonText: 'Start Recording',
+    timer: '--:--',
   },
   reducers: {
     setMicState(state, action) {
@@ -67,6 +69,12 @@ const sessionSlice = createSlice({
     },
     setIsRecording(state, action) {
       state.isRecording = action.payload;
+      state.recordButtonText = action.payload
+        ? 'Stop Recording'
+        : 'Start Recording';
+    },
+    setTimer(state, action) {
+      state.timer = action.payload;
     },
     setIsJoinedSession(state, action) {
       state.isJoinedSession = action.payload;
@@ -176,12 +184,17 @@ const sessionSlice = createSlice({
       );
     },
     addPeerStream(state, action) {
-      const { id } = action.payload;
-      state.peers = state.peers.map((peer) => {
-        return peer._id.toString() === id
-          ? { ...peer, ...action.payload }
-          : peer;
-      });
+      const { id, appData, screen } = action.payload;
+      if (appData?.screen) {
+        state.screenShareStream = screen;
+        state.isScreenShare = true;
+      } else {
+        state.peers = state.peers.map((peer) => {
+          return peer._id.toString() === id
+            ? { ...peer, ...action.payload }
+            : peer;
+        });
+      }
     },
 
     updateActiveStudentsInExamSession(state, action) {
@@ -240,16 +253,18 @@ const sessionSlice = createSlice({
       state.screenId = action.payload;
     },
     setPeerScreenStream(state, action) {
-      const { id } = action.payload;
-      const peer = state.peers.find((peer) => peer._id.toString() === id);
-      if (peer) {
-        state.screenShareStream = peer.screen;
+      const foundPeer = state.peers.find(
+        (peer) => peer._id.toString() === action.payload
+      );
+      if (foundPeer) {
+        state.screenShareStream = foundPeer.screen;
         state.isScreenShare = true;
       }
     },
-    disablePeerScreenStream(state, action) {
-      state.screenShareStream = null;
+    disablePeerScreenStream(state) {
+      console.log(state.screenShareStream);
       state.isScreenShare = false;
+      state.screenShareStream = null;
     },
   },
 });
@@ -287,5 +302,6 @@ export const {
   removePeer,
   setPeerScreenStream,
   disablePeerScreenStream,
+  setTimer,
 } = sessionSlice.actions;
 export const sessionReducer = sessionSlice.reducer;

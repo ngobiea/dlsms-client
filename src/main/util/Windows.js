@@ -202,6 +202,10 @@ module.exports = class Windows {
         this.examSessionWindow.webContents.send('source', {
           source: inputSources[0],
         });
+      } else if (this.sessionWindow) {
+        this.sessionWindow.webContents.send('source', {
+          source: inputSources[0],
+        });
       } else {
         const videoOptionsMenu = Menu.buildFromTemplate(
           inputSources.map((source) => {

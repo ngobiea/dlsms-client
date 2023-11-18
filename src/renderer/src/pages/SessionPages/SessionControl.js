@@ -4,6 +4,12 @@ import { PiPhoneDisconnectFill, PiRecordFill } from 'react-icons/pi';
 import { ipcRenderer } from 'electron';
 import classSessionContext from '../../context/ClassSessionContext';
 import { shareScreen, stopShareScreen } from '../../utils/screen';
+import { start, stop, recordTime, getTime } from '../../utils/stopWatch';
+import {
+  captureScreen,
+  stopRecording,
+} from '../../utils/mediasoup/classSession/recordScreen';
+
 import {
   MdOutlineChat,
   MdPeopleOutline,
@@ -20,6 +26,7 @@ import {
   setIsShowParticipants,
   setIsShowChat,
   setIsRecording,
+  setTimer,
   store,
 } from '../../store';
 import {
@@ -31,15 +38,15 @@ import {
 } from '../../utils/webcamSetup';
 
 import { socket } from '../../context/realtimeContext';
+
+let interval = null;
+const intervalTime = 1000;
 const classSessionId = localStorage.getItem('sessionId');
 
 ipcRenderer.on('source', (_e, { source }) => {
   console.log('source', source);
   store.dispatch(setIsShareScreen(true));
   shareScreen(source.id);
-  socket.emit('shareScreen', {
-    classSessionId,
-  });
 });
 
 const SessionControl = () => {
@@ -53,6 +60,7 @@ const SessionControl = () => {
     localVideoStream,
     localScreenStream,
     isScreenShare,
+    timer,
   } = useSelector((state) => {
     return state.session;
   });
@@ -108,7 +116,7 @@ const SessionControl = () => {
         ipcRenderer.send('showScreenSources');
       }
     } else {
-      socket.emit('stopShareScreen', {classSessionId});
+      socket.emit('stopShareScreen', { classSessionId });
       stopShareScreen();
       dispatch(setIsShareScreen(false));
     }
@@ -130,7 +138,7 @@ const SessionControl = () => {
         ) : (
           '   '
         )}
-        <div className="self-center align-middle text-center">{'--:--'}</div>
+        <div className="self-center align-middle text-center">{timer}</div>
       </div>
       <div className="self-center pr-3 flex">
         <ChatControl />
@@ -188,15 +196,32 @@ const SessionControl = () => {
 };
 const ChatControl = () => {
   const dispatch = useDispatch();
-  const { isShowChat, isShowParticipants, isRecording, activeBorder } =
-    useSelector((state) => {
-      return state.session;
-    });
+
+  const {
+    isShowChat,
+    isShowParticipants,
+    isRecording,
+    activeBorder,
+    recordButtonText,
+  } = useSelector((state) => {
+    return state.session;
+  });
+
   const handleRecoding = () => {
     if (isRecording) {
       dispatch(setIsRecording(false));
+      stop();
+      clearInterval(interval);
+      dispatch(setTimer('--:--'));
+      stopRecording();
     } else {
       dispatch(setIsRecording(true));
+      captureScreen();
+      start();
+      interval = setInterval(() => {
+        console.log(getTime());
+        dispatch(setTimer(recordTime(getTime())));
+      }, intervalTime);
     }
   };
   const handleShowChat = () => {
@@ -224,7 +249,7 @@ const ChatControl = () => {
         className="flex flex-col px-2 mx-2 text-green-800 cursor-pointer hover:text-green-500"
       >
         <PiRecordFill className="self-center  pt-1 w-6 h-6" />
-        <p>Record</p>
+        <p>{recordButtonText}</p>
       </button>
       <button
         onClick={handleShowChat}

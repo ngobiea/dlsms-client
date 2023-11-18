@@ -4,11 +4,15 @@ import { useSelector } from 'react-redux';
 
 const SessionView = () => {
   const videoRef = useRef();
-  const { activeBorder, localVideoStream, peers, isScreenShare } = useSelector(
-    (state) => {
-      return state.session;
-    }
-  );
+  const {
+    activeBorder,
+    localVideoStream,
+    peers,
+    isScreenShare,
+    localAudioStream,
+  } = useSelector((state) => {
+    return state.session;
+  });
 
   useEffect(() => {
     if (localVideoStream) {
@@ -106,14 +110,14 @@ const ScreenShareView = () => {
           <video
             ref={videoRef1}
             autoPlay
-            className="h-max w-full object-cover"
+            className="h-full w-full object-cover"
           ></video>
         </div>
         <div className="h-60 w-full bg-purple-600">
           <video
             ref={videoRef2}
             autoPlay
-            className="h-max w-full object-cover"
+            className="h-full w-full object-cover"
           ></video>
         </div>
       </div>

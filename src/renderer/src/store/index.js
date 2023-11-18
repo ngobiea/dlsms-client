@@ -86,6 +86,7 @@ import {
   removePeer,
   disablePeerScreenStream,
   setPeerScreenStream,
+  setTimer,
 } from './slices/sessionSlice';
 
 import { mediasoupReducer } from './slices/mediasoupSlice';
@@ -226,6 +227,7 @@ export {
   removePeer,
   disablePeerScreenStream,
   setPeerScreenStream,
+  setTimer,
 
   //examSession slice
   setCorrectOption,

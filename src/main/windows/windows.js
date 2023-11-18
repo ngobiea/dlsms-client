@@ -1,4 +1,4 @@
-const { app, ipcMain, clipboard } = require('electron');
+const { app, ipcMain, clipboard, dialog } = require('electron');
 const path = require('path');
 
 const Windows = require('../util/Windows');
@@ -65,5 +65,12 @@ exports.createWindow = async () => {
     } catch (error) {
       return false;
     }
+  });
+  ipcMain.handle('saveFilePath', async () => {
+    const { filePath } = await dialog.showSaveDialog({
+      buttonLabel: 'Save video',
+      defaultPath: `vid-${Date.now()}.webm`,
+    });
+    return { filePath };
   });
 };

@@ -3,7 +3,6 @@ import {
   addPeers,
   removePeer,
   disablePeerScreenStream,
-  setPeerScreenStream,
 } from '../../../store';
 import { Device } from 'mediasoup-client';
 import { Peer } from './Peer';
@@ -40,8 +39,7 @@ export class ClassSession {
     socket.on('newCSPeer', this.newPeer.bind(this));
     socket.on('newCSProducer', this.newProducer.bind(this));
     socket.on('closeCSCT', this.closeConsumerTransport.bind(this));
-    socket.on('newCSScreen', this.newScreen.bind(this));
-    socket.on('closeCSScreen', this.closeProducer.bind(this));
+    socket.on('closeCSScreen', this.closeScreen.bind(this));
   }
   addPeers(peers) {
     console.log(peers);
@@ -318,23 +316,14 @@ export class ClassSession {
       console.log(error);
     }
   }
-  newScreen({ classSessionId, userId }) {
-    try {
-      if (this.classSessionId !== classSessionId) {
-        console.log('Not this class session screen');
-        return;
-      }
-      store.dispatch(setPeerScreenStream(userId));
-    } catch (error) {
-      console.log(error);
-    }
-  }
+
   closeScreen({ classSessionId, userId }) {
     try {
       if (this.classSessionId !== classSessionId) {
         console.log('Not this class session screen');
         return;
       }
+      console.log('closing screen', userId);
       store.dispatch(disablePeerScreenStream(userId));
     } catch (error) {
       console.log(error);

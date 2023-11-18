@@ -1,4 +1,4 @@
-import { store, addPeerStream } from '../../../store';
+import { store, addPeerStream, setPeerScreenStream } from '../../../store';
 
 export class Peer {
   constructor(classSessionId, device, user, socket, producerIds) {
@@ -87,7 +87,10 @@ export class Peer {
           appData: producerAppData,
         });
         console.log('new consumer:', consumer);
-        const peerStream = { id: this.user._id.toString() };
+        const peerStream = {
+          id: this.user._id.toString(),
+          appData: producerAppData,
+        };
         const { track } = consumer;
         const stream = new MediaStream([track]);
         stream.consumerId = consumer.id;
@@ -126,7 +129,10 @@ export class Peer {
   closeConsumer({ classSessionId, consumerId }) {
     console.log('close consumer received');
 
-    const peerStream = { id: this.user._id.toString() };
+    const peerStream = {
+      id: this.user._id.toString(),
+      appData: this.consumers.get(consumerId).appData,
+    };
 
     if (
       classSessionId === this.classSessionId &&
