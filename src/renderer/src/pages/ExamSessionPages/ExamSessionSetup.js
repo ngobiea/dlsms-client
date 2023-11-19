@@ -47,14 +47,14 @@ const ExamSessionSetup = () => {
     return state.session;
   });
   const handleToClassSession = () => {
-    // socket.emit('addStudentToExam', { examSessionId }, ({ error, success }) => {
-    // if (success) {
-    navigate('/examSession');
-    ipcRenderer.send('openExamQuestionWindow');
-    // } else if (error) {
-    // console.log(error);
-    // }
-    // });
+    socket.emit('addStudentToExam', { examSessionId }, ({ error, success }) => {
+      if (success) {
+        navigate('/examSession');
+        ipcRenderer.send('openExamQuestionWindow');
+      } else if (error) {
+        console.log(error);
+      }
+    });
   };
   const handleMic = (e) => {
     const value = e.target.checked;

@@ -26,6 +26,7 @@ import {
   MdOutlineMicOff,
 } from 'react-icons/md';
 import { socket } from '../../context/realtimeContext';
+const accountType = JSON.parse(localStorage.getItem('accountType'));
 
 const classSessionId = localStorage.getItem('sessionId');
 
@@ -55,17 +56,21 @@ const ClassSessionSetup = () => {
   });
 
   const handleToClassSession = () => {
-    socket.emit(
-      'addStudentToClassSession',
-      { classSessionId },
-      ({ error, success }) => {
-        if (success) {
-          navigate('/session');
-        } else if (error) {
-          console.log(error);
+    if (accountType === 'tutor') {
+      navigate('/session');
+    } else {
+      socket.emit(
+        'addStudentToClassSession',
+        { classSessionId },
+        ({ error, success }) => {
+          if (success) {
+            navigate('/session');
+          } else if (error) {
+            console.log(error);
+          }
         }
-      }
-    );
+      );
+    }
   };
 
   const handleCancel = () => {

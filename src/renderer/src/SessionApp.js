@@ -47,8 +47,8 @@ const SessionApp = () => {
   return (
     <>
       <TitleNav />
-      {accountType !== 'tutor' && !isModelsLoaded ? (
-        <Skeleton />
+      {accountType !== 'tutor' && message !== '' ? (
+        <CloseWindow message={message} />
       ) : (
         <Routes>
           <Route
@@ -62,16 +62,7 @@ const SessionApp = () => {
             }
           />
           <Route path="setup" element={<ClassSessionSetup />} />
-          <Route
-            path="rules"
-            element={
-              message === '' ? (
-                <SessionRulesPage />
-              ) : (
-                <CloseWindow message={message} />
-              )
-            }
-          />
+          <Route path="rules" element={<SessionRulesPage />} />
           <Route path="verify" element={<VerificationPage />} />
           <Route path="session" element={<ClassSessionPage />} />
         </Routes>
