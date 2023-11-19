@@ -28,6 +28,7 @@ import {
 import { socket } from '../../context/realtimeContext';
 const examSessionId = localStorage.getItem('examSessionId');
 
+
 const ExamSessionSetup = () => {
   const { examSession } = useContext(ExamSessionContext);
 
