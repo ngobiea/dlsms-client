@@ -3,8 +3,15 @@ import * as faceapi from '@vladmandic/face-api';
 import { offWebCam } from './webcam';
 import { socket } from '../../context/realtimeContext';
 const examSessionId = localStorage.getItem('examSessionId');
+const classSessionId = localStorage.getItem('sessionId');
 
-import { store, setProgress, setRecognitionResult } from '../../store';
+console.log(document.title);
+import {
+  store,
+  setProgress,
+  setRecognitionResult,
+  setModelsLoaded,
+} from '../../store';
 const numberOfImages = 10;
 const intervalTime = 2000;
 const recognitionThreshold = 2;
@@ -15,10 +22,12 @@ const unknownLimit = 5;
 const emptyLimit = 8;
 let intervalRef = null;
 let recognitions = [];
+const esaValue = 3000;
 
 export default class FaceApi {
   static realtimeInterval = rTInterval;
   static labeledFaceDescriptors = null;
+  static ESA = esaValue;
 
   static async loadRecognitionModels() {
     const accountType = store.getState().account.accountType;
@@ -31,6 +40,7 @@ export default class FaceApi {
         await faceapi.nets.faceRecognitionNet.loadFromUri(modelsPath);
         console.log('Recognition Models Loaded');
         FaceApi.labeledFaceDescriptors = await this.getLabeledFaceDescriptors();
+        store.dispatch(setModelsLoaded(true));
       }
     } catch (error) {
       console.log('Error occur while Loading models', error);
@@ -62,7 +72,9 @@ export default class FaceApi {
     recognitions = [];
     try {
       store.dispatch(setRecognitionResult({ result: -1 }));
-      const faceMatcher = new faceapi.FaceMatcher(FaceApi.labeledFaceDescriptors);
+      const faceMatcher = new faceapi.FaceMatcher(
+        FaceApi.labeledFaceDescriptors
+      );
       let interval = null;
       interval = setInterval(async () => {
         const detectedFaces = await faceapi
@@ -141,7 +153,13 @@ export default class FaceApi {
         console.log(results);
         recognitions.push(results);
         if (recognitions.length >= numberOfImages) {
-          FaceApi.processRealTimeRecognitionResult();
+          if (document.title === 'examSession') {
+            FaceApi.processRealTimeRecognitionResult();
+          } else if (document.title === 'classSession') {
+            FaceApi.processClassRealTimeRecognitionResult();
+          } else {
+            console.log('No Session');
+          }
         }
       }, rTInterval);
     } catch (error) {
@@ -150,7 +168,7 @@ export default class FaceApi {
   }
 
   static processRealTimeRecognitionResult() {
-    console.log('Processing Result');
+    console.log('Processing Result for examSession');
 
     const {
       countUnknownLabels,
@@ -192,7 +210,6 @@ export default class FaceApi {
   }
   static stopRealTimeRecognition() {
     clearInterval(intervalRef);
-    intervalRef = null;
   }
   static processUtil() {
     let countMatchingLabels = 0;
@@ -209,6 +226,82 @@ export default class FaceApi {
             title: 'More Faces Detected',
             description: 'More than one face detected',
             time: new Date(),
+          },
+        });
+        recognitions = [];
+        return { moreFaces: true };
+      }
+
+      if (
+        recognition.length === 1 &&
+        recognition[0].label === label &&
+        recognition[0].match > realtimeThreshold
+      ) {
+        countMatchingLabels++;
+      }
+      if (recognition.length === 1 && recognition[0].label !== label) {
+        countUnknownLabels++;
+      }
+      if (recognition.length === 0) {
+        countEmptyResults++;
+      }
+    }
+    return { countMatchingLabels, countUnknownLabels, countEmptyResults };
+  }
+  static processClassRealTimeRecognitionResult() {
+    console.log('Processing Result for class session');
+
+    const {
+      countUnknownLabels,
+      countEmptyResults,
+      countMatchingLabels,
+      moreFaces,
+    } = FaceApi.processClassUtil();
+    if (moreFaces) {
+      return;
+    }
+    console.log(countMatchingLabels, countUnknownLabels, countEmptyResults);
+    if (countMatchingLabels >= matchLimit) {
+      console.log('verify');
+      socket.emit('verify', {
+        classSessionId,
+        verify: {
+          isVerify: true,
+        },
+      });
+    } else if (countUnknownLabels >= unknownLimit) {
+      console.log('unknown');
+      socket.emit('verify', {
+        classSessionId,
+        verify: {
+          isVerify: false,
+        },
+      });
+    } else if (countEmptyResults >= emptyLimit) {
+      console.log('empty');
+      socket.emit('verify', {
+        classSessionId,
+        verify: {
+          isVerify: false,
+        },
+      });
+    }
+
+    recognitions = [];
+  }
+
+  static processClassUtil() {
+    let countMatchingLabels = 0;
+    let countUnknownLabels = 0;
+    let countEmptyResults = 0;
+    const label = store.getState().account.user.email;
+
+    for (const recognition of recognitions) {
+      if (recognition.length > 1) {
+        socket.emit('verify', {
+          classSessionId,
+          verify: {
+            isVerify: false,
           },
         });
         recognitions = [];

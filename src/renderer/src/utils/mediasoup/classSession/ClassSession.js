@@ -3,9 +3,17 @@ import {
   addPeers,
   removePeer,
   disablePeerScreenStream,
+  setIsRecording,
+  setTimer,
 } from '../../../store';
 import { Device } from 'mediasoup-client';
 import { Peer } from './Peer';
+import { start, stop, recordTime, getTime } from '../../stopWatch';
+import { ipcRenderer } from 'electron';
+
+let interval = null;
+const intervalTime = 1000;
+const notClass = 'Not a class session';
 export class ClassSession {
   constructor(classSessionId, accountType) {
     this.socket = null;
@@ -40,6 +48,8 @@ export class ClassSession {
     socket.on('newCSProducer', this.newProducer.bind(this));
     socket.on('closeCSCT', this.closeConsumerTransport.bind(this));
     socket.on('closeCSScreen', this.closeScreen.bind(this));
+    socket.on('recordCS', this.recordSession.bind(this));
+    socket.on('endCS', this.endClassSession.bind(this));
   }
   addPeers(peers) {
     console.log(peers);
@@ -320,11 +330,45 @@ export class ClassSession {
   closeScreen({ classSessionId, userId }) {
     try {
       if (this.classSessionId !== classSessionId) {
-        console.log('Not this class session screen');
+        console.log(notClass);
         return;
       }
       console.log('closing screen', userId);
       store.dispatch(disablePeerScreenStream(userId));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  recordSession({ classSessionId, state }) {
+    try {
+      if (this.classSessionId !== classSessionId) {
+        console.log('Not this class session screen');
+        return;
+      }
+      if (state === 'start') {
+        store.dispatch(setIsRecording(true));
+        start();
+        interval = setInterval(() => {
+          store.dispatch(setTimer(recordTime(getTime())));
+        }, intervalTime);
+      } else if (state === 'stop') {
+        store.dispatch(setIsRecording(false));
+        stop();
+        clearInterval(interval);
+        store.dispatch(setTimer('--:--'));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  endClassSession({ classSessionId }) {
+    try {
+      if (this.classSessionId !== classSessionId) {
+        console.log(notClass);
+        return;
+      }
+      console.log('End class session');
+      ipcRenderer.send('closeSessionWindow');
     } catch (error) {
       console.log(error);
     }

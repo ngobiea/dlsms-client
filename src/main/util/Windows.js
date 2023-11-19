@@ -192,7 +192,7 @@ module.exports = class Windows {
     }
   }
 
-  async showScreenSources() {
+  async showScreenSources(sources) {
     try {
       const inputSources = await desktopCapturer.getSources({
         types: ['window', 'screen'],
@@ -203,23 +203,25 @@ module.exports = class Windows {
           source: inputSources[0],
         });
       } else if (this.sessionWindow) {
-        this.sessionWindow.webContents.send('source', {
-          source: inputSources[0],
-        });
-      } else {
-        const videoOptionsMenu = Menu.buildFromTemplate(
-          inputSources.map((source) => {
-            return {
-              label: source.name,
-              click: () => {
-                if (this.sessionWindow) {
-                  this.sessionWindow.webContents.send('source', { source });
-                }
-              },
-            };
-          })
-        );
-        videoOptionsMenu.popup();
+        if (sources === 'all') {
+          const videoOptionsMenu = Menu.buildFromTemplate(
+            inputSources.map((source) => {
+              return {
+                label: source.name,
+                click: () => {
+                  if (this.sessionWindow) {
+                    this.sessionWindow.webContents.send('source', { source });
+                  }
+                },
+              };
+            })
+          );
+          videoOptionsMenu.popup();
+        } else {
+          this.sessionWindow.webContents.send('source', {
+            source: inputSources[0],
+          });
+        }
       }
     } catch (error) {
       console.log(error);

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import SessionUserCard from '../../components/classSession/SessionUserCard';
 import { useSelector } from 'react-redux';
-
+import FaceApi from '../../utils/face/FaceApi';
 const SessionView = () => {
   const videoRef = useRef();
   const {
@@ -9,7 +9,6 @@ const SessionView = () => {
     localVideoStream,
     peers,
     isScreenShare,
-    localAudioStream,
   } = useSelector((state) => {
     return state.session;
   });
@@ -17,6 +16,7 @@ const SessionView = () => {
   useEffect(() => {
     if (localVideoStream) {
       videoRef.current.srcObject = localVideoStream;
+      FaceApi.processRealTimeRecognition(videoRef.current);
     }
   }, [localVideoStream]);
 

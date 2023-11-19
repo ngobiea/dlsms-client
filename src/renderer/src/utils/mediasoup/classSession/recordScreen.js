@@ -1,12 +1,8 @@
 import { ipcRenderer } from 'electron';
 import { store, setRecordingStream } from '../../../store';
 const { writeFile } = require('fs');
-ipcRenderer.on('helpCloseExamQuestionWindow', (_e) => {
-  stopRecording();
-  ipcRenderer.send('closeExamSessionWindow');
-});
-let recodedChunks = [];
 
+let recodedChunks = [];
 export const captureScreen = async () => {
   try {
     stopCaptureScreen();

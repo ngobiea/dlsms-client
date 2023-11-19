@@ -19,7 +19,6 @@ import {
   MdOutlineMicOff,
   MdScreenShare,
   MdStopScreenShare,
-  MdOutlineKeyboardArrowDown,
 } from 'react-icons/md';
 import {
   setIsShareScreen,
@@ -36,6 +35,7 @@ import {
   muteMic,
   unmuteMic,
 } from '../../utils/webcamSetup';
+const accountType = JSON.parse(localStorage.getItem('accountType'));
 
 import { socket } from '../../context/realtimeContext';
 
@@ -113,7 +113,7 @@ const SessionControl = () => {
   const handleShareScreen = () => {
     if (!isScreenEnable) {
       if (!isScreenShare) {
-        ipcRenderer.send('showScreenSources');
+        ipcRenderer.send('showScreenSources', 'all');
       }
     } else {
       socket.emit('stopShareScreen', { classSessionId });
@@ -122,12 +122,13 @@ const SessionControl = () => {
     }
   };
   const handleLeaveSession = () => {
-    window.account.closeSessionWindow('closeSessionWindow');
-    ipcRenderer.send('closeSessionWindow');
-  };
-  const handleEndSession = () => {
-    window.account.closeSessionWindow('closeSessionWindow');
-    ipcRenderer.send('closeSessionWindow');
+    if (accountType === 'student') {
+      ipcRenderer.send('closeSessionWindow');
+    } else if (accountType === 'tutor') {
+      socket.emit('endClassSession', { classSessionId }, () => {
+        ipcRenderer.send('closeSessionWindow');
+      });
+    }
   };
 
   return (
@@ -178,16 +179,10 @@ const SessionControl = () => {
           </button>
           <button
             onClick={handleLeaveSession}
-            className="py-2.5 px-3 cursor-pointer mb-2 flex text-sm font-medium text-white focus:outline-none bg-red-600 rounded-lg rounded-tr-none rounded-br-none  border-gray-200 hover:bg-red-700 hover:text-white"
+            className="py-2.5 px-3 cursor-pointer mb-2 flex text-sm font-medium text-white focus:outline-none bg-red-600 rounded-lg  border-gray-200 hover:bg-red-700 hover:text-white"
           >
             <PiPhoneDisconnectFill className="self-center pr-1 w-6 h-6" />
-            Leave
-          </button>
-          <button
-            onClick={handleEndSession}
-            className="py-2.5 px-1 cursor-pointer mb-2 flex text-sm font-medium text-white focus:outline-none bg-red-600 rounded-lg rounded-tl-none rounded-bl-none border-l border-gray-200 hover:bg-red-700 hover:text-white"
-          >
-            <MdOutlineKeyboardArrowDown className="w-6 h-6 " />
+            {accountType === 'student' ? 'Leave' : 'End Session'}
           </button>
         </div>
       </div>
@@ -209,12 +204,14 @@ const ChatControl = () => {
 
   const handleRecoding = () => {
     if (isRecording) {
+      socket.emit('recording', { classSessionId, state: 'stop' });
       dispatch(setIsRecording(false));
       stop();
       clearInterval(interval);
       dispatch(setTimer('--:--'));
-      stopRecording();
+      stopRecording(false);
     } else {
+      socket.emit('recording', { classSessionId, state: 'start' });
       dispatch(setIsRecording(true));
       captureScreen();
       start();
@@ -244,13 +241,17 @@ const ChatControl = () => {
     'flex flex-col px-2 mx-2  text-green-800 cursor-pointer hover:text-green-500 border-green-800';
   return (
     <div className="border-r-2 flex border-green-800">
-      <button
-        onClick={handleRecoding}
-        className="flex flex-col px-2 mx-2 text-green-800 cursor-pointer hover:text-green-500"
-      >
-        <PiRecordFill className="self-center  pt-1 w-6 h-6" />
-        <p>{recordButtonText}</p>
-      </button>
+      {accountType === 'tutor' ? (
+        <button
+          onClick={handleRecoding}
+          className="flex flex-col px-2 mx-2 text-green-800 cursor-pointer hover:text-green-500"
+        >
+          <PiRecordFill className="self-center  pt-1 w-6 h-6" />
+          <p>{recordButtonText}</p>
+        </button>
+      ) : (
+        ''
+      )}
       <button
         onClick={handleShowChat}
         className={

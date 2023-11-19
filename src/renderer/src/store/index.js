@@ -87,6 +87,7 @@ import {
   disablePeerScreenStream,
   setPeerScreenStream,
   setTimer,
+  setModelsLoaded,
 } from './slices/sessionSlice';
 
 import { mediasoupReducer } from './slices/mediasoupSlice';
@@ -228,7 +229,8 @@ export {
   disablePeerScreenStream,
   setPeerScreenStream,
   setTimer,
-
+  setModelsLoaded,
+  
   //examSession slice
   setCorrectOption,
   addQuestion,

@@ -55,7 +55,17 @@ const ClassSessionSetup = () => {
   });
 
   const handleToClassSession = () => {
-    navigate('/session');
+    socket.emit(
+      'addStudentToClassSession',
+      { classSessionId },
+      ({ error, success }) => {
+        if (success) {
+          navigate('/session');
+        } else if (error) {
+          console.log(error);
+        }
+      }
+    );
   };
 
   const handleCancel = () => {

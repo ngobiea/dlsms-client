@@ -8,7 +8,7 @@ const SessionRulesPage = () => {
       <div className="p-8">
         <div className="bg-white p-4 rounded-lg shadow-xl py-8 mt-12">
           <h4 className="text-4xl font-bold text-gray-800 tracking-widest uppercase text-center">
-            Exam Rules
+            Class Session Rules
           </h4>
           <p className="text-center text-gray-600 text-lg mt-2 font-bold">
             To join this classroom you should familiarize yourself with the

@@ -37,6 +37,7 @@ const sessionSlice = createSlice({
     screenShareStream: null,
     recordButtonText: 'Start Recording',
     timer: '--:--',
+    isModelsLoaded: false,
   },
   reducers: {
     setMicState(state, action) {
@@ -159,9 +160,7 @@ const sessionSlice = createSlice({
     setIsProducer(state, action) {
       state.isProducer = action.payload;
     },
-    addConsumerTransports(state, action) {
-      state.consumerTransports.push(action.payload);
-    },
+ 
     setIsDeviceSet(state, action) {
       state.isDeviceSet = action.payload;
     },
@@ -195,25 +194,6 @@ const sessionSlice = createSlice({
             : peer;
         });
       }
-    },
-
-    updateActiveStudentsInExamSession(state, action) {
-      const { id } = action.payload;
-      state.activeStudentsInExamSession = state.activeStudentsInExamSession.map(
-        (student) => {
-          return student._id.toString() === id
-            ? { ...student, ...action.payload }
-            : student;
-        }
-      );
-    },
-    updatePeers(state, action) {
-      const { id } = action.payload;
-      state.peers = state.peers.map((peer) => {
-        return peer._id.toString() === id
-          ? { ...peer, ...action.payload }
-          : peer;
-      });
     },
     removeStudentFromActiveExamSession(state, action) {
       state.activeStudentsInExamSession =
@@ -266,6 +246,9 @@ const sessionSlice = createSlice({
       state.isScreenShare = false;
       state.screenShareStream = null;
     },
+    setModelsLoaded(state, action) {
+      state.isModelsLoaded = action.payload;
+    },
   },
 });
 
@@ -303,5 +286,7 @@ export const {
   setPeerScreenStream,
   disablePeerScreenStream,
   setTimer,
+  setModelsLoaded,
+
 } = sessionSlice.actions;
 export const sessionReducer = sessionSlice.reducer;

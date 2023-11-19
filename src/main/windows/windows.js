@@ -30,8 +30,8 @@ exports.createWindow = async () => {
   ipcMain.on('openExamSessionWindow', async () => {
     windows.createExamSessionWindow();
   });
-  ipcMain.on('showScreenSources', async () => {
-    windows.showScreenSources();
+  ipcMain.on('showScreenSources', async (_e, source) => {
+    windows.showScreenSources(source);
   });
   ipcMain.on('closeExamSessionWindow', () => {
     windows.closeExamSessionWindow();

@@ -48,12 +48,12 @@ const ExamSessionSetup = () => {
   });
   const handleToClassSession = () => {
     // socket.emit('addStudentToExam', { examSessionId }, ({ error, success }) => {
-      // if (success) {
-        navigate('/examSession');
-        ipcRenderer.send('openExamQuestionWindow');
-      // } else if (error) {
-        // console.log(error);
-      // }
+    // if (success) {
+    navigate('/examSession');
+    ipcRenderer.send('openExamQuestionWindow');
+    // } else if (error) {
+    // console.log(error);
+    // }
     // });
   };
   const handleMic = (e) => {
@@ -76,7 +76,7 @@ const ExamSessionSetup = () => {
         await examSession.loadDevice(rtpCapabilities, socket);
       }
     );
-    ipcRenderer.send('showScreenSources');
+    ipcRenderer.send('showScreenSources', 'one');
   }, []);
 
   useEffect(() => {
@@ -169,7 +169,7 @@ const ExamSessionSetup = () => {
               </label>
             </div>
             <div className="flex">
-              {micState ==='unmute' || micState==='enable' ? (
+              {micState === 'unmute' || micState === 'enable' ? (
                 <MdOutlineMic className="w-10 h-6 self-center" />
               ) : (
                 <MdOutlineMicOff className="w-10 h-6 self-center" />
