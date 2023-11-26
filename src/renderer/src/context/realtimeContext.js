@@ -27,6 +27,7 @@ socket.on('connect_error', (err) => {
   console.log(err.data);
 });
 
+
 const RealtimeContext = createContext();
 
 const RealtimeProvider = ({ children }) => {

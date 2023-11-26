@@ -4,7 +4,7 @@ import 'react-datetime/css/react-datetime.css';
 import { HashRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import 'react-toggle/style.css';
-
+import '../../public/css/question.css';
 import { RealtimeProvider } from '../context/realtimeContext';
 import { store } from '../store';
 

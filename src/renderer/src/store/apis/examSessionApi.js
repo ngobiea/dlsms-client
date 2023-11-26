@@ -63,6 +63,23 @@ const examSessionApi = createApi({
           };
         },
       }),
+      postSubmitAnswers: builder.mutation({
+        query: (body) => {
+          return {
+            url: `/student/exam-session/submit`,
+            method: 'POST',
+            body,
+          };
+        },
+      }),
+      getQuestions: builder.query({
+        query: (examSessionId) => {
+          return {
+            url: `/student/exam-session/questions/${examSessionId}`,
+            method: 'GET',
+          };
+        },
+      }),
     };
   },
 });
@@ -74,6 +91,8 @@ export const {
   useDeleteExamQuestionMutation,
   usePostSaveExamSessionMutation,
   useGetIsExamSessionEndedQuery,
+  useGetQuestionsQuery,
+  usePostSubmitAnswersMutation,
 } = examSessionApi;
 
 export { examSessionApi };

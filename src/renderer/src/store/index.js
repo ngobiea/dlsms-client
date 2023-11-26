@@ -90,8 +90,6 @@ import {
   setModelsLoaded,
 } from './slices/sessionSlice';
 
-import { mediasoupReducer } from './slices/mediasoupSlice';
-
 import {
   examSessionReducer,
   setCorrectOption,
@@ -100,6 +98,8 @@ import {
   setShowExamSession,
   setIsShowExamConfirm,
   setExamSessionIdStep,
+  setStudentCorrectOption,
+  setQuestions,
 } from './slices/examSessionSlice';
 
 import {
@@ -120,6 +120,7 @@ import {
 import { accountApi } from './apis/accountsApi';
 import { classroomApi } from './apis/classroomsApi';
 import { examSessionApi } from './apis/examSessionApi';
+import { reportApi } from './apis/reportApi';
 
 const store = configureStore({
   reducer: {
@@ -130,12 +131,12 @@ const store = configureStore({
     app: appReducer,
     session: sessionReducer,
     chat: chatReducer,
-    mediasoup: mediasoupReducer,
     examSession: examSessionReducer,
     join: joinReducer,
     [accountApi.reducerPath]: accountApi.reducer,
     [classroomApi.reducerPath]: classroomApi.reducer,
     [examSessionApi.reducerPath]: examSessionApi.reducer,
+    [reportApi.reducerPath]: reportApi.reducer,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware({
@@ -144,7 +145,8 @@ const store = configureStore({
     })
       .concat(accountApi.middleware)
       .concat(classroomApi.middleware)
-      .concat(examSessionApi.middleware);
+      .concat(examSessionApi.middleware)
+      .concat(reportApi.middleware);
   },
 });
 
@@ -230,7 +232,7 @@ export {
   setPeerScreenStream,
   setTimer,
   setModelsLoaded,
-  
+
   //examSession slice
   setCorrectOption,
   addQuestion,
@@ -238,6 +240,8 @@ export {
   setShowExamSession,
   setIsShowExamConfirm,
   setExamSessionIdStep,
+  setStudentCorrectOption,
+  setQuestions,
 
   //join slice
   setDefaultWebcam,
@@ -279,4 +283,14 @@ export {
   useDeleteExamQuestionMutation,
   usePostSaveExamSessionMutation,
   useGetIsExamSessionEndedQuery,
+  useGetQuestionsQuery,
+  usePostSubmitAnswersMutation,
 } from './apis/examSessionApi';
+
+// Report Apis
+export {
+  useGetClassSessionsQuery,
+  useGetExamSessionsQuery,
+  useGetCSStudentsQuery,
+  useGetESStudentsQuery,
+} from './apis/reportApi';

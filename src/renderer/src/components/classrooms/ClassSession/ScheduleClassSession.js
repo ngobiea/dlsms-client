@@ -31,7 +31,6 @@ const ScheduleClassSession = () => {
   const dispatch = useDispatch();
 
   const handleScheduleClassSession = (schedule) => {
-    
     schedule.startDate = new Date(startDate);
     schedule.endDate = new Date(endDate);
     schedule.classroomId = classroomId;

@@ -1,22 +1,19 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import FileInput from '../../../../components/App/FileInput';
-import TextArea from '../../../../components/App/TextArea';
-import { useDispatch, useSelector } from 'react-redux';
 import Input from '../../../../components/App/Input';
+import FileInput from '../../../../components/App/FileInput';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   addQuestion,
   removeAllFiles,
   usePostExamQuestionMutation,
 } from '../../../../store';
 
-const LQsForm = () => {
+const SQsView = () => {
   const dispatch = useDispatch();
-  const { files } = useSelector((state) => state.app);
   const { examSessionId } = useSelector((state) => state.examSession);
-
+  const { files } = useSelector((state) => state.app);
   const [postExamQuestion, { isSuccess, data }] = usePostExamQuestionMutation();
-
   const {
     register,
     handleSubmit,
@@ -37,7 +34,6 @@ const LQsForm = () => {
     }
     postExamQuestion({ question, examSessionId });
   };
-
   useEffect(() => {
     if (isSuccess) {
       resetField('question');
@@ -54,8 +50,7 @@ const LQsForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className=" w-full flex">
           <div className=" w-10/12 mr-3">
-            <TextArea
-              rows={10}
+            <Input
               focus={true}
               reg={register}
               labelText={'Question'}
@@ -65,7 +60,7 @@ const LQsForm = () => {
               errors={errors}
             />
           </div>
-          <div className=" w-2/12 self-center">
+          <div className=" w-2/12">
             <Input
               type={'number'}
               focus={true}
@@ -78,7 +73,6 @@ const LQsForm = () => {
             />
           </div>
         </div>
-
         <FileInput />
         <div>
           <button className="text-white flex  bg-sidebar hover:bg-sidebarHover focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">
@@ -90,4 +84,4 @@ const LQsForm = () => {
   );
 };
 
-export default LQsForm;
+export default SQsView;

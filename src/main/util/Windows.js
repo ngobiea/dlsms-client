@@ -104,7 +104,7 @@ module.exports = class Windows {
       this.examQuestionWindow = createExamQuestionWindow(false);
       this.examQuestionWindow.on(readyToShow, () => {
         this.examQuestionWindow.show();
-
+        
         this.bHInterval = setInterval(() => {
           BrowserHistory.getAllHistory(this.bHIntervalTime)
             .then((histories) => {

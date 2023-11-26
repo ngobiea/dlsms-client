@@ -27,6 +27,7 @@ const SQs = ({ question, index }) => {
         <div
           onClick={handleDeleteQuestion}
           className="  absolute top-0 right-5 cursor-pointer"
+          tabIndex={0} // Add tabIndex attribute to make it focusable
         >
           <MdClose className=" font-bold text-2xl text-red-500" />
         </div>

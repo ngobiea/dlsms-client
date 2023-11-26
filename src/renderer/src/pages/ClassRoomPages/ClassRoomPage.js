@@ -30,8 +30,6 @@ const ClassRoomPage = () => {
   });
   const { isShowExamSession } = useSelector((state) => state.examSession);
 
-  const { students } = useSelector((state) => state.classroom);
-
   const { data, isSuccess } = useFetchClassroomQuery({
     accountType,
     classroomId,
@@ -64,12 +62,18 @@ const ClassRoomPage = () => {
       return state.modal;
     }
   );
-  
+
   return (
     <div
       className="flex relative  pt-10 pl-20 overflow-hidden h-screen"
+      tabIndex={0}
       onClick={() => {
         if (isShowSchedule) {
+          dispatch(setShowSchedule(false));
+        }
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' && isShowSchedule) {
           dispatch(setShowSchedule(false));
         }
       }}

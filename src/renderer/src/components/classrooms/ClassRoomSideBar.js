@@ -74,24 +74,27 @@ const ClassRoomSideBar = () => {
             </div>
           </li>
           <li>
-            <a
-              href="#"
+            <Link
+              to={'class-session'}
               className="flex items-center p-2 text-green-800 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <img src={classSession} alt="classSession" className="w-6 h-6" />
               <span className="flex-1 ml-3 whitespace-nowrap">
                 Class Sessions
               </span>
-            </a>
+            </Link>
           </li>
           <li>
-            <div className="flex items-center p-2 text-green-800 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+            <Link
+              to={'exam-session'}
+              className="flex items-center p-2 text-green-800 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
               <img src={exam} alt="exam" className="w-6 h-6" />
 
               <span className="flex-1 ml-3 whitespace-nowrap">
                 Exam Sessions
               </span>
-            </div>
+            </Link>
           </li>
           <li>
             <div

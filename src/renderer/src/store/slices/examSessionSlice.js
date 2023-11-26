@@ -6,8 +6,9 @@ const examSessionSlice = createSlice({
   name: 'examSession',
   initialState: {
     questions: [],
+    mcqQuestions: [],
     correctOption: option1Id,
-    examSessionId: '',
+    examSessionId: localStorage.getItem('examSessionId') || '',
     isShowExamSession: false,
     step: 'setup',
     isShowExamConfirm: false,
@@ -47,6 +48,27 @@ const examSessionSlice = createSlice({
     removeAllQuestions(state, _action) {
       state.questions = [];
     },
+    setStudentCorrectOption(state, action) {
+      const { questionId, optionId } = action.payload;
+      state.questions = state.questions.map((question) => {
+        if (question._id === questionId) {
+          question.correctOption = optionId;
+        }
+        return question;
+      });
+      state.mcqQuestions = state.mcqQuestions.map((question) => {
+        if (question._id === questionId) {
+          question.correctOption = optionId;
+        }
+        return question;
+      });
+    },
+    setQuestions(state, action) {
+      state.questions = action.payload;
+      state.mcqQuestions = action.payload.filter(
+        (question) => question.type === 'mcq'
+      );
+    },
   },
 });
 
@@ -58,5 +80,7 @@ export const {
   setShowExamSession,
   setExamSessionIdStep,
   removeAllQuestions,
+  setStudentCorrectOption,
+  setQuestions,
 } = examSessionSlice.actions;
 export const examSessionReducer = examSessionSlice.reducer;

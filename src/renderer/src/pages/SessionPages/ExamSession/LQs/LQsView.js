@@ -10,7 +10,7 @@ import {
   usePostExamQuestionMutation,
 } from '../../../../store';
 
-const LQsForm = () => {
+const LQsView = () => {
   const dispatch = useDispatch();
   const { files } = useSelector((state) => state.app);
   const { examSessionId } = useSelector((state) => state.examSession);
@@ -90,4 +90,4 @@ const LQsForm = () => {
   );
 };
 
-export default LQsForm;
+export default LQsView;

@@ -11,7 +11,6 @@ import Input from '../../../../components/App/Input';
 import Toggle from 'react-toggle';
 import { useSelector, useDispatch } from 'react-redux';
 
-
 const minOptions = 3;
 
 const MCQsForm = () => {
@@ -95,14 +94,14 @@ const MCQsForm = () => {
             />
           </div>
         </div>
-        <span
+        <button
           onClick={() => {
             append({ optionId: generateClassroomCode() });
           }}
           className="text-white cursor-pointer bg-sidebar hover:bg-sidebarHover focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm sm:w-auto px-5 py-2.5 text-center"
         >
           Add Option
-        </span>
+        </button>
         <div className="flex w-full my-3">
           <p className=" w-1/2">Questions Options</p>
           <div className=" w-1/2 flex justify-around">

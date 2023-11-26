@@ -1,6 +1,7 @@
 import React from 'react';
 import TitleNav from './components/TitleNav';
 import { socket } from './context/realtimeContext';
+import ExamSessionPage from './pages/SessionPages/ExamSession/ExamSessionPage';
 const examSessionId = localStorage.getItem('examSessionId');
 console.log(examSessionId);
 window.account.blurExamQuestionWindow(() => {
@@ -17,6 +18,7 @@ window.account.blurExamQuestionWindow(() => {
     });
   }
 });
+
 window.account.minimizeExamQuestionWindow(() => {
   console.log('examQuestionWindow minimize');
   if (socket) {
@@ -65,8 +67,8 @@ const ExamQuestionApp = () => {
   return (
     <>
       <TitleNav />;
-      <div className="flex h-full w-full items-center justify-center">
-        ExamQuestionApp
+      <div className=" w-full h-full">
+        <ExamSessionPage />
       </div>
     </>
   );

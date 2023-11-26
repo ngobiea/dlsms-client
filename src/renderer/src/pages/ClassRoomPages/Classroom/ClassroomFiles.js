@@ -4,18 +4,12 @@ import FileTableHeader from '../../../components/classrooms/FileTableHeader';
 
 const ClassroomFiles = () => {
   return (
-    <div className="bg-white rounded-md ">
+    <div className="bg-white rounded-md h-full ">
       <div className="-mx-4 px-4  overflow-x-auto">
         <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <FileTableHeader />
             <tbody>
-              <FileTableData />
-              <FileTableData />
-              <FileTableData />
-              <FileTableData />
-              <FileTableData />
-              <FileTableData />
               <FileTableData />
               <FileTableData />
               <FileTableData />

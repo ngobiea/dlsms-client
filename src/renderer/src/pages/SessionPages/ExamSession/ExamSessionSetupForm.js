@@ -104,7 +104,6 @@ const ExamSessionSetupForm = () => {
               {duration}
             </p>
           </div>
-
           {!isValidTime && (
             <div className="text-red-500">Invalid Schedule Time </div>
           )}

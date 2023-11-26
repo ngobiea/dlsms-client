@@ -27,9 +27,10 @@ const MCQs = ({ question, index }) => {
         </div>
         <div
           onClick={handleDeleteQuestion}
-          className="  absolute top-0 right-5 cursor-pointer"
+          className="absolute top-0 right-5 cursor-pointer"
+          tabIndex={0}
         >
-          <MdClose className=" font-bold text-2xl text-red-500" />
+          <MdClose className="font-bold text-2xl text-red-500" />
         </div>
       </div>
 

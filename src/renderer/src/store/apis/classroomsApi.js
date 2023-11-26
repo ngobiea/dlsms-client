@@ -28,7 +28,6 @@ const classroomApi = createApi({
       fetchClassroom: builder.query({
         query: fetchClassroomQuery,
       }),
-      
       verifyClassroomCode: builder.mutation({
         query: verifyClassroomCodeQuery,
       }),

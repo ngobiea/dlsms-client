@@ -18,8 +18,13 @@ import TitleNav from './components/TitleNav';
 import SideBar from './components/SideBar';
 import ExamConfirm from './components/App/ExamConfirm';
 import Notification from './components/Notification';
+import ClassSessionsPage from './pages/ClassRoomPages/ClassSessions/ClassSessionsPage';
+import CSession from './pages/ClassRoomPages/ClassSessions/CSession';
+import ESession from './pages/ClassRoomPages/ExamSessions/ESession';
+import ExamSessionsPage from './pages/ClassRoomPages/ExamSessions/ExamSessionsPage';
 import { useSelector } from 'react-redux';
-
+import StudentCS from './pages/ClassRoomPages/ClassSessions/StudentCS';
+import StudentES from './pages/ClassRoomPages/ExamSessions/StudentES';
 const App = () => {
   const { isShowExamConfirm } = useSelector((state) => state.examSession);
   const { notification } = useSelector((state) => state.app);
@@ -41,6 +46,14 @@ const App = () => {
             <Route path="" element={<Assigned />} />
             <Route path="graded" element={<GradedAssignment />} />
             <Route path="create" element={<CreateAssignment />} />
+          </Route>
+          <Route path="class-session" element={<ClassSessionsPage />}>
+            <Route path="" element={<CSession />} />
+            <Route path=":classSessionId" element={<StudentCS />} />
+          </Route>
+          <Route path="exam-session" element={<ExamSessionsPage />}>
+            <Route path="" element={<ESession />} />
+            <Route path=":examSessionId" element={<StudentES />} />
           </Route>
         </Route>
         <Route path="assignment" element={<AssignmentPage />} />

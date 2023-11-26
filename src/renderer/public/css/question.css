@@ -1,0 +1,9 @@
+/* Disable selection */
+body {
+    user-select: none;
+}
+
+/* Cursor style change */
+::selection {
+    background-color: transparent;
+}

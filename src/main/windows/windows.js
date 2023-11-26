@@ -66,6 +66,9 @@ exports.createWindow = async () => {
       return false;
     }
   });
+  ipcMain.on('closeExamQuestionWindow', () => {
+    windows.closeExamQuestionWindow();
+  });
   ipcMain.handle('saveFilePath', async () => {
     const { filePath } = await dialog.showSaveDialog({
       buttonLabel: 'Save video',

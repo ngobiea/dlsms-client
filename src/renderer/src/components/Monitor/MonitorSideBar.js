@@ -25,7 +25,10 @@ const MonitorSideBar = () => {
 
   const handleEnd = ({ user }) => {
     console.log(user._id.toString());
-    socket.emit('endStudentSession', { examSessionId, studentId: user._id.toString() });
+    socket.emit('endStudentSession', {
+      examSessionId,
+      studentId: user._id.toString(),
+    });
   };
 
   const handleJoin = ({ user }) => {
@@ -82,9 +85,9 @@ const MonitorSideBar = () => {
               return (
                 <li className="" key={violation._id.toString()}>
                   <div className="text-green-800 relative h-36  flex flex-col border p-1 border-green-300 w-full rounded-lg bg-green-50 ">
-                    <div className="text-sm">{violation.utc_time}</div>
+                    <div className="text-sm">{violation.time}</div>
                     <div className=" text-sm">
-                      {violation.firstName} {violation.lastName}
+                      {violation.user.firstName}@{violation.user.studentId}
                     </div>
                     <div className="flex">
                       <TbWorldWww className="text-red-500 text-3xl" />
