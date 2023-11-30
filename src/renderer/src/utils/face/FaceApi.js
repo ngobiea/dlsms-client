@@ -38,9 +38,11 @@ export default class FaceApi {
         await faceapi.nets.ssdMobilenetv1.loadFromUri(modelsPath);
         await faceapi.nets.faceLandmark68Net.loadFromUri(modelsPath);
         await faceapi.nets.faceRecognitionNet.loadFromUri(modelsPath);
-        console.log('Recognition Models Loaded');
-        FaceApi.labeledFaceDescriptors = await this.getLabeledFaceDescriptors();
-        store.dispatch(setModelsLoaded(true));
+
+        this.getLabeledFaceDescriptors().then((lfd) => { 
+          FaceApi.labeledFaceDescriptors = lfd;
+          store.dispatch(setModelsLoaded(true));
+        });
       }
     } catch (error) {
       console.log('Error occur while Loading models', error);

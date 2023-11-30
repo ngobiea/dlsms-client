@@ -62,7 +62,10 @@ const SessionApp = () => {
             }
           />
           <Route path="setup" element={<ClassSessionSetup />} />
-          <Route path="rules" element={<SessionRulesPage />} />
+          <Route
+            path="rules"
+            element={isModelsLoaded ? <SessionRulesPage /> : <Skeleton />}
+          />
           <Route path="verify" element={<VerificationPage />} />
           <Route path="session" element={<ClassSessionPage />} />
         </Routes>

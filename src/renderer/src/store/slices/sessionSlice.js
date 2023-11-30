@@ -160,6 +160,7 @@ const sessionSlice = createSlice({
     setIsProducer(state, action) {
       state.isProducer = action.payload;
     },
+
     setIsDeviceSet(state, action) {
       state.isDeviceSet = action.payload;
     },
