@@ -282,7 +282,6 @@ export {
   usePostExamQuestionMutation,
   useDeleteExamQuestionMutation,
   usePostSaveExamSessionMutation,
-  useGetIsExamSessionEndedQuery,
   useGetQuestionsQuery,
   usePostSubmitAnswersMutation,
 } from './apis/examSessionApi';
@@ -293,4 +292,5 @@ export {
   useGetExamSessionsQuery,
   useGetCSStudentsQuery,
   useGetESStudentsQuery,
+  useGetStudentESQuery,
 } from './apis/reportApi';

@@ -13,10 +13,13 @@ const StudentCSTableHeader = () => {
           Attendance
         </th>
         <th scope="col" className="px-6 py-3">
-          Times Left
+          Join Time
         </th>
         <th scope="col" className="px-6 py-3">
-          Action
+          Leave Time
+        </th>
+        <th scope="col" className="px-6 py-3">
+          No of Times Left
         </th>
       </tr>
     </thead>

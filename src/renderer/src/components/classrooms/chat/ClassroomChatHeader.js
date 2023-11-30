@@ -8,6 +8,7 @@ import {
   setShowScheduleForm,
   setShowExamSession,
 } from '../../../store';
+import { getCapitalLetters } from '../../../utils/util';
 
 const ClassroomChatHeader = () => {
   const dispatch = useDispatch();
@@ -16,6 +17,9 @@ const ClassroomChatHeader = () => {
   });
   const { accountType } = useSelector((state) => {
     return state.account;
+  });
+  const { name } = useSelector((state) => {
+    return state.classroom;
   });
 
   const showClass =
@@ -28,7 +32,7 @@ const ClassroomChatHeader = () => {
   return (
     <div className="flex justify-between px-2 pt-3 pb-2 border-b-2 border-gray-200">
       <div className="relative flex items-center space-x-4">
-        <MiniClassRoomCard title={'FC'} classes={'small'} />
+        <MiniClassRoomCard title={getCapitalLetters(name)} classes={'small'} />
         <NavLink
           to={''}
           className={(navData) =>

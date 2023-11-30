@@ -1,6 +1,6 @@
 // https://mediasoup.org/documentation/v3/mediasoup-client/api/#ProducerOptions
 // https://mediasoup.org/documentation/v3/mediasoup-client/api/#transport-produce
-export let params = {
+export const params = {
   // mediasoup params
   encodings: [
     {

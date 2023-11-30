@@ -41,6 +41,14 @@ const reportApi = createApi({
           };
         },
       }),
+      getStudentES: builder.query({
+        query: (studentId) => {
+          return {
+            url: `tutor/exam-session/student/${studentId}`,
+            method: 'GET',
+          };
+        },
+      }),
     };
   },
 });
@@ -50,5 +58,6 @@ export const {
   useGetExamSessionsQuery,
   useGetCSStudentsQuery,
   useGetESStudentsQuery,
+  useGetStudentESQuery
 } = reportApi;
 export { reportApi };

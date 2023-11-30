@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
 import SessionHeader from '../../../components/classrooms/Sessions/SessionHeader';
-import SessionTableData from '../../../components/classrooms/Sessions/SessionTableData';
-import SessionTableHeader from '../../../components/classrooms/Sessions/SessionTableHeader';
 import { useGetESStudentsQuery } from '../../../store';
 import { useParams } from 'react-router-dom';
 import StudentESTableData from '../../../components/classrooms/ExamSession.js/StudentESTableData';
@@ -22,7 +20,7 @@ const StudentES = () => {
   }, [data, isSuccess]);
   return (
     <div className=" w-full h-full ">
-      <SessionHeader title={'Exam Session Students'} />
+      <SessionHeader title={'Students'} buttonText={'Exam Session'} />
       <div className="bg-white rounded-md ">
         <div className="-mx-4 px-4  overflow-x-auto">
           <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">

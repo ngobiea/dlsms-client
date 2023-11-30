@@ -18,7 +18,7 @@ const StudentCS = () => {
   }, [data, isSuccess]);
   return (
     <div className=" w-full h-full ">
-      <SessionHeader title={'Class Session'} />
+      <SessionHeader title={'Students'} buttonText={'Class Session'} />
       <div className="bg-white rounded-md ">
         <div className="-mx-4 px-4  overflow-x-auto">
           <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">

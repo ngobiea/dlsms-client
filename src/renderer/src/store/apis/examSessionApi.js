@@ -55,14 +55,7 @@ const examSessionApi = createApi({
           };
         },
       }),
-      getIsExamSessionEnded: builder.query({
-        query: ({ examSessionId }) => {
-          return {
-            url: `/student/examSession-status/${examSessionId}`,
-            method: 'GET',
-          };
-        },
-      }),
+   
       postSubmitAnswers: builder.mutation({
         query: (body) => {
           return {
@@ -90,7 +83,6 @@ export const {
   usePostExamQuestionMutation,
   useDeleteExamQuestionMutation,
   usePostSaveExamSessionMutation,
-  useGetIsExamSessionEndedQuery,
   useGetQuestionsQuery,
   usePostSubmitAnswersMutation,
 } = examSessionApi;

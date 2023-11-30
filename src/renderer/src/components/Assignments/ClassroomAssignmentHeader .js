@@ -1,8 +1,12 @@
 import React from 'react';
 import MiniClassRoomCard from '../classrooms/MiniClassRoomCard';
 import { Link, NavLink } from 'react-router-dom';
-
+import { useSelector } from 'react-redux';
+import { getCapitalLetters } from '../../utils/util';
 const ClassroomAssignmentHeader = () => {
+  const { name } = useSelector((state) => {
+    return state.classroom;
+  });
   const activeClass = 'text-lg text-green-900 border-b-2 border-green-800';
   const inActiveClass = 'text-lg text-green-900';
   function handleActive(navData) {
@@ -11,7 +15,7 @@ const ClassroomAssignmentHeader = () => {
   return (
     <div className="flex  justify-between px-2 pt-3 pb-2 border-b-2 border-gray-200">
       <div className="relative flex items-center space-x-4">
-        <MiniClassRoomCard title={'FC'} classes={'small'} />
+        <MiniClassRoomCard title={getCapitalLetters(name)} classes={'small'} />
 
         <NavLink to={''} className={handleActive} end>
           Assigned

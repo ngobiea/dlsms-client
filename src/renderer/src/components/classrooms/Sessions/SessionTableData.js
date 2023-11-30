@@ -2,10 +2,49 @@ import React from 'react';
 import { formatDateTime } from '../../../utils/dateTime';
 const accountType = JSON.parse(localStorage.getItem('accountType'));
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
+const token = JSON.parse(localStorage.getItem('user')).token;
+import { baseUrl, localhost } from '../../../utils/url';
 const SessionTableData = ({ session, type }) => {
   const navigate = useNavigate();
-  const handleDownloadReport = () => {};
+  const handleDownloadReport = async () => {
+    let host = '';
+    if (type === 'class') {
+      host = `${baseUrl || localhost}/tutor/class-session/reports/${session._id}`;
+    } else if (type === 'exam') {
+      host = `${baseUrl || localhost}/tutor/exam-session/reports/${session._id}`;
+    } else {
+      console.log('invalid type');
+      return;
+    }
+    try {
+      const response = await axios.get(host, {
+        responseType: 'blob',
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+        onDownloadProgress: (progressEvent) => {
+          const { loaded, total } = progressEvent;
+          const progress = Math.round((loaded / total) * 100);
+
+          console.log(`Download Progress: ${progress}%`);
+          // Update UI with the download progress (e.g., set state for a progress bar)
+        },
+      });
+      console.log(response);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${session.title}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (error) {
+      console.log('Error downloading report');
+      console.log(error);
+    }
+  };
+
   const handleViewStudents = () => {
     if (type === 'class') {
       navigate(`${session._id}`);
