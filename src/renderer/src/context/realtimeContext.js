@@ -7,7 +7,12 @@ import { joinClassroomHandler } from '../realTimeCommunication/classroom/joinCla
 import { classroomScheduleMessageHandle } from '../realTimeCommunication/classroom/classroomScheduleMessageHandle';
 import { examScheduleMessage } from '../realTimeCommunication/classroom/examScheduleMessageHandler';
 import { baseUrl, localhost } from '../utils/url';
-import { useFetchClassroomsQuery, setClassrooms, store } from '../store';
+import {
+  useFetchClassroomsQuery,
+  setClassrooms,
+  store,
+  setOnlineStatus,
+} from '../store';
 
 const userDetails = JSON.parse(localStorage.getItem('user'));
 let socket;
@@ -27,7 +32,6 @@ socket.on('connect_error', (err) => {
   console.log(err.data);
 });
 
-
 const RealtimeContext = createContext();
 
 const RealtimeProvider = ({ children }) => {
@@ -35,6 +39,14 @@ const RealtimeProvider = ({ children }) => {
   const dispatch = useDispatch();
 
   const { accountType } = store.getState().account;
+  window.addEventListener('offline', () => {
+    store.dispatch(setOnlineStatus(false));
+    console.log('offline');
+  });
+  window.addEventListener('online', () => {
+    store.dispatch(setOnlineStatus(true));
+    console.log('online');
+  });
   const { data, isSuccess } = useFetchClassroomsQuery(accountType);
   const connectWithSocketServer = () => {
     socket.on('update-classroom-members', (value) => {

@@ -22,6 +22,7 @@ const appSlice = createSlice({
       type: 'success',
       isActive: false,
     },
+    isOnline: true,
     socket: null,
     modelsPath: '',
   },
@@ -85,6 +86,9 @@ const appSlice = createSlice({
     setMOdelsPath(state, action) {
       state.modelsPath = action.payload;
     },
+    setOnlineStatus(state, action) {
+      state.isOnline = action.payload;
+    },
   },
 });
 export const {
@@ -100,5 +104,6 @@ export const {
   setNotification,
   setSocket,
   setMOdelsPath,
+  setOnlineStatus,
 } = appSlice.actions;
 export const appReducer = appSlice.reducer;

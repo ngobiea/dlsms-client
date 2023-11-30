@@ -28,7 +28,7 @@ import StudentES from './pages/ClassRoomPages/ExamSessions/StudentES';
 const App = () => {
   const { isShowExamConfirm } = useSelector((state) => state.examSession);
   const { notification } = useSelector((state) => state.app);
-
+  console.log(navigator.onLine);
   return (
     <>
       <TitleNav />
