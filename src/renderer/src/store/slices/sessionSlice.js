@@ -160,7 +160,6 @@ const sessionSlice = createSlice({
     setIsProducer(state, action) {
       state.isProducer = action.payload;
     },
- 
     setIsDeviceSet(state, action) {
       state.isDeviceSet = action.payload;
     },
@@ -287,6 +286,5 @@ export const {
   disablePeerScreenStream,
   setTimer,
   setModelsLoaded,
-
 } = sessionSlice.actions;
 export const sessionReducer = sessionSlice.reducer;

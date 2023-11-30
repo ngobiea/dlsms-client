@@ -1,6 +1,4 @@
 import React from 'react';
-import { formatDateTime } from '../../../utils/dateTime';
-const accountType = JSON.parse(localStorage.getItem('accountType'));
 
 const StudentCSTableData = ({ student }) => {
   console.log(student);

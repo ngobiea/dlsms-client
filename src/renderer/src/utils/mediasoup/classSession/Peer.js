@@ -1,4 +1,4 @@
-import { store, addPeerStream, setPeerScreenStream } from '../../../store';
+import { store, addPeerStream } from '../../../store';
 
 export class Peer {
   constructor(classSessionId, device, user, socket, producerIds) {
