@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { formatDateTime } from '../../../utils/dateTime';
 const StudentCSTableData = ({ student }) => {
   console.log(student);
   return (
@@ -8,11 +8,17 @@ const StudentCSTableData = ({ student }) => {
         scope="row"
         className="px-6 py-4 font-medium text-green-700 whitespace-nowrap dark:text-white"
       >
-        Augustine Ngobie
+        {student.name}
       </th>
-      <td className="px-6 py-4 text-green-700">SP20-BSE-108</td>
-      <td className="px-6 py-4 text-green-700">78%</td>
-      <td className="px-6 py-4 text-green-700">3</td>
+      <td className="px-6 py-4 text-green-700">{student.studentId}</td>
+      <td className="px-6 py-4 text-green-700">{student.attendance+'%'}</td>
+      <td className="px-6 py-4 text-green-700">
+        {formatDateTime(student.startTime)}
+      </td>
+      <td className="px-6 py-4 text-green-700">
+        {formatDateTime(student.endTime)}
+      </td>
+      <td className="px-6 py-4 text-green-700">{student.left}</td>
     </tr>
   );
 };

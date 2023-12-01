@@ -10,9 +10,13 @@ const SessionTableData = ({ session, type }) => {
   const handleDownloadReport = async () => {
     let host = '';
     if (type === 'class') {
-      host = `${baseUrl || localhost}/tutor/class-session/reports/${session._id}`;
+      host = `${baseUrl || localhost}/tutor/class-session/reports/${
+        session._id
+      }`;
     } else if (type === 'exam') {
-      host = `${baseUrl || localhost}/tutor/exam-session/reports/${session._id}`;
+      host = `${baseUrl || localhost}/tutor/exam-session/reports/${
+        session._id
+      }`;
     } else {
       console.log('invalid type');
       return;
@@ -67,6 +71,7 @@ const SessionTableData = ({ session, type }) => {
       <td className="px-6 py-4 text-green-700">
         {formatDateTime(session.endDate)}
       </td>
+      <td className="px-6 py-4 text-green-700">{session.students.length}</td>
       <td className="flex items-center px-6 py-4">
         {accountType !== 'student' && (
           <button

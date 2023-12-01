@@ -1,5 +1,5 @@
 import { store, addPeerStream } from '../../../store';
-
+import FaceApi from '../../face/FaceApi';
 export class Peer {
   constructor(classSessionId, device, user, socket, producerIds) {
     this.classSessionId = classSessionId;
@@ -19,6 +19,7 @@ export class Peer {
     this.socket.on('closeCSConsumer', this.closeConsumer.bind(this));
     this.socket.on('pauseCSConsumer', this.pauseConsumer.bind(this));
     this.socket.on('resumeCSConsumer', this.resumeConsumer.bind(this));
+    this.socket.on('CSStarted', this.setCSStarted.bind(this));
   }
   createConsumerTransport() {
     this.socket.emit(
@@ -168,6 +169,13 @@ export class Peer {
       this.consumers.has(consumerId)
     ) {
       this.consumers.get(consumerId).resume();
+    }
+  }
+  setCSStarted({ classSessionId }) {
+    console.log('set CS started received');
+    if (classSessionId === this.classSessionId) {
+      console.log('CS started');
+      FaceApi.status = 'started';
     }
   }
 }

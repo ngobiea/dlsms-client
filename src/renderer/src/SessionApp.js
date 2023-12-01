@@ -28,11 +28,12 @@ const SessionApp = () => {
     if (accountType === 'student') {
       socket.emit('classStatus', { classSessionId }, ({ status }) => {
         console.log(status);
-        if (status === 'ongoing') {
+        if (status === 'ongoing' || status === 'started') {
           socket.emit('studentImages', ({ images }) => {
             console.log(images);
             dispatch(setStudentImages(images));
             FaceApi.loadRecognitionModels();
+            FaceApi.status = status;
           });
         } else if (status === 'ended') {
           setMessage('This class session has ended');

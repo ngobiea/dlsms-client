@@ -28,6 +28,7 @@ export default class FaceApi {
   static realtimeInterval = rTInterval;
   static labeledFaceDescriptors = null;
   static ESA = esaValue;
+  static status = 'pending';
 
   static async loadRecognitionModels() {
     const accountType = store.getState().account.accountType;
@@ -39,7 +40,7 @@ export default class FaceApi {
         await faceapi.nets.faceLandmark68Net.loadFromUri(modelsPath);
         await faceapi.nets.faceRecognitionNet.loadFromUri(modelsPath);
 
-        this.getLabeledFaceDescriptors().then((lfd) => { 
+        this.getLabeledFaceDescriptors().then((lfd) => {
           FaceApi.labeledFaceDescriptors = lfd;
           store.dispatch(setModelsLoaded(true));
         });
@@ -157,7 +158,10 @@ export default class FaceApi {
         if (recognitions.length >= numberOfImages) {
           if (document.title === 'examSession') {
             FaceApi.processRealTimeRecognitionResult();
-          } else if (document.title === 'classSession') {
+          } else if (
+            document.title === 'classSession' &&
+            FaceApi.status === 'started'
+          ) {
             FaceApi.processClassRealTimeRecognitionResult();
           } else {
             console.log('No Session');
