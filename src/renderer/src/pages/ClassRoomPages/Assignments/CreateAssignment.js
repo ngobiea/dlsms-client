@@ -1,15 +1,65 @@
-import React, { useContext } from 'react';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import Input from '../../../components/App/Input';
-import DateInput from '../../../components/App/DateInput';
-import RealtimeContext from '../../../context/realtimeContext';
 import FileInput from '../../../components/App/FileInput';
-import AccountContext from '../../../context/accountContext';
-
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  removeAllFiles,
+  setEndDate,
+  usePostAssignmentMutation,
+} from '../../../store';
+import DateInput from '../../../components/App/DateInput';
+import { useNavigate } from 'react-router-dom';
 const CreateAssignment = () => {
-  const { register, handleSubmit, errors } = useContext(AccountContext);
-  const handleCrateAssignment = (data) => {
-    
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { files, endDate } = useSelector((state) => state.app);
+  const { classroomId } = useSelector((state) => state.classroom);
+  const {
+    register,
+    handleSubmit,
+    resetField,
+    reset,
+    formState: { errors },
+  } = useForm();
+  const [postAssignment, { isSuccess, data, isError, error }] =
+    usePostAssignmentMutation();
+  
+  const handleCrateAssignment = (formData) => {
+    console.log('create assignment');
+    console.log(formData);
+    console.log(files);
+    console.log(endDate);
+    const assignment = new FormData();
+    assignment.append('title', formData.title);
+    assignment.append('points', formData.points);
+    assignment.append('instruction', formData.instruction);
+    assignment.append('dueDate', endDate);
+    if (files.length > 0) {
+      files.forEach((file) => {
+        assignment.append('files', file);
+      });
+    }
+    postAssignment({ assignment, classroomId });
   };
+  const handleEndDateChange = (selected) => {
+    if (selected.toDate !== undefined) {
+      dispatch(setEndDate(selected.toDate().toISOString()));
+    }
+  };
+  useEffect(() => {
+    if (isSuccess) {
+      resetField('title');
+      resetField('points');
+      resetField('instruction');
+      reset();
+      dispatch(removeAllFiles());
+      console.log(data);
+      navigate('/' + classroomId);
+    } else if (isError) {
+      console.log(error);
+    }
+  }, [isSuccess, isError]);
 
   return (
     <div className="bg-white-full h-full">
@@ -23,16 +73,12 @@ const CreateAssignment = () => {
               New Assignment
             </p>
             <div>
-              <button
-                type="button"
-                className="py-2.5 px-7 mr-5 mb-2 text-sm font-medium text-green-500 focus:outline-none bg-white rounded-md border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200"
-              >
+              <span className="py-2.5 px-7 mr-5 mb-2 text-sm font-medium text-green-500 focus:outline-none bg-white rounded-md border border-gray-200 hover:bg-gray-100 hover:text-blue-700">
                 Cancel
-              </button>
+              </span>
               <button
-                // disabled={isTimeBeforeDate(time, date)}
                 type="submit"
-                className="py-2.5 px-7 mr-2 mb-2 text-sm font-medium text-white focus:outline-none rounded-md border bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 "
+                className="py-2.5 px-7 mr-2 mb-2 text-sm font-medium text-white focus:outline-none rounded-md border bg-green-700 hover:bg-green-800"
               >
                 Assign
               </button>
@@ -69,9 +115,15 @@ const CreateAssignment = () => {
               errors={errors}
             />
           </div>
+          <div className="mx-7 my-7">
+            <DateInput
+              handleDateTimeChange={handleEndDateChange}
+              label={'Due Date'}
+              value={new Date(endDate)}
+            />
+          </div>
 
-          <FileInput reg={register} />
-     
+          <FileInput />
         </form>
       </div>
     </div>

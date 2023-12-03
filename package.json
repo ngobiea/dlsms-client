@@ -19,7 +19,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@reduxjs/toolkit": "^1.9.5",
+    "@reduxjs/toolkit": "^1.9.7",
     "@vladmandic/face-api": "^1.7.12",
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",

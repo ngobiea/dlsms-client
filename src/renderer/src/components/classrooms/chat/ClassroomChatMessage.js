@@ -5,6 +5,7 @@ import ExamSessionScheduleMessage from './ExamSessionScheduleMessage';
 import GeneralMessage from './GeneralMessage';
 import SenderMessage from './SenderMessage';
 import WelcomeMessage from './WelcomeMessage';
+import AssignmentMessage from './AssignmentMessage';
 import { useSelector } from 'react-redux';
 const ClassroomChatMessage = () => {
   const { messages } = useSelector((state) => state.chat);
@@ -47,6 +48,13 @@ const ClassroomChatMessage = () => {
           } else if (message.type === 'general') {
             return (
               <GeneralMessage message={message} key={message._id.toString()} />
+            );
+          } else if (message.type === 'assignment') {
+            return (
+              <AssignmentMessage
+                message={message}
+                key={message._id.toString()}
+              />
             );
           }
           return null;

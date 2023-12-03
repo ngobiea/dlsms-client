@@ -6,7 +6,7 @@ const DateInput = ({ handleDateTimeChange, label,value }) => {
 
   return (
     <div className="flex flex-col">
-      <label className="">
+      <label className="font-bold text-title">
         {label} <span className="text-red-500">*</span>
       </label>
 

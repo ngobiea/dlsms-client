@@ -6,7 +6,6 @@ import {
   MdLink,
   MdOutlineHome,
 } from 'react-icons/md';
-import { RiChatPollLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setShowCode } from '../../store';
@@ -95,17 +94,6 @@ const ClassRoomSideBar = () => {
                 Exam Sessions
               </span>
             </Link>
-          </li>
-          <li>
-            <div
-              href="#"
-              className="flex items-center p-2 text-green-800 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <RiChatPollLine className="text-green-800" />
-              <span className="flex-1 ml-3 whitespace-nowrap">
-                Classroom polls
-              </span>
-            </div>
           </li>
         </ul>
         <ul className="pt-4 mt-4 space-y-2 font-medium border-t border-gray-200 dark:border-gray-700">

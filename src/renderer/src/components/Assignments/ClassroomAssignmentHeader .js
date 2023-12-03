@@ -3,6 +3,8 @@ import MiniClassRoomCard from '../classrooms/MiniClassRoomCard';
 import { Link, NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { getCapitalLetters } from '../../utils/util';
+const accountType = JSON.parse(localStorage.getItem('accountType'));
+
 const ClassroomAssignmentHeader = () => {
   const { name } = useSelector((state) => {
     return state.classroom;
@@ -20,17 +22,30 @@ const ClassroomAssignmentHeader = () => {
         <NavLink to={''} className={handleActive} end>
           Assigned
         </NavLink>
-        <NavLink to={'graded'} className={handleActive}>
-          Graded
-        </NavLink>
+        {accountType === 'tutor' && (
+          <NavLink to={'graded'} className={handleActive}>
+            Graded
+          </NavLink>
+        )}
+
+        {accountType === 'student' && (
+          <NavLink to={'submitted'} className={handleActive}>
+            Submitted
+          </NavLink>
+        )}
       </div>
-      <Link to={'create'} className="mr-5 ">
-        <div className="flex items-center justify-start">
-          <div className="h-9 px-2 border-y border border-green-600  text-green-800 rounded hover:bg-gray-100 ">
-            Crate Assignment
+      {accountType === 'tutor' && (
+        <Link to={'create'} className="mr-5 ">
+          <div className="flex items-center justify-start">
+            <button
+              type="button"
+              className="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+            >
+              New Assignment
+            </button>
           </div>
-        </div>
-      </Link>
+        </Link>
+      )}
     </div>
   );
 };

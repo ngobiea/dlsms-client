@@ -25,6 +25,11 @@ import ExamSessionsPage from './pages/ClassRoomPages/ExamSessions/ExamSessionsPa
 import { useSelector } from 'react-redux';
 import StudentCS from './pages/ClassRoomPages/ClassSessions/StudentCS';
 import StudentES from './pages/ClassRoomPages/ExamSessions/StudentES';
+import Assignment from './pages/ClassRoomPages/Assignments/Assignment';
+import SubmittedAssignment from './pages/ClassRoomPages/Assignments/SubmittedAssignment';
+import StudentSubmission from './pages/ClassRoomPages/Assignments/StudentSubmission';
+const accountType = JSON.parse(localStorage.getItem('accountType'));
+
 const App = () => {
   const { isShowExamConfirm } = useSelector((state) => state.examSession);
   const { notification } = useSelector((state) => state.app);
@@ -46,6 +51,18 @@ const App = () => {
             <Route path="" element={<Assigned />} />
             <Route path="graded" element={<GradedAssignment />} />
             <Route path="create" element={<CreateAssignment />} />
+            <Route
+              path=":assignmentId"
+              element={
+                accountType === 'student' ? (
+                  <Assignment />
+                ) : (
+                  <StudentSubmission />
+                )
+              }
+            />
+            <Route path="submitted" element={<SubmittedAssignment />} />
+  
           </Route>
           <Route path="class-session" element={<ClassSessionsPage />}>
             <Route path="" element={<CSession />} />

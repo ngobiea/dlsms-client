@@ -33,8 +33,6 @@ import {
   setTutor,
 } from './slices/classroomSlice';
 
-import { assignmentReducer } from './slices/assignmentSlice';
-
 import {
   appReducer,
   setIsWebcamActive,
@@ -118,10 +116,22 @@ import {
   setRecognitionResult,
 } from './slices/join';
 
+import {
+  assignmentReducer,
+  setAssignedAssignment,
+  addAssignedAssignment,
+  setGradedAssignment,
+  addGradedAssignment,
+  setSubmittedAssignment,
+  addSubmittedAssignment,
+  setSubmissionId
+} from './slices/assignmentSlice';
+
 import { accountApi } from './apis/accountsApi';
 import { classroomApi } from './apis/classroomsApi';
 import { examSessionApi } from './apis/examSessionApi';
 import { reportApi } from './apis/reportApi';
+import { assignmentApi } from './apis/assignmentApi';
 
 const store = configureStore({
   reducer: {
@@ -133,11 +143,13 @@ const store = configureStore({
     session: sessionReducer,
     chat: chatReducer,
     examSession: examSessionReducer,
+
     join: joinReducer,
     [accountApi.reducerPath]: accountApi.reducer,
     [classroomApi.reducerPath]: classroomApi.reducer,
     [examSessionApi.reducerPath]: examSessionApi.reducer,
     [reportApi.reducerPath]: reportApi.reducer,
+    [assignmentApi.reducerPath]: assignmentApi.reducer,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware({
@@ -147,7 +159,8 @@ const store = configureStore({
       .concat(accountApi.middleware)
       .concat(classroomApi.middleware)
       .concat(examSessionApi.middleware)
-      .concat(reportApi.middleware);
+      .concat(reportApi.middleware)
+      .concat(assignmentApi.middleware);
   },
 });
 
@@ -257,6 +270,16 @@ export {
   setJoinButtonText,
   setStudentImages,
   setRecognitionResult,
+
+  //assignment slice
+  setAssignedAssignment,
+  addAssignedAssignment,
+  setGradedAssignment,
+  addGradedAssignment,
+  setSubmittedAssignment,
+  addSubmittedAssignment,
+  setSubmissionId,
+
 };
 
 // Account Apis
@@ -296,3 +319,14 @@ export {
   useGetESStudentsQuery,
   useGetStudentESQuery,
 } from './apis/reportApi';
+
+// Assignment Apis
+export {
+  usePostAssignmentMutation,
+  useGetAssignedAssignmentQuery,
+  useGetGradedAssignmentQuery,
+  useGetAssignmentQuery,
+  usePostSubmitAssignmentMutation,
+  usePostGradeAssignmentMutation,
+  useGetSubmittedAssignmentsQuery
+} from './apis/assignmentApi';

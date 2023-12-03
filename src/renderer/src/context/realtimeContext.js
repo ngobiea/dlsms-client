@@ -6,6 +6,7 @@ import { logoutHandler } from '../utils/util';
 import { joinClassroomHandler } from '../realTimeCommunication/classroom/joinClassroomHandler';
 import { classroomScheduleMessageHandle } from '../realTimeCommunication/classroom/classroomScheduleMessageHandle';
 import { examScheduleMessage } from '../realTimeCommunication/classroom/examScheduleMessageHandler';
+import { postAssignmentMessageHandler } from '../realTimeCommunication/classroom/postAssignmentHandler';
 import { baseUrl, localhost } from '../utils/url';
 import {
   useFetchClassroomsQuery,
@@ -39,14 +40,17 @@ const RealtimeProvider = ({ children }) => {
   const dispatch = useDispatch();
 
   const { accountType } = store.getState().account;
+
   window.addEventListener('offline', () => {
     store.dispatch(setOnlineStatus(false));
     console.log('offline');
   });
+
   window.addEventListener('online', () => {
     store.dispatch(setOnlineStatus(true));
     console.log('online');
   });
+
   const { data, isSuccess } = useFetchClassroomsQuery(accountType);
   const connectWithSocketServer = () => {
     socket.on('update-classroom-members', (value) => {
@@ -55,7 +59,6 @@ const RealtimeProvider = ({ children }) => {
 
     socket.on('classroom-schedule-message', (value) => {
       console.log('received class schedule message event');
-
       classroomScheduleMessageHandle(value, navigate);
     });
 
@@ -64,14 +67,9 @@ const RealtimeProvider = ({ children }) => {
       examScheduleMessage(value, navigate);
     });
 
-    socket.on('esConnected', ({ name }) => {
-      console.log(name);
-      console.log('io is set for exam session');
-    });
-
-    socket.on('blurESQW', ({ examSessionId, user }) => {
-      console.log('received blurExamQuestionWindow for:', user);
-      console.log(examSessionId);
+    socket.on('assignment-post-message', (value) => {
+      console.log('received assignment post message event');
+      postAssignmentMessageHandler(value, navigate);
     });
   };
 

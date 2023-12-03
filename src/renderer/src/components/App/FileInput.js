@@ -16,7 +16,7 @@ const FileInput = () => {
     dispatch(addFile(newFiles));
   };
   return (
-    <div className="mx-7 my-7 w-auto">
+    <div className="mx-7 my-7 w-auto" title='Select File'>
       <label
         className="flex w-auto cursor-pointer text-title"
         htmlFor="file-input"
