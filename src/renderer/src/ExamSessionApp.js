@@ -44,19 +44,6 @@ ipcRenderer.on('stopRecord', (_e) => {
   FaceApi.stopRealTimeRecognition();
 });
 
-// socket.on('ESOpen', async (callback) => {
-//   try {
-//     console.log('received ESOpen event');
-//     const isESOpen = await ipcRenderer.invoke('isExamSessionWindowOpen');
-//     console.log(isESOpen);
-//     if (isESOpen) {
-//       callback(isESOpen);
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
-
 socket.on('endExamSession', async () => {
   console.log('received endExamSession event');
   const isClosed = await ipcRenderer.invoke('closeExamWindow');
@@ -76,23 +63,23 @@ const ExamSessionApp = () => {
         setMessage('You exam session has ended, Close Window');
         console.log('Student ended exam session, Close Exam session window');
       } else if (status === 'ongoing') {
-    setMessage('');
-    socket.emit('studentImages', ({ images }) => {
-      dispatch(setStudentImages(images));
-      FaceApi.loadRecognitionModels();
-    });
-    } else if (status === 'ended') {
-      setMessage('Exam session ended, Close Window');
-      console.log('Exam session ended, Close Exam session window');
-    } else if (status === 'invalid') {
-      setMessage('Invalid Exam Session, Close Window');
-      console.log('Invalid Exam Session, Close Exam session window');
-    } else if (status === 'pending') {
-      setMessage('Exam Session is not started yet, Close Window');
-      console.log(
-        'Exam Session is not started yet, Close Exam session window'
-      );
-    }
+        setMessage('');
+        socket.emit('studentImages', ({ images }) => {
+          dispatch(setStudentImages(images));
+          FaceApi.loadRecognitionModels();
+        });
+      } else if (status === 'ended') {
+        setMessage('Exam session ended, Close Window');
+        console.log('Exam session ended, Close Exam session window');
+      } else if (status === 'invalid') {
+        setMessage('Invalid Exam Session, Close Window');
+        console.log('Invalid Exam Session, Close Exam session window');
+      } else if (status === 'pending') {
+        setMessage('Exam Session is not started yet, Close Window');
+        console.log(
+          'Exam Session is not started yet, Close Exam session window'
+        );
+      }
     });
   }, []);
 
