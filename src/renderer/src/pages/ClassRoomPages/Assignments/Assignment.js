@@ -9,12 +9,13 @@ import {
 } from '../../../store';
 import { formatDateTime } from '../../../utils/dateTime';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { baseUrl, localhost } from '../../../utils/url';
+const token = JSON.parse(localStorage.getItem('user')).token;
 
 const Assignment = () => {
   const dispatch = useDispatch();
   const { assignmentId } = useParams();
-  console.log(assignmentId);
-  console.log('Assignment');
   const { files } = useSelector((state) => state.app);
   const { data, error, isError, isSuccess } = useGetAssignmentQuery({
     assignmentId,
@@ -32,13 +33,74 @@ const Assignment = () => {
     }
     submitAssignment({ submission, assignmentId });
   };
-  const handleDownload = () => {
-    console.log('download')
+  const handleReferenceDownload = async ({ _id, name }) => {
+    try {
+      const response = await axios.get(
+        `${baseUrl || localhost}/download/${assignmentId}/file/${_id}`,
+        {
+          responseType: 'blob',
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+          onDownloadProgress: (progressEvent) => {
+            const { loaded, total } = progressEvent;
+            const progress = Math.round((loaded / total) * 100);
+            console.log(`Download Progress: ${progress}%`);
+            // Update UI with the download progress (e.g., set state for a progress bar)
+          },
+        }
+      );
+      console.log(response);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${name}`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (error) {
+      console.log('Error downloading report');
+      console.log(error);
+    }
+  };
+  const handleDownloadSubmission = async ({ name }) => {
+    const submissionId = data?.submissions[0]?._id;
+    try {
+      const response = await axios.get(
+        `${
+          baseUrl || localhost
+        }/tutor/download/${assignmentId}/submission/${submissionId}`,
+        {
+          responseType: 'blob',
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+          onDownloadProgress: (progressEvent) => {
+            const { loaded, total } = progressEvent;
+            const progress = Math.round((loaded / total) * 100);
+            console.log(`Download Progress: ${progress}%`);
+            // Update UI with the download progress (e.g., set state for a progress bar)
+          },
+        }
+      );
+      console.log(response);
+      const fileName = response.headers['content-disposition'];
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${fileName}`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (error) {
+      console.log('Error downloading report');
+      console.log(error);
+    }
   };
   useEffect(() => {
     if (isSuccess) {
-      dispatch(removeAllFiles());
       console.log(data);
+      dispatch(removeAllFiles());
     } else if (isError) {
       console.log(error);
     }
@@ -86,6 +148,16 @@ const Assignment = () => {
                 <span className="font-bold text-green-800">Total Points :</span>{' '}
                 <span className=" text-green-800">{data?.points}</span>
               </p>
+              <p>
+                <span className="font-bold text-green-800">
+                  Attain Points :
+                </span>{' '}
+                <span className=" text-green-800">
+                  {data?.submissions[0]?.graded
+                    ? data?.submissions[0]?.points
+                    : 'nill'}
+                </span>
+              </p>
             </div>
           </div>
           <div className="mx-7 my-7">
@@ -113,7 +185,12 @@ const Assignment = () => {
                     <span className="sr-only">Dismiss</span>
                     <MdDownload
                       title="Download File"
-                      onClick={handleDownload}
+                      onClick={() => {
+                        handleReferenceDownload({
+                          _id: file._id,
+                          name: file.name,
+                        });
+                      }}
                       className="h-6 w-6"
                       aria-hidden="true"
                     />
@@ -141,7 +218,12 @@ const Assignment = () => {
                     <span className="sr-only">Dismiss</span>
                     <MdDownload
                       title="Download File"
-                      onClick={handleDownload}
+                      onClick={() =>
+                        handleDownloadSubmission({
+                          key: file.key,
+                          name: file.name,
+                        })
+                      }
                       className="h-6 w-6"
                       aria-hidden="true"
                     />

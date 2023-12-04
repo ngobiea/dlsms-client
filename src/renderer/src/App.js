@@ -62,7 +62,6 @@ const App = () => {
               }
             />
             <Route path="submitted" element={<SubmittedAssignment />} />
-  
           </Route>
           <Route path="class-session" element={<ClassSessionsPage />}>
             <Route path="" element={<CSession />} />

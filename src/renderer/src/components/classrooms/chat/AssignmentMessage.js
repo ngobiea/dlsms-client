@@ -13,7 +13,7 @@ const AssignmentMessage = ({ message }) => {
   console.log(classroomId);
 
   const handleViewAssignments = () => {
-    navigate(`/${classroomId}/assignment/${_id.toString()}`);
+    navigate(`assignment/${_id.toString()}`);
   };
   return (
     <div className="bg-gray-300 transition duration-350 ease-in-out mx-2 rounded-lg rounded-bl-none">

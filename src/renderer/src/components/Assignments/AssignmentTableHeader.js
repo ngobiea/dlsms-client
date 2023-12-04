@@ -13,7 +13,7 @@ const AssignmentTableHeader = () => {
           Submitted On
         </th>
         <th scope="col" className="px-6 py-3">
-          File
+          Points
         </th>
         <th scope="col" className="px-6 py-3">
           Action

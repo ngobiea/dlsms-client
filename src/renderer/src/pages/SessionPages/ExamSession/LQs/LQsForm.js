@@ -73,7 +73,7 @@ const LQsForm = () => {
               labelText={'Points'}
               inputValue={'points'}
               valid={{ required: true }}
-              errorMessage={'Question Name is required and unique'}
+              errorMessage={'Points is required'}
               errors={errors}
             />
           </div>

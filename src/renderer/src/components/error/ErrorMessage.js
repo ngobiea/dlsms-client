@@ -1,10 +1,10 @@
 import React from 'react';
 import { MdClose } from 'react-icons/md';
-const ErrorMessage = ({ error,reset }) => {
+const ErrorMessage = ({ error, reset }) => {
   return (
     <div className="flex p-4 mb-4 text-red-800 rounded-lg bg-red-50">
       <span className="sr-only">Info</span>
-      <div className="ml-3 text-sm font-bold">{error.data.message}</div>
+      <div className="ml-3 text-sm font-bold">{error.data?.message}</div>
       <button
         onClick={() => {
           reset();

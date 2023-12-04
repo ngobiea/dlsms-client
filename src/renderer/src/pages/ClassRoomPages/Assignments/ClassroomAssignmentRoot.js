@@ -9,7 +9,7 @@ const ClassroomAssignmentRoot = () => {
   });
 
   return (
-    <div className="flex-1 flex flex-col h-screen mr-20 mb-20">
+    <div className="flex-1 flex flex-col h-screen  mb-20">
       <ClassroomAssignmentHeader />
       <Outlet />
       {submissionId && <GradeAssignmentForm />}

@@ -19,7 +19,6 @@ const Assigned = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      console.log(data);
       dispatch(setAssignedAssignment(data));
     } else if (isError) {
       console.log(error);

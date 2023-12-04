@@ -16,51 +16,46 @@ const ClassroomChatMessage = () => {
     }
   }, []);
   return (
-    <>
-      <div
-        ref={messagesRef}
-        className="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
-      >
-        <WelcomeMessage />
-        {messages.map((message) => {
-          if (message.type === 'classSession') {
-            return (
-              <ClassSessionScheduleMessage
-                key={message._id.toString()}
-                message={message}
-              />
-            );
-          } else if (message.type === 'examSession') {
-            return (
-              <ExamSessionScheduleMessage
-                key={message._id.toString()}
-                message={message}
-              />
-            );
-          } else if (
-            message.type === 'general' &&
-            message.sender._id.toString() ===
-              JSON.parse(localStorage.getItem('user'))._id.toString()
-          ) {
-            return (
-              <SenderMessage message={message} key={message._id.toString()} />
-            );
-          } else if (message.type === 'general') {
-            return (
-              <GeneralMessage message={message} key={message._id.toString()} />
-            );
-          } else if (message.type === 'assignment') {
-            return (
-              <AssignmentMessage
-                message={message}
-                key={message._id.toString()}
-              />
-            );
-          }
-          return null;
-        })}
-      </div>
-    </>
+    <div
+      ref={messagesRef}
+      className="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
+    >
+      <WelcomeMessage />
+      {messages.map((message) => {
+        if (message.type === 'classSession') {
+          return (
+            <ClassSessionScheduleMessage
+              key={message._id.toString()}
+              message={message}
+            />
+          );
+        } else if (message.type === 'examSession') {
+          return (
+            <ExamSessionScheduleMessage
+              key={message._id.toString()}
+              message={message}
+            />
+          );
+        } else if (
+          message.type === 'general' &&
+          message.sender._id.toString() ===
+            JSON.parse(localStorage.getItem('user'))._id.toString()
+        ) {
+          return (
+            <SenderMessage message={message} key={message._id.toString()} />
+          );
+        } else if (message.type === 'general') {
+          return (
+            <GeneralMessage message={message} key={message._id.toString()} />
+          );
+        } else if (message.type === 'assignment') {
+          return (
+            <AssignmentMessage message={message} key={message._id.toString()} />
+          );
+        }
+        return null;
+      })}
+    </div>
   );
 };
 

@@ -25,19 +25,25 @@ const LoginPage = () => {
   };
   useEffect(() => {
     setValue('email', JSON.parse(localStorage.getItem('email')));
-  }, []);
-  if (isSuccess) {
-    const expirationDate = 1713117329.737435;
-    const isLogin = {
-      url: 'https://dlsms.com',
-      name: 'isLogin',
-      value: true,
-      expirationDate,
-    };
-    localStorage.setItem('user', JSON.stringify(data.userDetails));
-    localStorage.setItem('email', JSON.stringify(data.userDetails.email));
-    window.account.login(isLogin);
-  }
+    if (isSuccess) {
+      const expirationDate = 1713117329.737435;
+      const isLogin = {
+        url: 'https://dlsms.com',
+        name: 'isLogin',
+        value: true,
+        expirationDate,
+      };
+      localStorage.setItem('user', JSON.stringify(data.userDetails));
+      localStorage.setItem('email', JSON.stringify(data.userDetails.email));
+      window.account.login(isLogin);
+    } else if (isError) {
+      console.log(error);
+      console.log(error?.status);
+      if (error?.status === 'FETCH_ERROR') {
+        
+      }
+    }
+  }, [isError, isSuccess]);
 
   return (
     <div>
@@ -80,10 +86,10 @@ const LoginPage = () => {
             errorMessage={'Password is required'}
             errors={errors}
           />
-          {isError && error.data.type === 'verify' && (
+          {isError && error?.data?.type === 'verify' && (
             <EmailVerificationError error={error} reset={reset} />
           )}
-          {isError && error.data.type !== 'verify' && (
+          {isError && error?.data?.type !== 'verify' && (
             <ErrorMessage error={error} reset={reset} />
           )}
 

@@ -66,6 +66,7 @@ const assignmentApi = createApi({
       }),
 
       postGradeAssignment: builder.mutation({
+        invalidatesTags: ['assignmentSubmission'],
         query: (body) => {
           return {
             url: `/tutor/assignment/grade`,
