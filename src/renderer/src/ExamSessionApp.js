@@ -16,7 +16,9 @@ import CloseWindow from './pages/ExamSessionPages/CloseWindow';
 import { socket } from './context/realtimeContext';
 import RulesPage from './pages/ExamSessionPages/RulesPage';
 import VerificationPage from './pages/ExamSessionPages/VerificationPage';
+
 const examSessionId = localStorage.getItem('examSessionId');
+
 ipcRenderer.on('source', (_e, { source }) => {
   console.log('source', source);
   store.dispatch(setScreenId(source.id));
@@ -41,18 +43,20 @@ ipcRenderer.on('stopRecord', (_e) => {
   stopRecording(socket);
   FaceApi.stopRealTimeRecognition();
 });
-socket.on('ESOpen', async (callback) => {
-  try {
-    console.log('received ESOpen event');
-    const isESOpen = await ipcRenderer.invoke('isExamSessionWindowOpen');
-    console.log(isESOpen);
-    if (isESOpen) {
-      callback(isESOpen);
-    }
-  } catch (error) {
-    console.log(error);
-  }
-});
+
+// socket.on('ESOpen', async (callback) => {
+//   try {
+//     console.log('received ESOpen event');
+//     const isESOpen = await ipcRenderer.invoke('isExamSessionWindowOpen');
+//     console.log(isESOpen);
+//     if (isESOpen) {
+//       callback(isESOpen);
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
+
 socket.on('endExamSession', async () => {
   console.log('received endExamSession event');
   const isClosed = await ipcRenderer.invoke('closeExamWindow');
