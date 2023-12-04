@@ -99,6 +99,7 @@ import {
   setExamSessionIdStep,
   setStudentCorrectOption,
   setQuestions,
+  setExamSessionId,
 } from './slices/examSessionSlice';
 
 import {
@@ -124,7 +125,7 @@ import {
   addGradedAssignment,
   setSubmittedAssignment,
   addSubmittedAssignment,
-  setSubmissionId
+  setSubmissionId,
 } from './slices/assignmentSlice';
 
 import { accountApi } from './apis/accountsApi';
@@ -257,6 +258,7 @@ export {
   setExamSessionIdStep,
   setStudentCorrectOption,
   setQuestions,
+  setExamSessionId,
 
   //join slice
   setDefaultWebcam,
@@ -279,7 +281,6 @@ export {
   setSubmittedAssignment,
   addSubmittedAssignment,
   setSubmissionId,
-
 };
 
 // Account Apis
@@ -309,6 +310,8 @@ export {
   usePostSaveExamSessionMutation,
   useGetQuestionsQuery,
   usePostSubmitAnswersMutation,
+  useGetStudentAnswersQuery,
+  usePostGradeStudentMutation,
 } from './apis/examSessionApi';
 
 // Report Apis
@@ -328,5 +331,5 @@ export {
   useGetAssignmentQuery,
   usePostSubmitAssignmentMutation,
   usePostGradeAssignmentMutation,
-  useGetSubmittedAssignmentsQuery
+  useGetSubmittedAssignmentsQuery,
 } from './apis/assignmentApi';

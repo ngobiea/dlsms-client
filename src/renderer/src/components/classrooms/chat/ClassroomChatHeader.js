@@ -42,22 +42,6 @@ const ClassroomChatHeader = () => {
         >
           Chat
         </NavLink>
-        <NavLink
-          to={'file'}
-          className={(navData) =>
-            navData.isActive ? activeClass : inActiveClass
-          }
-        >
-          Files
-        </NavLink>
-        <NavLink
-          to={''}
-          className={(navData) =>
-            navData.isActive ? activeClass : inActiveClass
-          }
-        >
-          Recordings
-        </NavLink>
       </div>
       {accountType === 'tutor' && (
         <div className="mr-5">
@@ -84,6 +68,7 @@ const ClassroomChatHeader = () => {
                 onClick={() => {
                   dispatch(setShowScheduleForm(true));
                 }}
+                tabIndex={0}
               >
                 <div className="block px-4 py-2 hover:bg-gray-100">
                   Schedule Class Session
@@ -93,6 +78,7 @@ const ClassroomChatHeader = () => {
                 onClick={() => {
                   dispatch(setShowExamSession(true));
                 }}
+                tabIndex={0} 
               >
                 <div className="block px-4 py-2 hover:bg-gray-100">
                   Schedule Exam Session

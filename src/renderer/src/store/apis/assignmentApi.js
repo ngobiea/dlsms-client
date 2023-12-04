@@ -88,7 +88,6 @@ const assignmentApi = createApi({
       updateAssignment: builder.mutation({
         query: ({ assignmentId }) => {
           const formData = new FormData();
-          console.log('assignmentId in api', assignmentId);
           formData.append('assignmentId', assignmentId);
           return {
             url: `/tutor/assignment/save`,

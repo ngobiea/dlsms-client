@@ -1,7 +1,6 @@
 import React from 'react';
 import { MdOutlineCalendarMonth } from 'react-icons/md';
 import { formatDateTime, formatCustomDateTime } from '../../../utils/dateTime';
-import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 const AssignmentMessage = ({ message }) => {
@@ -9,8 +8,6 @@ const AssignmentMessage = ({ message }) => {
   const { sender, assignment, timestamp } = message;
   const { _id, title, dueDate } = assignment;
   const { firstName, lastName } = sender;
-  const { classroomId } = useSelector((state) => state.classroom);
-  console.log(classroomId);
 
   const handleViewAssignments = () => {
     navigate(`assignment/${_id.toString()}`);

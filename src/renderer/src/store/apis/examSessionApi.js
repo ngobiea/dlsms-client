@@ -3,6 +3,7 @@ import { prepareHeaders } from './classroomApi/prepareHeaders';
 import { baseUrl, localhost } from '../../utils/url';
 const examSessionApi = createApi({
   reducerPath: 'examSessionApi',
+  tagTypes: ['examSessionSubmission'],
   baseQuery: fetchBaseQuery({
     baseUrl: baseUrl || localhost,
     prepareHeaders,
@@ -55,7 +56,7 @@ const examSessionApi = createApi({
           };
         },
       }),
-   
+
       postSubmitAnswers: builder.mutation({
         query: (body) => {
           return {
@@ -73,6 +74,25 @@ const examSessionApi = createApi({
           };
         },
       }),
+      getStudentAnswers: builder.query({
+        providesTags: ['examSessionSubmission'],
+        query: (studentId) => {
+          return {
+            url: `/tutor/exam-session/answers/${studentId}`,
+            method: 'GET',
+          };
+        },
+      }),
+      postGradeStudent: builder.mutation({
+        invalidatesTags: ['examSessionSubmission'],
+        query: ({ examSessionId, points }) => {
+          return {
+            url: `/tutor/exam-session/grade`,
+            method: 'POST',
+            body: { points, examSessionId },
+          };
+        },
+      }),
     };
   },
 });
@@ -85,6 +105,8 @@ export const {
   usePostSaveExamSessionMutation,
   useGetQuestionsQuery,
   usePostSubmitAnswersMutation,
+  useGetStudentAnswersQuery,
+  usePostGradeStudentMutation,
 } = examSessionApi;
 
 export { examSessionApi };

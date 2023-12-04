@@ -12,6 +12,7 @@ const examSessionSlice = createSlice({
     isShowExamSession: false,
     step: 'setup',
     isShowExamConfirm: false,
+    examSessionId: '',
   },
   reducers: {
     setCorrectOption(state, action) {
@@ -69,6 +70,9 @@ const examSessionSlice = createSlice({
         (question) => question.type === 'mcq'
       );
     },
+    setExamSessionId(state, action) {
+      state.examSessionId = action.payload;
+    }
   },
 });
 
@@ -82,5 +86,6 @@ export const {
   removeAllQuestions,
   setStudentCorrectOption,
   setQuestions,
+  setExamSessionId,
 } = examSessionSlice.actions;
 export const examSessionReducer = examSessionSlice.reducer;

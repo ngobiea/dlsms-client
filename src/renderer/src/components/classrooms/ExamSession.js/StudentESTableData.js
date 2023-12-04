@@ -1,80 +1,14 @@
 import React from 'react';
 import { formatDateTime } from '../../../utils/dateTime';
-const accountType = JSON.parse(localStorage.getItem('accountType'));
-import axios from 'axios';
-import { baseUrl, localhost } from '../../../utils/url';
-
-const token = JSON.parse(localStorage.getItem('user')).token;
+import { useNavigate } from 'react-router-dom';
 
 const StudentESTableData = ({ student }) => {
+  
+  const navigate = useNavigate();
   const handleViewStudents = async () => {
     try {
-      console.log('view exam students');
+      navigate(`../student/${student?._id.toString()}`);
     } catch (error) {
-      console.log(error);
-    }
-  };
-  const downloadRecording = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl || localhost}/tutor/exam-session/recording/${student._id}`,
-        {
-          responseType: 'blob', // important
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-          onDownloadProgress: (progressEvent) => {
-            const { loaded, total } = progressEvent;
-            const progress = Math.round((loaded / total) * 100);
-
-            console.log(`Download Progress: ${progress}%`);
-            // Update UI with the download progress (e.g., set state for a progress bar)
-          },
-        }
-      );
-
-      console.log(response);
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'vid-1701010735585.webm');
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-    } catch (error) {
-      console.log('Error downloading report');
-      console.log(error);
-    }
-  };
-  const handleDownloadReport = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl || localhost}/tutor/exam-session/report/${student._id}`,
-        {
-          responseType: 'blob',
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-          onDownloadProgress: (progressEvent) => {
-            const { loaded, total } = progressEvent;
-            const progress = Math.round((loaded / total) * 100);
-
-            console.log(`Download Progress: ${progress}%`);
-            // Update UI with the download progress (e.g., set state for a progress bar)
-          },
-        }
-      );
-      console.log(response);
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${student.studentId}.xlsx`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-    } catch (error) {
-      console.log('Error downloading report');
       console.log(error);
     }
   };
@@ -100,28 +34,12 @@ const StudentESTableData = ({ student }) => {
       </td>
 
       <td className="flex items-center px-6 py-4">
-        {accountType !== 'student' && (
-          <button
-            onClick={handleViewStudents}
-            type="button"
-            className="px-4 py-2 text-sm font-medium text-green-900 bg-gray-200 border border-green-900 rounded-s-lg hover:bg-gray-100 hover:text-green-700 focus:z-10 focus:text-green-700"
-          >
-            Review Student
-          </button>
-        )}
         <button
-          onClick={downloadRecording}
+          onClick={handleViewStudents}
           type="button"
-          className="px-4 py-2 text-sm font-medium text-green-900 bg-gray-200 border-t border-b border-green-900 hover:bg-gray-100 hover:text-green-700 focus:z-10 focus:text-green-700"
+          className="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
         >
-          Download Recording
-        </button>
-        <button
-          onClick={handleDownloadReport}
-          type="button"
-          className="px-4 py-2 text-sm font-medium text-green-900 bg-gray-200 border border-green-900 rounded-e-lg hover:bg-gray-100 hover:text-green-700 focus:z-10 focus:text-green-700"
-        >
-          Download Report
+          View
         </button>
       </td>
     </tr>

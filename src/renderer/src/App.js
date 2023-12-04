@@ -28,6 +28,8 @@ import StudentES from './pages/ClassRoomPages/ExamSessions/StudentES';
 import Assignment from './pages/ClassRoomPages/Assignments/Assignment';
 import SubmittedAssignment from './pages/ClassRoomPages/Assignments/SubmittedAssignment';
 import StudentSubmission from './pages/ClassRoomPages/Assignments/StudentSubmission';
+import StudentAnswers from './pages/ClassRoomPages/ExamSessions/StudentAnswers';
+
 const accountType = JSON.parse(localStorage.getItem('accountType'));
 
 const App = () => {
@@ -70,6 +72,7 @@ const App = () => {
           <Route path="exam-session" element={<ExamSessionsPage />}>
             <Route path="" element={<ESession />} />
             <Route path=":examSessionId" element={<StudentES />} />
+            <Route path="student/:studentId" element={<StudentAnswers />} />
           </Route>
         </Route>
         <Route path="assignment" element={<AssignmentPage />} />
