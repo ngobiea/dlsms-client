@@ -3,8 +3,9 @@ import { formatDateTime } from '../../utils/dateTime';
 const accountType = JSON.parse(localStorage.getItem('accountType'));
 import axios from 'axios';
 import { baseUrl, localhost } from '../../utils/url';
-import { setSubmissionId } from '../../store';
+import { setSubmissionId, setDownloadProgress } from '../../store';
 import { useDispatch } from 'react-redux';
+import { notification } from '../../utils/notification';
 const token = JSON.parse(localStorage.getItem('user')).token;
 
 const AssignmentTableData = ({ submission, assignmentId }) => {
@@ -21,6 +22,7 @@ const AssignmentTableData = ({ submission, assignmentId }) => {
     );
   };
   const handleDownloadSubmission = async () => {
+    notification('Downloading Submission', 'Download Started');
     try {
       const response = await axios.get(
         `${

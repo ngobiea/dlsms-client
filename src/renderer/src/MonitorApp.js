@@ -5,8 +5,11 @@ import TitleNav from './components/TitleNav';
 import MonitorPage from './pages/MonitorPages/MonitorPage';
 import ExamSessionContext from './context/ExamSessionContext';
 const examSessionId = localStorage.getItem('examSessionId');
-
+import NoConnection from './pages/NoConnection';
 const MonitorApp = () => {
+  const { notification, downloadProgress, isOnline } = useSelector(
+    (state) => state.app
+  );
   const { socket, examSession } = useContext(ExamSessionContext);
   useEffect(() => {
     socket.emit(
@@ -21,11 +24,17 @@ const MonitorApp = () => {
   return (
     <>
       <TitleNav />
-      {isDeviceSet && (
-        <Routes>
-          {/* <Route path="/" element={<CurrentStudentList />} /> */}
-          <Route path="/" element={<MonitorPage />} />
-        </Routes>
+      {isOnline ? (
+        <>
+          {isDeviceSet && (
+            <Routes>
+              {/* <Route path="/" element={<CurrentStudentList />} /> */}
+              <Route path="/" element={<MonitorPage />} />
+            </Routes>
+          )}
+        </>
+      ) : (
+        <NoConnection />
       )}
     </>
   );

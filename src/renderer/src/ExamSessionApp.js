@@ -16,7 +16,7 @@ import CloseWindow from './pages/ExamSessionPages/CloseWindow';
 import { socket } from './context/realtimeContext';
 import RulesPage from './pages/ExamSessionPages/RulesPage';
 import VerificationPage from './pages/ExamSessionPages/VerificationPage';
-
+import NoConnection from './pages/NoConnection';
 const examSessionId = localStorage.getItem('examSessionId');
 
 ipcRenderer.on('source', (_e, { source }) => {
@@ -54,7 +54,9 @@ socket.on('endExamSession', async () => {
 });
 
 const ExamSessionApp = () => {
-  const { notification } = useSelector((state) => state.app);
+  const { notification, downloadProgress, isOnline } = useSelector(
+    (state) => state.app
+  );
   const [message, setMessage] = useState('');
   const dispatch = useDispatch();
   useEffect(() => {
@@ -87,14 +89,20 @@ const ExamSessionApp = () => {
     <>
       <TitleNav />
       {message !== '' && <CloseWindow message={message} />}
-      {notification.isActive && <Notification />}
-      {message === '' && (
-        <Routes>
-          <Route path="/" element={<RulesPage />} />
-          <Route path="/setup" element={<ExamSessionSetup />} />
-          <Route path="examSession" element={<ExamSession />} />
-          <Route path="verify" element={<VerificationPage />} />
-        </Routes>
+      {notification.isActive && <Notification />}v
+      {isOnline ? (
+        <>
+          {message === '' && (
+            <Routes>
+              <Route path="/" element={<RulesPage />} />
+              <Route path="/setup" element={<ExamSessionSetup />} />
+              <Route path="examSession" element={<ExamSession />} />
+              <Route path="verify" element={<VerificationPage />} />
+            </Routes>
+          )}
+        </>
+      ) : (
+        <NoConnection />
       )}
     </>
   );

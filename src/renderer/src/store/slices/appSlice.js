@@ -25,6 +25,7 @@ const appSlice = createSlice({
     isOnline: true,
     socket: null,
     modelsPath: '',
+    downloadProgress: 0,
   },
   reducers: {
     setIsWebcamActive(state, action) {
@@ -89,6 +90,9 @@ const appSlice = createSlice({
     setOnlineStatus(state, action) {
       state.isOnline = action.payload;
     },
+    setDownloadProgress(state, action) {
+      state.downloadProgress = action.payload;
+    },
   },
 });
 export const {
@@ -105,5 +109,6 @@ export const {
   setSocket,
   setMOdelsPath,
   setOnlineStatus,
+  setDownloadProgress,
 } = appSlice.actions;
 export const appReducer = appSlice.reducer;

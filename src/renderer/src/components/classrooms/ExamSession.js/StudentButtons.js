@@ -1,33 +1,42 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { setExamSessionId } from '../../../store';
+import { setExamSessionId, setDownloadProgress } from '../../../store';
 import axios from 'axios';
 import { baseUrl, localhost } from '../../../utils/url';
 const token = JSON.parse(localStorage.getItem('user')).token;
 const accountType = JSON.parse(localStorage.getItem('accountType'));
-
+import { notification } from '../../../utils/notification';
 const StudentButtons = ({ student }) => {
   const dispatch = useDispatch();
   const downloadRecording = async () => {
+    notification('Downloading Recording', 'Download Started');
     try {
       const response = await axios.get(
         `${baseUrl || localhost}/tutor/exam-session/recording/${student._id}`,
         {
-          responseType: 'blob', // important
+          responseType: 'blob',
           headers: {
             authorization: `Bearer ${token}`,
           },
           onDownloadProgress: (progressEvent) => {
             const { loaded, total } = progressEvent;
+
             const progress = Math.round((loaded / total) * 100);
 
             console.log(`Download Progress: ${progress}%`);
-            // Update UI with the download progress (e.g., set state for a progress bar)
+            dispatch(setDownloadProgress(progress));
+            if (progress === 100) {
+              notification('Downloading Recording', 'Download Completed');
+              dispatch(setDownloadProgress(0));
+            }
           },
         }
       );
 
       console.log(response);
+      // if (response.status === 200) {
+      //   dispatch(setDownloadProgress(0));
+      // }
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
@@ -42,6 +51,7 @@ const StudentButtons = ({ student }) => {
     }
   };
   const handleDownloadReport = async () => {
+    notification('Downloading Report', 'Download Started');
     try {
       const response = await axios.get(
         `${baseUrl || localhost}/tutor/exam-session/report/${student._id}`,
@@ -55,6 +65,11 @@ const StudentButtons = ({ student }) => {
             const progress = Math.round((loaded / total) * 100);
 
             console.log(`Download Progress: ${progress}%`);
+            dispatch(setDownloadProgress(progress));
+            if (progress === 100) {
+              notification('Downloading Report', 'Download Completed');
+              dispatch(setDownloadProgress(0));
+            }
             // Update UI with the download progress (e.g., set state for a progress bar)
           },
         }

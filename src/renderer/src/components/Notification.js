@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setNotification } from '../store';
+const timeOutTime = 5000;
 
 const Notification = ({ type }) => {
   const dispatch = useDispatch();
@@ -16,7 +17,7 @@ const Notification = ({ type }) => {
           message: '',
         })
       );
-    }, 5000);
+    }, timeOutTime);
   }, []);
   const successClass =
     'fixed bottom-0 right-0 z-40 p-4 w-1/2  text-green-800 border border-green-300 rounded-lg bg-green-100';

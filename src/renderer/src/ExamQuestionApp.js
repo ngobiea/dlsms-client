@@ -2,6 +2,7 @@ import React from 'react';
 import TitleNav from './components/TitleNav';
 import { socket } from './context/realtimeContext';
 import ExamSessionPage from './pages/SessionPages/ExamSession/ExamSessionPage';
+import NoConnection from './pages/NoConnection';
 const examSessionId = localStorage.getItem('examSessionId');
 console.log(examSessionId);
 window.account.blurExamQuestionWindow(() => {
@@ -64,12 +65,19 @@ window.account.focusExamQuestionWindow(() => {
 });
 
 const ExamQuestionApp = () => {
+  const { notification, downloadProgress, isOnline } = useSelector(
+    (state) => state.app
+  );
   return (
     <>
-      <TitleNav />;
-      <div className=" w-full h-full">
-        <ExamSessionPage />
-      </div>
+      <TitleNav />
+      {isOnline ? (
+        <div className=" w-full h-full">
+          <ExamSessionPage />
+        </div>
+      ) : (
+        <NoConnection />
+      )}
     </>
   );
 };

@@ -48,6 +48,7 @@ import {
   setSocket,
   setMOdelsPath,
   setOnlineStatus,
+  setDownloadProgress,
 } from './slices/appSlice';
 
 import { chatReducer, addMessage, setMessages } from './slices/chatSlice';
@@ -197,6 +198,7 @@ export {
   setSocket,
   setMOdelsPath,
   setOnlineStatus,
+  setDownloadProgress,
 
   //classroom Slice
   setStudents,
