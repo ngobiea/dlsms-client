@@ -18,7 +18,7 @@ const StudentMCQs = ({ question, index }) => {
               {String.fromCharCode(ascii + pos)}) {option.value}
               {option.optionId === question.correctOption && (
                 <span>
-                  {option.isCorrect ? (
+                  {question.isCorrect ? (
                     <MdOutlineCheckCircleOutline className="inline-block ml-2 text-green-500" />
                   ) : (
                     <MdClose className="inline-block ml-2 text-red-500" />

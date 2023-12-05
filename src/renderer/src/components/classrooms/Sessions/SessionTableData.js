@@ -50,6 +50,7 @@ const SessionTableData = ({ session, type }) => {
       console.log(error);
     }
   };
+  const handleStudentView = () => {};
 
   const handleViewStudents = () => {
     if (type === 'class') {
@@ -76,22 +77,33 @@ const SessionTableData = ({ session, type }) => {
       <td className="px-6 py-4 text-green-700">{session.students.length}</td>
       <td className="flex items-center px-6 py-4">
         {accountType !== 'student' && (
-          <button
-            onClick={handleViewStudents}
-            type="button"
-            className="px-4 py-2 text-sm font-medium text-green-900 bg-gray-200 border border-green-900 rounded-s-lg hover:bg-gray-100 hover:text-green-700 focus:z-10 focus:text-green-700"
-          >
-            View Report
-          </button>
+          <>
+            <button
+              onClick={handleViewStudents}
+              type="button"
+              className="px-4 py-2 text-sm font-medium text-green-900 bg-gray-200 border border-green-900 rounded-s-lg hover:bg-gray-100 hover:text-green-700 focus:z-10 focus:text-green-700"
+            >
+              View Report
+            </button>
+            <button
+              onClick={handleDownloadReport}
+              type="button"
+              className="px-4 py-2 text-sm font-medium text-green-900 bg-gray-200 border border-green-900 rounded-e-lg hover:bg-gray-100 hover:text-green-700 focus:z-10 focus:text-green-700"
+            >
+              Download Report
+            </button>
+          </>
         )}
 
-        <button
-          onClick={handleDownloadReport}
-          type="button"
-          className="px-4 py-2 text-sm font-medium text-green-900 bg-gray-200 border border-green-900 rounded-e-lg hover:bg-gray-100 hover:text-green-700 focus:z-10 focus:text-green-700"
-        >
-          Download Report
-        </button>
+        {accountType === 'student' && (
+          <button
+            onClick={handleStudentView}
+            type="button"
+            className="px-4 py-2 text-sm font-medium text-green-900 bg-gray-200 border border-green-900 rounded-e-lg hover:bg-gray-100 hover:text-green-700 focus:z-10 focus:text-green-700"
+          >
+            View
+          </button>
+        )}
       </td>
     </tr>
   );
