@@ -43,7 +43,18 @@ ipcRenderer.on('stopRecord', (_e) => {
   stopRecording(socket);
   FaceApi.stopRealTimeRecognition();
 });
-
+socket.on('ESOpen', async (callback) => {
+  try {
+    console.log('received ESOpen event');
+    const isESOpen = await ipcRenderer.invoke('isExamSessionWindowOpen');
+    console.log(isESOpen);
+    if (isESOpen) {
+      callback(isESOpen);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
 socket.on('endExamSession', async () => {
   console.log('received endExamSession event');
   const isClosed = await ipcRenderer.invoke('closeExamWindow');

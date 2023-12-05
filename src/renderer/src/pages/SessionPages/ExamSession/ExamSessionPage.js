@@ -5,21 +5,21 @@ import SubmitButtons from '../../../components/classrooms/ExamSession.js/SubmitB
 import MCQsView from './MCQs/MCQsView';
 import LQs from './LQs/LQs';
 import SQs from './SQs/SQs';
+const examSessionId = localStorage.getItem('examSessionId');
+console.log(examSessionId);
 
-import { useGetQuestionsQuery, setQuestions} from '../../../store';
+import { useGetQuestionsQuery, setQuestions } from '../../../store';
 
 const ExamSessionPage = () => {
   const dispatch = useDispatch();
-  const { questions, examSessionId } = useSelector(
-    (state) => state.examSession
-  );
+  const { questions } = useSelector((state) => state.examSession);
 
   const { data, isSuccess, isError, error } =
     useGetQuestionsQuery(examSessionId);
   useEffect(() => {
     if (isSuccess) {
-        console.log(data);
-        dispatch(setQuestions(data.questions));
+      console.log(data);
+      dispatch(setQuestions(data.questions));
     }
     if (isError) {
       console.log(error);

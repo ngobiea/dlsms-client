@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { usePostSubmitAnswersMutation } from '../../../store';
+const examSessionId = localStorage.getItem('examSessionId');
 
 const SubmitButtons = () => {
-  const { examSessionId, mcqQuestions } = useSelector(
-    (state) => state.examSession
-  );
+  const { mcqQuestions } = useSelector((state) => state.examSession);
   const [postSubmitExamSession, { isSuccess, data, isError, error }] =
     usePostSubmitAnswersMutation();
   useEffect(() => {
