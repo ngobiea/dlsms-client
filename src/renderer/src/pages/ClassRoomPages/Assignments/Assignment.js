@@ -6,7 +6,9 @@ import {
   removeAllFiles,
   usePostSubmitAssignmentMutation,
   useGetAssignmentQuery,
+  setDownloadProgress,
 } from '../../../store';
+import { notification } from '../../../utils/notification';
 import { formatDateTime } from '../../../utils/dateTime';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -34,6 +36,7 @@ const Assignment = () => {
     submitAssignment({ submission, assignmentId });
   };
   const handleReferenceDownload = async ({ _id, name }) => {
+    notification('Downloading Reference', 'Download Started');
     try {
       const response = await axios.get(
         `${baseUrl || localhost}/download/${assignmentId}/file/${_id}`,

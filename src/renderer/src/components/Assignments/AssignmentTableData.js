@@ -37,6 +37,11 @@ const AssignmentTableData = ({ submission, assignmentId }) => {
             const { loaded, total } = progressEvent;
             const progress = Math.round((loaded / total) * 100);
             console.log(`Download Progress: ${progress}%`);
+            dispatch(setDownloadProgress(progress));
+            if (progress === 100) {
+              notification('Downloading Submission', 'Download Completed');
+              dispatch(setDownloadProgress(0));
+            }
             // Update UI with the download progress (e.g., set state for a progress bar)
           },
         }

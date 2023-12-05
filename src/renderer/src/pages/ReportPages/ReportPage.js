@@ -1,7 +1,11 @@
 import React from 'react';
 import axios from 'axios';
+import { notification } from '../../utils/notification';
+import { useDispatch } from 'react-redux';
+import { setDownloadProgress } from '../../store';
 const ReportPage = () => {
   const handleDownload = async () => {
+    notification('Downloading Report', 'Download Started');
     try {
       const response = await axios.get('http://localhost:6001/report', {
         responseType: 'blob',
