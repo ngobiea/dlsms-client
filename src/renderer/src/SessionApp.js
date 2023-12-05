@@ -11,7 +11,7 @@ import { socket } from './context/realtimeContext';
 import { setStudentImages } from './store';
 import Skeleton from './pages/SessionPages/Skeleton';
 import CloseWindow from './pages/ExamSessionPages/CloseWindow';
-import NoConnection from './pages/NoConnection';
+
 const accountType = JSON.parse(localStorage.getItem('accountType'));
 const classSessionId = localStorage.getItem('sessionId');
 
@@ -23,9 +23,6 @@ const SessionApp = () => {
   const { isModelsLoaded } = useSelector((state) => {
     return state.session;
   });
-  const { notification, downloadProgress, isOnline } = useSelector(
-    (state) => state.app
-  );
 
   useEffect(() => {
     if (accountType === 'student') {
@@ -51,34 +48,28 @@ const SessionApp = () => {
   return (
     <>
       <TitleNav />
-      {isOnline ? (
-        <>
-          {accountType !== 'tutor' && message !== '' ? (
-            <CloseWindow message={message} />
-          ) : (
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  accountType === 'tutor' ? (
-                    <Navigate to="/setup" />
-                  ) : (
-                    <Navigate to="/rules" />
-                  )
-                }
-              />
-              <Route path="setup" element={<ClassSessionSetup />} />
-              <Route
-                path="rules"
-                element={isModelsLoaded ? <SessionRulesPage /> : <Skeleton />}
-              />
-              <Route path="verify" element={<VerificationPage />} />
-              <Route path="session" element={<ClassSessionPage />} />
-            </Routes>
-          )}
-        </>
+      {accountType !== 'tutor' && message !== '' ? (
+        <CloseWindow message={message} />
       ) : (
-        <NoConnection />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              accountType === 'tutor' ? (
+                <Navigate to="/setup" />
+              ) : (
+                <Navigate to="/rules" />
+              )
+            }
+          />
+          <Route path="setup" element={<ClassSessionSetup />} />
+          <Route
+            path="rules"
+            element={isModelsLoaded ? <SessionRulesPage /> : <Skeleton />}
+          />
+          <Route path="verify" element={<VerificationPage />} />
+          <Route path="session" element={<ClassSessionPage />} />
+        </Routes>
       )}
     </>
   );

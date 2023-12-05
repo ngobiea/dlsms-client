@@ -1,4 +1,4 @@
-export const baseUrl = 'http://15.206.212.110:6001';
+export const baseUrl = null;
 export const localhost = 'http://localhost:6001';
 // http://15.206.212.110:6001
 //65.0.106.239

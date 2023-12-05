@@ -30,14 +30,12 @@ import SubmittedAssignment from './pages/ClassRoomPages/Assignments/SubmittedAss
 import StudentSubmission from './pages/ClassRoomPages/Assignments/StudentSubmission';
 import StudentAnswers from './pages/ClassRoomPages/ExamSessions/StudentAnswers';
 import DownloadProgress from './components/DownloadProgress';
-import NoConnection from './pages/NoConnection';
+
 const accountType = JSON.parse(localStorage.getItem('accountType'));
 
 const App = () => {
   const { isShowExamConfirm } = useSelector((state) => state.examSession);
-  const { notification, downloadProgress, isOnline } = useSelector(
-    (state) => state.app
-  );
+  const { notification, downloadProgress } = useSelector((state) => state.app);
   console.log(navigator.onLine);
   return (
     <>
@@ -46,52 +44,48 @@ const App = () => {
       {downloadProgress > 0 && <DownloadProgress />}
       {notification.isActive && <Notification />}
       {isShowExamConfirm && <ExamConfirm />}
-      {isOnline ? (
-        <Routes>
-          <Route path="/" element={<ClassRoomsPage />} />
-          <Route path=":classroomId" element={<ClassRoomPage />}>
-            <Route path="" element={<ClassroomChatRoot />}>
-              <Route path="" element={<ClassroomChat />} />
-              <Route path="file" element={<ClassroomFiles />} />
-            </Route>
-            <Route path="assignment" element={<ClassroomAssignmentRoot />}>
-              <Route path="" element={<Assigned />} />
-              <Route path="graded" element={<GradedAssignment />} />
-              <Route path="create" element={<CreateAssignment />} />
-              <Route
-                path=":assignmentId"
-                element={
-                  accountType === 'student' ? (
-                    <Assignment />
-                  ) : (
-                    <StudentSubmission />
-                  )
-                }
-              />
-              <Route path="submitted" element={<SubmittedAssignment />} />
-            </Route>
-            <Route path="class-session" element={<ClassSessionsPage />}>
-              <Route path="" element={<CSession />} />
-              <Route path=":classSessionId" element={<StudentCS />} />
-            </Route>
-            <Route path="exam-session" element={<ExamSessionsPage />}>
-              <Route path="" element={<ESession />} />
-              <Route path=":examSessionId" element={<StudentES />} />
-              <Route path="student/:studentId" element={<StudentAnswers />} />
-            </Route>
+      <Routes>
+        <Route path="/" element={<ClassRoomsPage />} />
+        <Route path=":classroomId" element={<ClassRoomPage />}>
+          <Route path="" element={<ClassroomChatRoot />}>
+            <Route path="" element={<ClassroomChat />} />
+            <Route path="file" element={<ClassroomFiles />} />
           </Route>
-          <Route path="assignment" element={<AssignmentPage />} />
-          <Route path="report" element={<ReportPage />} />
-          <Route path="notification" element={<NotificationPage />} />
-          <Route
-            path=":classroomId/image"
-            element={<JoinClassroomVerification />}
-          />
-          <Route path=":classroomId/join" element={<JoinPage />} />
-        </Routes>
-      ) : (
-        <NoConnection />
-      )}
+          <Route path="assignment" element={<ClassroomAssignmentRoot />}>
+            <Route path="" element={<Assigned />} />
+            <Route path="graded" element={<GradedAssignment />} />
+            <Route path="create" element={<CreateAssignment />} />
+            <Route
+              path=":assignmentId"
+              element={
+                accountType === 'student' ? (
+                  <Assignment />
+                ) : (
+                  <StudentSubmission />
+                )
+              }
+            />
+            <Route path="submitted" element={<SubmittedAssignment />} />
+          </Route>
+          <Route path="class-session" element={<ClassSessionsPage />}>
+            <Route path="" element={<CSession />} />
+            <Route path=":classSessionId" element={<StudentCS />} />
+          </Route>
+          <Route path="exam-session" element={<ExamSessionsPage />}>
+            <Route path="" element={<ESession />} />
+            <Route path=":examSessionId" element={<StudentES />} />
+            <Route path="student/:studentId" element={<StudentAnswers />} />
+          </Route>
+        </Route>
+        <Route path="assignment" element={<AssignmentPage />} />
+        <Route path="report" element={<ReportPage />} />
+        <Route path="notification" element={<NotificationPage />} />
+        <Route
+          path=":classroomId/image"
+          element={<JoinClassroomVerification />}
+        />
+        <Route path=":classroomId/join" element={<JoinPage />} />
+      </Routes>
     </>
   );
 };
