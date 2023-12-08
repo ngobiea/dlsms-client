@@ -40,7 +40,7 @@ const LoginPage = () => {
       console.log(error);
       console.log(error?.status);
       if (error?.status === 'FETCH_ERROR') {
-        
+        console.log('fetch error');
       }
     }
   }, [isError, isSuccess]);

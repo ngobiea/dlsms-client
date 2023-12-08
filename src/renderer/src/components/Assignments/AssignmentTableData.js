@@ -12,7 +12,6 @@ const AssignmentTableData = ({ submission, assignmentId }) => {
   const dispatch = useDispatch();
   const { date, student, graded, points, _id } = submission;
   const { firstName, lastName, studentId } = student;
-  console.log(submission);
   const showSubmitForm = async () => {
     dispatch(
       setSubmissionId({
@@ -21,6 +20,7 @@ const AssignmentTableData = ({ submission, assignmentId }) => {
       })
     );
   };
+
   const handleDownloadSubmission = async () => {
     notification('Downloading Submission', 'Download Started');
     try {
@@ -60,6 +60,45 @@ const AssignmentTableData = ({ submission, assignmentId }) => {
       console.log(error);
     }
   };
+    const handleDownloadPlagiarism = async () => {
+      notification('Downloading Submission', 'Download Started');
+      try {
+        const response = await axios.get(
+          `${
+            baseUrl || localhost
+          }/tutor/plagiarism/${assignmentId}/submission/${_id}`,
+          {
+            // responseType: 'blob',
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+            // onDownloadProgress: (progressEvent) => {
+            //   const { loaded, total } = progressEvent;
+            //   const progress = Math.round((loaded / total) * 100);
+            //   console.log(`Download Progress: ${progress}%`);
+            //   dispatch(setDownloadProgress(progress));
+            //   if (progress === 100) {
+            //     notification('Downloading Submission', 'Download Completed');
+            //     dispatch(setDownloadProgress(0));
+            //   }
+            //   // Update UI with the download progress (e.g., set state for a progress bar)
+            // },
+          }
+        );
+        console.log(response);
+        // const fileName = response.headers['content-disposition'];
+        // const url = window.URL.createObjectURL(new Blob([response.data]));
+        // const link = document.createElement('a');
+        // link.href = url;
+        // link.setAttribute('download', `${fileName}`);
+        // document.body.appendChild(link);
+        // link.click();
+        // link.parentNode.removeChild(link);
+      } catch (error) {
+        console.log('Error downloading report');
+        console.log(error);
+      }
+    };
 
   return (
     <tr className="bg-white border-b  hover:bg-gray-50">
@@ -79,15 +118,21 @@ const AssignmentTableData = ({ submission, assignmentId }) => {
           type="button"
           className="px-4 py-2 text-sm font-medium text-green-900 bg-gray-200 border border-green-900 rounded-s-lg hover:bg-gray-100 hover:text-green-700 focus:z-10 focus:text-green-700"
         >
-          Grade Assignment
+          Grade
         </button>
-
+        <button
+          type="button"
+          onClick={handleDownloadPlagiarism}
+          className="px-4 py-2 text-sm font-medium text-green-900 bg-gray-200 border-t border-b border-green-900 hover:bg-gray-100 hover:text-green-700 focus:z-10 focus:text-green-700 "
+        >
+          Plagiarism
+        </button>
         <button
           onClick={handleDownloadSubmission}
           type="button"
           className="px-4 py-2 text-sm font-medium text-green-900 bg-gray-200 border border-green-900 rounded-e-lg hover:bg-gray-100 hover:text-green-700 focus:z-10 focus:text-green-700"
         >
-          Download Submission
+          Download
         </button>
       </td>
     </tr>

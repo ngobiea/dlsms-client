@@ -84,7 +84,6 @@ export default class FaceApi {
           .detectAllFaces(videoElement)
           .withFaceLandmarks()
           .withFaceDescriptors();
-
         const results = detectedFaces.map((detection) => {
           const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
           return {
