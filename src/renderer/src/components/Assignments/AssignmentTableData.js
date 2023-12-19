@@ -47,7 +47,8 @@ const AssignmentTableData = ({ submission, assignmentId }) => {
         }
       );
       console.log(response);
-      const fileName = response.headers['content-disposition'];
+      const fileName = response.headers['filename'];
+      console.log(fileName);
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -60,45 +61,45 @@ const AssignmentTableData = ({ submission, assignmentId }) => {
       console.log(error);
     }
   };
-    const handleDownloadPlagiarism = async () => {
-      notification('Downloading Submission', 'Download Started');
-      try {
-        const response = await axios.get(
-          `${
-            baseUrl || localhost
-          }/tutor/plagiarism/${assignmentId}/submission/${_id}`,
-          {
-            // responseType: 'blob',
-            headers: {
-              authorization: `Bearer ${token}`,
-            },
-            // onDownloadProgress: (progressEvent) => {
-            //   const { loaded, total } = progressEvent;
-            //   const progress = Math.round((loaded / total) * 100);
-            //   console.log(`Download Progress: ${progress}%`);
-            //   dispatch(setDownloadProgress(progress));
-            //   if (progress === 100) {
-            //     notification('Downloading Submission', 'Download Completed');
-            //     dispatch(setDownloadProgress(0));
-            //   }
-            //   // Update UI with the download progress (e.g., set state for a progress bar)
-            // },
-          }
-        );
-        console.log(response);
-        // const fileName = response.headers['content-disposition'];
-        // const url = window.URL.createObjectURL(new Blob([response.data]));
-        // const link = document.createElement('a');
-        // link.href = url;
-        // link.setAttribute('download', `${fileName}`);
-        // document.body.appendChild(link);
-        // link.click();
-        // link.parentNode.removeChild(link);
-      } catch (error) {
-        console.log('Error downloading report');
-        console.log(error);
-      }
-    };
+  const handleDownloadPlagiarism = async () => {
+    notification('Downloading Submission', 'Download Started');
+    try {
+      const response = await axios.get(
+        `${
+          baseUrl || localhost
+        }/tutor/plagiarism/${assignmentId}/submission/${_id}`,
+        {
+          responseType: 'blob',
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+          onDownloadProgress: (progressEvent) => {
+            const { loaded, total } = progressEvent;
+            const progress = Math.round((loaded / total) * 100);
+            console.log(`Download Progress: ${progress}%`);
+            dispatch(setDownloadProgress(progress));
+            if (progress === 100) {
+              notification('Downloading Submission', 'Download Completed');
+              dispatch(setDownloadProgress(0));
+            }
+            // Update UI with the download progress (e.g., set state for a progress bar)
+          },
+        }
+      );
+      console.log(response);
+      // const fileName = response.headers['content-disposition'];
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${studentId}-report.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (error) {
+      console.log('Error downloading report');
+      console.log(error);
+    }
+  };
 
   return (
     <tr className="bg-white border-b  hover:bg-gray-50">
