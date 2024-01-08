@@ -41,4 +41,4 @@ Run the following commands in your terminal:
     npm start
     ```
 
-Code for backend can be found here <https://github.com/ngobiea/dlsms-client>
+Code for backend can be found here <https://github.com/ngobiea/dlsms-server.git>
